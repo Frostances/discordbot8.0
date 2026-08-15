@@ -1,0 +1,59 @@
+[2026-08-12T23:47:13.142Z] [INFO] [MUSIC] Music manager initialized
+[2026-08-12T23:47:13.144Z] [ERROR] [PROCESS] Unhandled rejection — An invalid token was provided.
+[2026-08-12T23:47:50.020Z] [INFO] [MUSIC] Music manager initialized
+[2026-08-12T23:47:50.599Z] [INFO] [BOT] Logged in as dock#7508
+[2026-08-12T23:47:50.692Z] [INFO] [BOT] Loaded 369652 dictionary words
+[2026-08-12T23:47:51.262Z] [INFO] [BLACKTEA] Initialized with 316 valid sequences
+[2026-08-12T23:47:51.263Z] [INFO] [STREAK] Next new day: 2026-08-13T22:00:00.000Z
+[2026-08-12T23:47:51.279Z] [INFO] [SLASH] Registering 90 slash commands globally...
+[2026-08-12T23:47:51.590Z] [INFO] [SLASH] Registered 90 slash commands successfully.
+[2026-08-12T23:47:51.593Z] [INFO] [TEMPBAN] Restored 0 active tempban(s); processed 0 overdue
+[2026-08-12T23:47:51.604Z] [INFO] [NUKE] Restored 0 scheduled nuke(s)
+[2026-08-12T23:47:52.347Z] [INFO] [BOT] Ready. Serving 2 guilds.
+[2026-08-12T23:47:59.698Z] [INFO] [CMD] lequm in #soon → .help
+[2026-08-12T23:54:18.860Z] [INFO] [MUSIC] Music manager initialized
+[2026-08-12T23:54:19.356Z] [INFO] [BOT] Logged in as dock#7508
+[2026-08-12T23:54:19.474Z] [INFO] [BOT] Loaded 369652 dictionary words
+[2026-08-12T23:54:20.010Z] [INFO] [BLACKTEA] Initialized with 316 valid sequences
+[2026-08-12T23:54:20.011Z] [INFO] [STREAK] Next new day: 2026-08-13T22:00:00.000Z
+[2026-08-12T23:54:20.025Z] [INFO] [SLASH] Registering 90 slash commands globally...
+[2026-08-12T23:54:20.287Z] [INFO] [SLASH] Registered 90 slash commands successfully.
+[2026-08-12T23:54:20.289Z] [INFO] [TEMPBAN] Restored 0 active tempban(s); processed 0 overdue
+[2026-08-12T23:54:20.301Z] [INFO] [NUKE] Restored 0 scheduled nuke(s)
+[2026-08-12T23:54:20.748Z] [INFO] [BOT] Ready. Serving 2 guilds.
+[2026-08-12T23:54:32.959Z] [INFO] [MUSIC] Music manager initialized
+[2026-08-12T23:54:33.401Z] [INFO] [BOT] Logged in as dock#7508
+[2026-08-12T23:54:33.496Z] [INFO] [BOT] Loaded 369652 dictionary words
+[2026-08-12T23:54:34.040Z] [INFO] [BLACKTEA] Initialized with 316 valid sequences
+[2026-08-12T23:54:34.041Z] [INFO] [STREAK] Next new day: 2026-08-13T22:00:00.000Z
+[2026-08-12T23:54:34.052Z] [INFO] [SLASH] Registering 90 slash commands globally...
+[2026-08-12T23:54:34.326Z] [INFO] [SLASH] Registered 90 slash commands successfully.
+[2026-08-12T23:54:34.328Z] [INFO] [TEMPBAN] Restored 0 active tempban(s); processed 0 overdue
+[2026-08-12T23:54:34.341Z] [INFO] [NUKE] Restored 0 scheduled nuke(s)
+[2026-08-12T23:54:35.102Z] [INFO] [BOT] Ready. Serving 2 guilds.
+[2026-08-12T23:56:00.271Z] [INFO] [MUSIC] Music manager initialized
+[2026-08-12T23:56:00.820Z] [INFO] [BOT] Logged in as dock#7508
+[2026-08-12T23:56:01.032Z] [INFO] [BOT] Loaded 369652 dictionary words
+[2026-08-12T23:56:01.648Z] [INFO] [BLACKTEA] Initialized with 316 valid sequences
+[2026-08-12T23:56:01.649Z] [INFO] [STREAK] Next new day: 2026-08-13T22:00:00.000Z
+[2026-08-12T23:56:01.663Z] [INFO] [SLASH] Registering 90 slash commands globally...
+[2026-08-12T23:56:01.970Z] [INFO] [SLASH] Registered 90 slash commands successfully.
+[2026-08-12T23:56:01.973Z] [INFO] [TEMPBAN] Restored 0 active tempban(s); processed 0 overdue
+[2026-08-12T23:56:01.978Z] [INFO] [NUKE] Restored 0 scheduled nuke(s)
+[2026-08-12T23:56:02.598Z] [INFO] [BOT] Ready. Serving 2 guilds.
+[2026-08-12T23:56:54.038Z] [INFO] [MUSIC] Music manager initialized
+[2026-08-12T23:56:54.693Z] [INFO] [BOT] Logged in as dock#7508
+[2026-08-12T23:56:54.923Z] [INFO] [BOT] Loaded 369652 dictionary words
+[2026-08-12T23:56:55.594Z] [INFO] [BLACKTEA] Initialized with 316 valid sequences
+[2026-08-12T23:56:55.594Z] [INFO] [STREAK] Next new day: 2026-08-13T22:00:00.000Z
+[2026-08-12T23:56:55.609Z] [INFO] [SLASH] Registering 90 slash commands globally...
+[2026-08-12T23:56:55.949Z] [INFO] [SLASH] Registered 90 slash commands successfully.
+[2026-08-12T23:56:55.952Z] [INFO] [TEMPBAN] Restored 0 active tempban(s); processed 0 overdue
+[2026-08-12T23:56:55.970Z] [INFO] [NUKE] Restored 0 scheduled nuke(s)
+[2026-08-12T23:56:56.535Z] [INFO] [BOT] Ready. Serving 2 guilds.
+[2026-08-12T23:56:58.761Z] [INFO] [CMD] lequm in #soon → .help
+[2026-08-12T23:57:00.814Z] [INFO] [CMD] lequm in #soon → .nuke
+[2026-08-12T23:57:32.943Z] [INFO] [CMD] lequm in #soon → .help
+[2026-08-12T23:58:48.094Z] [INFO] [CMD] lequm in #soon → .levels
+[2026-08-12T23:59:03.818Z] [INFO] [CMD] lequm in #soon → .starboard
+[2026-08-12T23:59:08.900Z] [ERROR] [LAVALINK] Node MainNode error: — connect ETIMEDOUT 38.46.216.241:443

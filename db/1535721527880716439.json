@@ -1,0 +1,1626 @@
+{
+  "temproles": [],
+  "reminders": [],
+  "_initialized": true,
+  "settings": {},
+  "modules": {},
+  "staffRoles": [],
+  "cases": [],
+  "notes": {},
+  "economy": {
+    "enabled": false,
+    "logChannelId": null,
+    "rewards": {
+      "daily": 500,
+      "workMin": 100,
+      "workMax": 400,
+      "quest": 300,
+      "trivia": 200,
+      "scramble": 200,
+      "math": 200,
+      "fasttype": 200,
+      "memory": 200,
+      "slotsMixed": 50,
+      "slotsCherry": 500,
+      "slotsStar": 1000,
+      "slotsDiamond": 2500,
+      "wheel": [
+        50,
+        100,
+        250,
+        500,
+        1000
+      ],
+      "scratchMin": 50,
+      "scratchMax": 500,
+      "minesBase": 100,
+      "minesIncrement": 50,
+      "cupsEasy": 100,
+      "cupsMedium": 250,
+      "cupsHard": 500,
+      "highlow": 200,
+      "jackpot": 5000
+    },
+    "cooldowns": {
+      "daily": 86400000,
+      "work": 3600000,
+      "trivia": 300000,
+      "scramble": 300000,
+      "math": 300000,
+      "fasttype": 300000,
+      "memory": 300000,
+      "slots": 300000,
+      "wheel": 300000,
+      "scratch": 300000,
+      "mines": 300000,
+      "cups": 300000,
+      "highlow": 300000,
+      "jackpot": 3600000
+    },
+    "events": {
+      "enabled": true,
+      "autoInterval": 3600000
+    },
+    "eventMultipliers": {
+      "work": 2,
+      "quest": 2,
+      "trivia": 2,
+      "casino": 2
+    },
+    "maxBalance": 999999999,
+    "dailyRewardLimit": 50000,
+    "antiSpamWindow": 10000,
+    "antiSpamThreshold": 10,
+    "messageCooldown": 2000,
+    "users": {},
+    "logs": [],
+    "shop": [
+      {
+        "id": "badge_vip",
+        "name": "VIP Badge",
+        "description": "A shiny VIP badge for your profile.",
+        "price": 5000,
+        "type": "badge",
+        "emoji": "💎"
+      },
+      {
+        "id": "badge_donator",
+        "name": "Donator Badge",
+        "description": "Shows you support the server.",
+        "price": 10000,
+        "type": "badge",
+        "emoji": "💖"
+      },
+      {
+        "id": "title_gambler",
+        "name": "Title: Gambler",
+        "description": "A title showing your casino skills.",
+        "price": 3000,
+        "type": "title",
+        "emoji": "🎰"
+      },
+      {
+        "id": "title_rich",
+        "name": "Title: Millionaire",
+        "description": "A title for the wealthy.",
+        "price": 8000,
+        "type": "title",
+        "emoji": "💰"
+      },
+      {
+        "id": "title_worker",
+        "name": "Title: Hard Worker",
+        "description": "Earned through dedication.",
+        "price": 2500,
+        "type": "title",
+        "emoji": "🔨"
+      },
+      {
+        "id": "decoration_gold",
+        "name": "Gold Frame",
+        "description": "A gold frame for your profile.",
+        "price": 6000,
+        "type": "decoration",
+        "emoji": "🖼️"
+      },
+      {
+        "id": "effect_rainbow",
+        "name": "Rainbow Effect",
+        "description": "Rainbow text effect on profile.",
+        "price": 7500,
+        "type": "effect",
+        "emoji": "🌈"
+      },
+      {
+        "id": "collectible_coin",
+        "name": "Lucky Coin",
+        "description": "A rare collectible coin.",
+        "price": 1500,
+        "type": "collectible",
+        "emoji": "🪙"
+      },
+      {
+        "id": "collectible_trophy",
+        "name": "Mini Trophy",
+        "description": "A small trophy for your shelf.",
+        "price": 4000,
+        "type": "collectible",
+        "emoji": "🏆"
+      },
+      {
+        "id": "event_summer",
+        "name": "Summer Sun",
+        "description": "Limited summer event item.",
+        "price": 2000,
+        "type": "event",
+        "emoji": "☀️"
+      }
+    ],
+    "activeEvents": {}
+  },
+  "lastSeen": {
+    "758268011462918165": 1786754759876,
+    "1292227159292772456": 1786800134022,
+    "1441527989111095437": 1786754390622,
+    "1381799110092394496": 1786755491150,
+    "1087505694674124830": 1786753643574,
+    "690765699454337087": 1786754519932,
+    "710373440565280838": 1786753978728,
+    "1521221248951128217": 1786796998111,
+    "527565652135903232": 1786796191769,
+    "1497750925627101286": 1786796280289,
+    "1100291518889197568": 1786789033308,
+    "939381032354996264": 1786795400080,
+    "1405661195532243115": 1786755490456,
+    "370307593442295818": 1786755119467,
+    "1527183642290556928": 1786755371249,
+    "1529700981665693810": 1786755506501,
+    "867164893797679125": 1786789791310,
+    "1007616729255522394": 1786797054007,
+    "1446807816693088408": 1786790850338,
+    "1476951547832307964": 1786804442188,
+    "1530445696795283506": 1786802854712,
+    "1533229547296784391": 1786802728485,
+    "1529075135225659392": 1786799362324,
+    "722370080666681397": 1786791857556,
+    "1251828648969895949": 1786804799954,
+    "1307260483065348147": 1786801754076,
+    "1260675161921949867": 1786792030566,
+    "377808710468370435": 1786792099920,
+    "1410668779347771402": 1786804814709,
+    "1505994919368720434": 1786803551204,
+    "1480134518169014404": 1786795800406,
+    "1535002540536496128": 1786798750884,
+    "1165627226969096293": 1786796941149,
+    "884359030254997534": 1786796778218,
+    "1535267061385662514": 1786801237266,
+    "715026416588030115": 1786800325271,
+    "1451905932887068742": 1786800565036,
+    "1530257963061612564": 1786801531049,
+    "884803088806969365": 1786803249399,
+    "1364995561979121736": 1786803626982,
+    "761825249243168768": 1786804183305
+  },
+  "ignored": {
+    "members": [],
+    "channels": []
+  },
+  "users": {
+    "758268011462918165": {
+      "xp": 312,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1292227159292772456": {
+      "xp": 68,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1441527989111095437": {
+      "xp": 144,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1381799110092394496": {
+      "xp": 250,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1087505694674124830": {
+      "xp": 31,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "690765699454337087": {
+      "xp": 92,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "710373440565280838": {
+      "xp": 30,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1521221248951128217": {
+      "xp": 50,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "527565652135903232": {
+      "xp": 138,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1497750925627101286": {
+      "xp": 296,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1100291518889197568": {
+      "xp": 110,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "939381032354996264": {
+      "xp": 257,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1405661195532243115": {
+      "xp": 155,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "370307593442295818": {
+      "xp": 13,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1527183642290556928": {
+      "xp": 20,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1529700981665693810": {
+      "xp": 11,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "867164893797679125": {
+      "xp": 76,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1007616729255522394": {
+      "xp": 164,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1446807816693088408": {
+      "xp": 75,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1476951547832307964": {
+      "xp": 790,
+      "level": 2,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1530445696795283506": {
+      "xp": 574,
+      "level": 2,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1533229547296784391": {
+      "xp": 225,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1529075135225659392": {
+      "xp": 361,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "722370080666681397": {
+      "xp": 82,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1251828648969895949": {
+      "xp": 126,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1307260483065348147": {
+      "xp": 54,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1260675161921949867": {
+      "xp": 83,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "377808710468370435": {
+      "xp": 11,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1410668779347771402": {
+      "xp": 74,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1505994919368720434": {
+      "xp": 341,
+      "level": 1,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1480134518169014404": {
+      "xp": 52,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1535002540536496128": {
+      "xp": 50,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1165627226969096293": {
+      "xp": 27,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "884359030254997534": {
+      "xp": 16,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1535267061385662514": {
+      "xp": 58,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "715026416588030115": {
+      "xp": 16,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1451905932887068742": {
+      "xp": 20,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1530257963061612564": {
+      "xp": 19,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "884803088806969365": {
+      "xp": 10,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1364995561979121736": {
+      "xp": 35,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "761825249243168768": {
+      "xp": 29,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    }
+  },
+  "autoresponders": {},
+  "messageStats": {
+    "1535721527880716439": {
+      "758268011462918165": {
+        "daily": {
+          "2026-08-15": 64
+        },
+        "weekly": {
+          "2026-08-10": 64
+        },
+        "monthly": {
+          "2026-08": 64
+        },
+        "total": 64
+      },
+      "1292227159292772456": {
+        "daily": {
+          "2026-08-15": 5
+        },
+        "weekly": {
+          "2026-08-10": 5
+        },
+        "monthly": {
+          "2026-08": 5
+        },
+        "total": 5
+      },
+      "1441527989111095437": {
+        "daily": {
+          "2026-08-15": 50
+        },
+        "weekly": {
+          "2026-08-10": 50
+        },
+        "monthly": {
+          "2026-08": 50
+        },
+        "total": 50
+      },
+      "1381799110092394496": {
+        "daily": {
+          "2026-08-15": 35
+        },
+        "weekly": {
+          "2026-08-10": 35
+        },
+        "monthly": {
+          "2026-08": 35
+        },
+        "total": 35
+      },
+      "1087505694674124830": {
+        "daily": {
+          "2026-08-15": 2
+        },
+        "weekly": {
+          "2026-08-10": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
+      },
+      "690765699454337087": {
+        "daily": {
+          "2026-08-15": 9
+        },
+        "weekly": {
+          "2026-08-10": 9
+        },
+        "monthly": {
+          "2026-08": 9
+        },
+        "total": 9
+      },
+      "710373440565280838": {
+        "daily": {
+          "2026-08-15": 5
+        },
+        "weekly": {
+          "2026-08-10": 5
+        },
+        "monthly": {
+          "2026-08": 5
+        },
+        "total": 5
+      },
+      "1521221248951128217": {
+        "daily": {
+          "2026-08-15": 6
+        },
+        "weekly": {
+          "2026-08-10": 6
+        },
+        "monthly": {
+          "2026-08": 6
+        },
+        "total": 6
+      },
+      "527565652135903232": {
+        "daily": {
+          "2026-08-15": 9
+        },
+        "weekly": {
+          "2026-08-10": 9
+        },
+        "monthly": {
+          "2026-08": 9
+        },
+        "total": 9
+      },
+      "1497750925627101286": {
+        "daily": {
+          "2026-08-15": 77
+        },
+        "weekly": {
+          "2026-08-10": 77
+        },
+        "monthly": {
+          "2026-08": 77
+        },
+        "total": 77
+      },
+      "1100291518889197568": {
+        "daily": {
+          "2026-08-15": 11
+        },
+        "weekly": {
+          "2026-08-10": 11
+        },
+        "monthly": {
+          "2026-08": 11
+        },
+        "total": 11
+      },
+      "939381032354996264": {
+        "daily": {
+          "2026-08-15": 29
+        },
+        "weekly": {
+          "2026-08-10": 29
+        },
+        "monthly": {
+          "2026-08": 29
+        },
+        "total": 29
+      },
+      "1405661195532243115": {
+        "daily": {
+          "2026-08-15": 30
+        },
+        "weekly": {
+          "2026-08-10": 30
+        },
+        "monthly": {
+          "2026-08": 30
+        },
+        "total": 30
+      },
+      "370307593442295818": {
+        "daily": {
+          "2026-08-15": 2
+        },
+        "weekly": {
+          "2026-08-10": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
+      },
+      "1527183642290556928": {
+        "daily": {
+          "2026-08-15": 2
+        },
+        "weekly": {
+          "2026-08-10": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
+      },
+      "1529700981665693810": {
+        "daily": {
+          "2026-08-15": 1
+        },
+        "weekly": {
+          "2026-08-10": 1
+        },
+        "monthly": {
+          "2026-08": 1
+        },
+        "total": 1
+      },
+      "867164893797679125": {
+        "daily": {
+          "2026-08-15": 13
+        },
+        "weekly": {
+          "2026-08-10": 13
+        },
+        "monthly": {
+          "2026-08": 13
+        },
+        "total": 13
+      },
+      "1007616729255522394": {
+        "daily": {
+          "2026-08-15": 22
+        },
+        "weekly": {
+          "2026-08-10": 22
+        },
+        "monthly": {
+          "2026-08": 22
+        },
+        "total": 22
+      },
+      "1446807816693088408": {
+        "daily": {
+          "2026-08-15": 17
+        },
+        "weekly": {
+          "2026-08-10": 17
+        },
+        "monthly": {
+          "2026-08": 17
+        },
+        "total": 17
+      },
+      "1476951547832307964": {
+        "daily": {
+          "2026-08-15": 271
+        },
+        "weekly": {
+          "2026-08-10": 271
+        },
+        "monthly": {
+          "2026-08": 271
+        },
+        "total": 271
+      },
+      "1530445696795283506": {
+        "daily": {
+          "2026-08-15": 128
+        },
+        "weekly": {
+          "2026-08-10": 128
+        },
+        "monthly": {
+          "2026-08": 128
+        },
+        "total": 128
+      },
+      "1533229547296784391": {
+        "daily": {
+          "2026-08-15": 49
+        },
+        "weekly": {
+          "2026-08-10": 49
+        },
+        "monthly": {
+          "2026-08": 49
+        },
+        "total": 49
+      },
+      "1529075135225659392": {
+        "daily": {
+          "2026-08-15": 79
+        },
+        "weekly": {
+          "2026-08-10": 79
+        },
+        "monthly": {
+          "2026-08": 79
+        },
+        "total": 79
+      },
+      "722370080666681397": {
+        "daily": {
+          "2026-08-15": 11
+        },
+        "weekly": {
+          "2026-08-10": 11
+        },
+        "monthly": {
+          "2026-08": 11
+        },
+        "total": 11
+      },
+      "1251828648969895949": {
+        "daily": {
+          "2026-08-15": 17
+        },
+        "weekly": {
+          "2026-08-10": 17
+        },
+        "monthly": {
+          "2026-08": 17
+        },
+        "total": 17
+      },
+      "1307260483065348147": {
+        "daily": {
+          "2026-08-15": 4
+        },
+        "weekly": {
+          "2026-08-10": 4
+        },
+        "monthly": {
+          "2026-08": 4
+        },
+        "total": 4
+      },
+      "1260675161921949867": {
+        "daily": {
+          "2026-08-15": 9
+        },
+        "weekly": {
+          "2026-08-10": 9
+        },
+        "monthly": {
+          "2026-08": 9
+        },
+        "total": 9
+      },
+      "377808710468370435": {
+        "daily": {
+          "2026-08-15": 2
+        },
+        "weekly": {
+          "2026-08-10": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
+      },
+      "1410668779347771402": {
+        "daily": {
+          "2026-08-15": 13
+        },
+        "weekly": {
+          "2026-08-10": 13
+        },
+        "monthly": {
+          "2026-08": 13
+        },
+        "total": 13
+      },
+      "1505994919368720434": {
+        "daily": {
+          "2026-08-15": 76
+        },
+        "weekly": {
+          "2026-08-10": 76
+        },
+        "monthly": {
+          "2026-08": 76
+        },
+        "total": 76
+      },
+      "1480134518169014404": {
+        "daily": {
+          "2026-08-15": 13
+        },
+        "weekly": {
+          "2026-08-10": 13
+        },
+        "monthly": {
+          "2026-08": 13
+        },
+        "total": 13
+      },
+      "1535002540536496128": {
+        "daily": {
+          "2026-08-15": 4
+        },
+        "weekly": {
+          "2026-08-10": 4
+        },
+        "monthly": {
+          "2026-08": 4
+        },
+        "total": 4
+      },
+      "1165627226969096293": {
+        "daily": {
+          "2026-08-15": 2
+        },
+        "weekly": {
+          "2026-08-10": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
+      },
+      "884359030254997534": {
+        "daily": {
+          "2026-08-15": 1
+        },
+        "weekly": {
+          "2026-08-10": 1
+        },
+        "monthly": {
+          "2026-08": 1
+        },
+        "total": 1
+      },
+      "1535267061385662514": {
+        "daily": {
+          "2026-08-15": 3
+        },
+        "weekly": {
+          "2026-08-10": 3
+        },
+        "monthly": {
+          "2026-08": 3
+        },
+        "total": 3
+      },
+      "715026416588030115": {
+        "daily": {
+          "2026-08-15": 1
+        },
+        "weekly": {
+          "2026-08-10": 1
+        },
+        "monthly": {
+          "2026-08": 1
+        },
+        "total": 1
+      },
+      "1451905932887068742": {
+        "daily": {
+          "2026-08-15": 1
+        },
+        "weekly": {
+          "2026-08-10": 1
+        },
+        "monthly": {
+          "2026-08": 1
+        },
+        "total": 1
+      },
+      "1530257963061612564": {
+        "daily": {
+          "2026-08-15": 1
+        },
+        "weekly": {
+          "2026-08-10": 1
+        },
+        "monthly": {
+          "2026-08": 1
+        },
+        "total": 1
+      },
+      "884803088806969365": {
+        "daily": {
+          "2026-08-15": 2
+        },
+        "weekly": {
+          "2026-08-10": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
+      },
+      "1364995561979121736": {
+        "daily": {
+          "2026-08-15": 4
+        },
+        "weekly": {
+          "2026-08-10": 4
+        },
+        "monthly": {
+          "2026-08": 4
+        },
+        "total": 4
+      },
+      "761825249243168768": {
+        "daily": {
+          "2026-08-15": 7
+        },
+        "weekly": {
+          "2026-08-10": 7
+        },
+        "monthly": {
+          "2026-08": 7
+        },
+        "total": 7
+      }
+    }
+  },
+  "starboardConfig": {
+    "channelId": null,
+    "emoji": "⭐",
+    "threshold": 3,
+    "color": "#FFD700",
+    "selfStar": false,
+    "jumpUrl": true,
+    "timestamp": true,
+    "attachments": true,
+    "locked": false,
+    "ignored": {
+      "channels": [],
+      "members": [],
+      "roles": []
+    },
+    "messages": {}
+  },
+  "clownboardConfig": {
+    "channelId": null,
+    "emoji": "🤡",
+    "threshold": 3,
+    "color": "#FF6B35",
+    "selfStar": false,
+    "jumpUrl": true,
+    "timestamp": true,
+    "attachments": true,
+    "locked": false,
+    "ignored": {
+      "channels": [],
+      "members": [],
+      "roles": []
+    },
+    "messages": {}
+  },
+  "vcStats": {
+    "1535721527880716439": {
+      "1087505694674124830": {
+        "totalMs": 62918,
+        "daily": {
+          "2026-08-15": 62918
+        },
+        "weekly": {
+          "2026-08-10": 62918
+        },
+        "monthly": {
+          "2026-08": 62918
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1476951547832307964": {
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": 1786754115359,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": true,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1100291518889197568": {
+        "totalMs": 3194,
+        "daily": {
+          "2026-08-15": 3194
+        },
+        "weekly": {
+          "2026-08-10": 3194
+        },
+        "monthly": {
+          "2026-08": 3194
+        },
+        "streamMs": 7902972,
+        "cameraMs": 0,
+        "streamDaily": {
+          "2026-08-15": 7902972
+        },
+        "cameraDaily": {},
+        "lastJoin": 1786754407836,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": true,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "370307593442295818": {
+        "totalMs": 37178,
+        "daily": {
+          "2026-08-15": 37178
+        },
+        "weekly": {
+          "2026-08-10": 37178
+        },
+        "monthly": {
+          "2026-08": 37178
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": 1786755147599,
+        "lastStreamJoin": 1786755251755,
+        "lastCameraJoin": null,
+        "inVc": true,
+        "streaming": true,
+        "cameraOn": false
+      },
+      "1529700981665693810": {
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": 1786755150469,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": true,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1007616729255522394": {
+        "totalMs": 10976459,
+        "daily": {
+          "2026-08-15": 10976459
+        },
+        "weekly": {
+          "2026-08-10": 10976459
+        },
+        "monthly": {
+          "2026-08": 10976459
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "867164893797679125": {
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1446807816693088408": {
+        "totalMs": 59944,
+        "daily": {
+          "2026-08-15": 59944
+        },
+        "weekly": {
+          "2026-08-10": 59944
+        },
+        "monthly": {
+          "2026-08": 59944
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1529075135225659392": {
+        "totalMs": 402041,
+        "daily": {
+          "2026-08-15": 402041
+        },
+        "weekly": {
+          "2026-08-10": 402041
+        },
+        "monthly": {
+          "2026-08": 402041
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1251828648969895949": {
+        "totalMs": 3918239,
+        "daily": {
+          "2026-08-15": 3918239
+        },
+        "weekly": {
+          "2026-08-10": 3918239
+        },
+        "monthly": {
+          "2026-08": 3918239
+        },
+        "streamMs": 65430,
+        "cameraMs": 0,
+        "streamDaily": {
+          "2026-08-15": 65430
+        },
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1533229547296784391": {
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": 1786791808710,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": true,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1528994270260756530": {
+        "totalMs": 116120,
+        "daily": {
+          "2026-08-15": 116120
+        },
+        "weekly": {
+          "2026-08-10": 116120
+        },
+        "monthly": {
+          "2026-08": 116120
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "939381032354996264": {
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1505994919368720434": {
+        "totalMs": 2021770,
+        "daily": {
+          "2026-08-15": 2021770
+        },
+        "weekly": {
+          "2026-08-10": 2021770
+        },
+        "monthly": {
+          "2026-08": 2021770
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1530445696795283506": {
+        "totalMs": 1735352,
+        "daily": {
+          "2026-08-15": 1735352
+        },
+        "weekly": {
+          "2026-08-10": 1735352
+        },
+        "monthly": {
+          "2026-08": 1735352
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "745116273981259888": {
+        "totalMs": 2723348,
+        "daily": {
+          "2026-08-15": 2723348
+        },
+        "weekly": {
+          "2026-08-10": 2723348
+        },
+        "monthly": {
+          "2026-08": 2723348
+        },
+        "streamMs": 0,
+        "cameraMs": 112493,
+        "streamDaily": {},
+        "cameraDaily": {
+          "2026-08-15": 112493
+        },
+        "lastJoin": 1786802322540,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": true,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1451905932887068742": {
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      },
+      "1530257963061612564": {
+        "totalMs": 26819,
+        "daily": {
+          "2026-08-15": 26819
+        },
+        "weekly": {
+          "2026-08-10": 26819
+        },
+        "monthly": {
+          "2026-08": 26819
+        },
+        "streamMs": 0,
+        "cameraMs": 0,
+        "streamDaily": {},
+        "cameraDaily": {},
+        "lastJoin": null,
+        "lastStreamJoin": null,
+        "lastCameraJoin": null,
+        "inVc": false,
+        "streaming": false,
+        "cameraOn": false
+      }
+    }
+  },
+  "commandUsage": {
+    "vc": 7,
+    "give": 1,
+    "reactionrole": 2,
+    "sticker": 2,
+    "quote": 1,
+    "help": 2,
+    "log": 1,
+    "kick": 1
+  },
+  "reactionRoles": {
+    "1537845191388434433": [
+      {
+        "emoji": "<a:pink_bow_gif:1537865887338594396>",
+        "roleId": "1535721527969062946"
+      }
+    ]
+  },
+  "roleBackups": {
+    "1528881379868152020": [
+      "1537876553650667555"
+    ]
+  }
+}
