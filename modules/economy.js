@@ -1,11 +1,11 @@
 // ══════════════════════════════════════════════════════════
-// ECONOMY CORE MODULE
+// ECONOMY CORE MODULE — v2.0 Complete Rewrite
 // ══════════════════════════════════════════════════════════
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 const { getGuildDb } = require('./database');
-const { isAdmin, isBotOwner, isStaffOrAdmin, hasDiscordPerm } = require('./helpers');
-const { success: mkSuccess, error: mkError, info: mkInfo, ok, err, greedOk, greedWarn, COLORS } = require('../utils/embeds');
+const { isAdmin, isBotOwner, hasDiscordPerm } = require('./helpers');
+const { success: mkSuccess, error: mkError, info: mkInfo, ok, err, COLORS } = require('../utils/embeds');
 const logger = require('../utils/logger');
 
 // ══════════════════════════════════════════════════════════
@@ -14,88 +14,40 @@ const logger = require('../utils/logger');
 
 const DEFAULT_ECONOMY = {
   enabled: false,
+  mode: 'guild',
   logChannelId: null,
-  rewards: {
-    daily: 500,
-    workMin: 100,
-    workMax: 400,
-    quest: 300,
-    trivia: 200,
-    scramble: 200,
-    math: 200,
-    fasttype: 200,
-    memory: 200,
-    slotsMixed: 50,
-    slotsCherry: 500,
-    slotsStar: 1000,
-    slotsDiamond: 2500,
-    wheel: [50, 100, 250, 500, 1000],
-    scratchMin: 50,
-    scratchMax: 500,
-    minesBase: 100,
-    minesIncrement: 50,
-    cupsEasy: 100,
-    cupsMedium: 250,
-    cupsHard: 500,
-    highlow: 200,
-    jackpot: 5000,
-  },
-  cooldowns: {
-    daily: 86400000,
-    work: 3600000,
-    trivia: 300000,
-    scramble: 300000,
-    math: 300000,
-    fasttype: 300000,
-    memory: 300000,
-    slots: 300000,
-    wheel: 300000,
-    scratch: 300000,
-    mines: 300000,
-    cups: 300000,
-    highlow: 300000,
-    jackpot: 3600000,
-  },
-  events: {
-    enabled: true,
-    autoInterval: 3600000,
-  },
-  eventMultipliers: {
-    work: 2,
-    quest: 2,
-    trivia: 2,
-    casino: 2,
-  },
+  currencyName: 'Credits',
+  currencySymbol: '💰',
   maxBalance: 999999999,
-  dailyRewardLimit: 50000,
+  dailyAmount: 500,
+  workCooldown: 420000,
+  crimeCooldown: 0,
+  robCooldown: 0,
+  users: {},
+  jobs: [
+    { name: 'Developer', min: 100, max: 500, description: 'Write code and fix bugs' },
+    { name: 'Designer', min: 80, max: 400, description: 'Create beautiful graphics' },
+    { name: 'Streamer', min: 120, max: 600, description: 'Entertain the masses' },
+    { name: 'Trader', min: 150, max: 700, description: 'Buy low, sell high' },
+    { name: 'Hacker', min: 200, max: 800, description: 'Break into systems (legally)' },
+  ],
+  shop: [],
+  circulation: 0,
+  logs: [],
+  activeEvents: {},
+  events: { enabled: true, autoInterval: 3600000 },
+  eventMultipliers: { work: 2, daily: 2, crime: 2, casino: 2 },
   antiSpamWindow: 10000,
   antiSpamThreshold: 10,
   messageCooldown: 2000,
 };
 
-const WORK_JOBS = [
-  { text: 'Delivered a package', min: 180, max: 320 },
-  { text: 'Fixed a computer', min: 150, max: 280 },
-  { text: 'Designed a logo', min: 250, max: 400 },
-  { text: 'Helped at a restaurant', min: 180, max: 300 },
-  { text: 'Repaired a game console', min: 280, max: 450 },
-  { text: 'Walked a dog', min: 100, max: 200 },
-  { text: 'Tutored a student', min: 200, max: 350 },
-  { text: 'Cleaned an office', min: 150, max: 250 },
-  { text: 'Delivered groceries', min: 120, max: 220 },
-  { text: 'Built a website', min: 300, max: 500 },
-];
-
-const QUEST_TEMPLATES = [
-  { type: 'messages', name: 'Send {target} legitimate messages', target: 50, reward: 300 },
-  { type: 'commands', name: 'Use {target} economy commands', target: 3, reward: 250 },
-  { type: 'minigames', name: 'Complete {target} minigames', target: 2, reward: 400 },
-  { type: 'daily', name: 'Complete a daily objective (,daily)', target: 1, reward: 200 },
-  { type: 'work', name: 'Use ,work {target} times', target: 5, reward: 350 },
-  { type: 'earn', name: 'Earn {target} Credits', target: 2000, reward: 500 },
-  { type: 'trivia', name: 'Answer {target} trivia questions correctly', target: 3, reward: 300 },
-  { type: 'scramble', name: 'Win {target} scramble games', target: 2, reward: 350 },
-];
+const PRESETS = {
+  standard: { dailyAmount: 500, workCooldown: 420000, maxBalance: 999999999 },
+  highroller: { dailyAmount: 2000, workCooldown: 300000, maxBalance: 9999999999 },
+  casual: { dailyAmount: 300, workCooldown: 600000, maxBalance: 99999999 },
+  casino: { dailyAmount: 1000, workCooldown: 180000, maxBalance: 999999999 },
+};
 
 // ══════════════════════════════════════════════════════════
 // HELPERS
@@ -108,13 +60,13 @@ function getEconomy(guildId) {
     ec = JSON.parse(JSON.stringify(DEFAULT_ECONOMY));
     db.set('economy', ec);
   }
-  // Merge defaults for missing keys
   for (const key of Object.keys(DEFAULT_ECONOMY)) {
     if (ec[key] === undefined) ec[key] = JSON.parse(JSON.stringify(DEFAULT_ECONOMY[key]));
   }
   if (!ec.users) ec.users = {};
   if (!ec.logs) ec.logs = [];
-  if (!ec.shop) ec.shop = getDefaultShopItems();
+  if (!ec.shop) ec.shop = [];
+  if (!ec.jobs) ec.jobs = JSON.parse(JSON.stringify(DEFAULT_ECONOMY.jobs));
   if (!ec.activeEvents) ec.activeEvents = {};
   return ec;
 }
@@ -128,69 +80,25 @@ function getUserEconomy(guildId, userId) {
   const ec = getEconomy(guildId);
   if (!ec.users[userId]) {
     ec.users[userId] = {
-      credits: 0,
-      lifetimeEarned: 0,
-      lifetimeSpent: 0,
-      questsCompleted: 0,
+      wallet: 0,
+      bank: 0,
+      totalEarned: 0,
+      totalSpent: 0,
+      gamesPlayed: 0,
+      gamesWon: 0,
+      robAttempts: 0,
+      robSuccess: 0,
+      lastWork: 0,
+      lastDaily: 0,
+      lastCrime: 0,
       inventory: [],
       equipped: {},
-      stats: {
-        dailyClaims: 0,
-        workCount: 0,
-        gamesPlayed: 0,
-        gamesWon: 0,
-        shopPurchases: 0,
-        messagesSent: 0,
-        commandsUsed: 0,
-      },
-      cooldowns: {},
-      quests: generateQuests(ec),
-      messageTracker: {
-        lastContent: '',
-        lastTime: 0,
-        messageCount: 0,
-        commandCount: 0,
-        spamCount: 0,
-        windowStart: 0,
-      },
+      messageTracker: { lastContent: '', lastTime: 0, messageCount: 0, windowStart: 0 },
       suspiciousFlags: 0,
     };
     saveEconomy(guildId, ec);
   }
   return ec.users[userId];
-}
-
-function generateQuests(ec) {
-  const quests = [];
-  const shuffled = QUEST_TEMPLATES.sort(() => Math.random() - 0.5);
-  for (let i = 0; i < 3; i++) {
-    const template = shuffled[i % shuffled.length];
-    quests.push({
-      id: Date.now() + i,
-      type: template.type,
-      name: template.name.replace('{target}', template.target),
-      target: template.target,
-      progress: 0,
-      reward: template.reward,
-      completed: false,
-    });
-  }
-  return quests;
-}
-
-function getDefaultShopItems() {
-  return [
-    { id: 'badge_vip', name: 'VIP Badge', description: 'A shiny VIP badge for your profile.', price: 5000, type: 'badge', emoji: '💎' },
-    { id: 'badge_donator', name: 'Donator Badge', description: 'Shows you support the server.', price: 10000, type: 'badge', emoji: '💖' },
-    { id: 'title_gambler', name: 'Title: Gambler', description: 'A title showing your casino skills.', price: 3000, type: 'title', emoji: '🎰' },
-    { id: 'title_rich', name: 'Title: Millionaire', description: 'A title for the wealthy.', price: 8000, type: 'title', emoji: '💰' },
-    { id: 'title_worker', name: 'Title: Hard Worker', description: 'Earned through dedication.', price: 2500, type: 'title', emoji: '🔨' },
-    { id: 'decoration_gold', name: 'Gold Frame', description: 'A gold frame for your profile.', price: 6000, type: 'decoration', emoji: '🖼️' },
-    { id: 'effect_rainbow', name: 'Rainbow Effect', description: 'Rainbow text effect on profile.', price: 7500, type: 'effect', emoji: '🌈' },
-    { id: 'collectible_coin', name: 'Lucky Coin', description: 'A rare collectible coin.', price: 1500, type: 'collectible', emoji: '🪙' },
-    { id: 'collectible_trophy', name: 'Mini Trophy', description: 'A small trophy for your shelf.', price: 4000, type: 'collectible', emoji: '🏆' },
-    { id: 'event_summer', name: 'Summer Sun', description: 'Limited summer event item.', price: 2000, type: 'event', emoji: '☀️' },
-  ];
 }
 
 function isEconomyEnabled(guildId) {
@@ -200,21 +108,6 @@ function isEconomyEnabled(guildId) {
 
 function formatNumber(n) {
   return n.toLocaleString('en-US');
-}
-
-function getCooldownRemaining(userEc, key) {
-  const last = userEc.cooldowns[key] || 0;
-  const ec = getEconomy(userEc._guildId); // hack: we need guildId
-  const cd = ec.cooldowns[key] || 0;
-  const remaining = last + cd - Date.now();
-  return remaining > 0 ? remaining : 0;
-}
-
-function setCooldown(guildId, userId, key) {
-  const ec = getEconomy(guildId);
-  const user = ec.users[userId];
-  if (user) user.cooldowns[key] = Date.now();
-  saveEconomy(guildId, ec);
 }
 
 function formatDuration(ms) {
@@ -228,135 +121,74 @@ function formatDuration(ms) {
   return `${s}s`;
 }
 
-// ══════════════════════════════════════════════════════════
-// ANTI-ABUSE
-// ══════════════════════════════════════════════════════════
-
-function trackEconomyMessage(guildId, userId, content, isCommand = false) {
-  const ec = getEconomy(guildId);
-  const user = getUserEconomy(guildId, userId);
-  const now = Date.now();
-  const tracker = user.messageTracker;
-
-  // Message cooldown
-  if (now - tracker.lastTime < ec.messageCooldown) return { ok: false, reason: 'cooldown' };
-
-  // Duplicate detection
-  if (content.trim().toLowerCase() === tracker.lastContent.toLowerCase()) return { ok: false, reason: 'duplicate' };
-
-  // Anti-spam window
-  if (now - tracker.windowStart > ec.antiSpamWindow) {
-    tracker.windowStart = now;
-    tracker.messageCount = 0;
-    tracker.spamCount = 0;
-  }
-  tracker.messageCount++;
-  if (tracker.messageCount > ec.antiSpamThreshold) {
-    tracker.spamCount++;
-    return { ok: false, reason: 'spam' };
-  }
-
-  tracker.lastContent = content;
-  tracker.lastTime = now;
-  user.stats.messagesSent++;
-  if (isCommand) user.stats.commandsUsed++;
-
-  // Quest progress for messages
-  for (const q of user.quests) {
-    if (q.completed) continue;
-    if (q.type === 'messages') q.progress = Math.min(q.target, q.progress + 1);
-  }
-
-  saveEconomy(guildId, ec);
-  return { ok: true };
+function parseAmount(input, user, field = 'wallet') {
+  if (!input) return null;
+  const lower = input.toLowerCase().trim();
+  if (lower === 'all') return user[field];
+  if (lower === 'half') return Math.floor(user[field] / 2);
+  if (lower === 'quarter') return Math.floor(user[field] / 4);
+  const num = parseInt(lower.replace(/,/g, ''));
+  if (isNaN(num) || num <= 0) return null;
+  return num;
 }
 
-function checkSuspiciousActivity(guildId, userId, amount) {
-  const ec = getEconomy(guildId);
-  const user = getUserEconomy(guildId, userId);
-  const dailyEarned = user._dailyEarned || 0;
-  if (dailyEarned + amount > ec.dailyRewardLimit) {
-    user.suspiciousFlags++;
-    saveEconomy(guildId, ec);
-    return false;
-  }
-  return true;
+function makeEmbed(title, description, color, footer) {
+  const embed = new EmbedBuilder()
+    .setColor(color || '#5865F2')
+    .setTitle(title)
+    .setDescription(description);
+  if (footer) embed.setFooter({ text: footer });
+  return embed;
 }
 
-function addDailyEarned(guildId, userId, amount) {
+function addCredits(guildId, userId, amount, source) {
   const ec = getEconomy(guildId);
   const user = getUserEconomy(guildId, userId);
-  if (!user._dailyEarned) user._dailyEarned = 0;
-  if (!user._dailyReset) user._dailyReset = 0;
-  const now = Date.now();
-  if (now - user._dailyReset > 86400000) {
-    user._dailyEarned = 0;
-    user._dailyReset = now;
-  }
-  user._dailyEarned += amount;
-  saveEconomy(guildId, ec);
-}
-
-// ══════════════════════════════════════════════════════════
-// TRANSACTIONS
-// ══════════════════════════════════════════════════════════
-
-function addCredits(guildId, userId, amount, source, staffId = null) {
-  const ec = getEconomy(guildId);
-  const user = getUserEconomy(guildId, userId);
-  const prev = user.credits;
-  user.credits = Math.min(ec.maxBalance, Math.max(0, user.credits + amount));
-  const actualAdded = user.credits - prev;
-  if (actualAdded > 0) {
-    user.lifetimeEarned += actualAdded;
-    addDailyEarned(guildId, userId, actualAdded);
+  const prev = user.wallet;
+  user.wallet = Math.min(ec.maxBalance, Math.max(0, user.wallet + amount));
+  const actual = user.wallet - prev;
+  if (actual > 0) {
+    user.totalEarned += actual;
+    ec.circulation += actual;
   }
   saveEconomy(guildId, ec);
-  logTransaction(guildId, userId, amount, source, prev, user.credits, staffId);
-  return actualAdded;
+  logTransaction(guildId, userId, amount, source, prev, user.wallet);
+  return actual;
 }
 
-function removeCredits(guildId, userId, amount, source, staffId = null) {
+function removeCredits(guildId, userId, amount, source) {
   const ec = getEconomy(guildId);
   const user = getUserEconomy(guildId, userId);
-  const prev = user.credits;
-  user.credits = Math.max(0, user.credits - amount);
-  const actualRemoved = prev - user.credits;
-  if (actualRemoved > 0) user.lifetimeSpent += actualRemoved;
+  const prev = user.wallet;
+  user.wallet = Math.max(0, user.wallet - amount);
+  const actual = prev - user.wallet;
+  if (actual > 0) {
+    user.totalSpent += actual;
+    ec.circulation -= actual;
+  }
   saveEconomy(guildId, ec);
-  logTransaction(guildId, userId, -actualRemoved, source, prev, user.credits, staffId);
-  return actualRemoved;
+  logTransaction(guildId, userId, -actual, source, prev, user.wallet);
+  return actual;
 }
 
-function setCredits(guildId, userId, amount, staffId = null) {
+function setCredits(guildId, userId, amount) {
   const ec = getEconomy(guildId);
   const user = getUserEconomy(guildId, userId);
-  const prev = user.credits;
-  user.credits = Math.max(0, Math.min(ec.maxBalance, amount));
+  const prev = user.wallet;
+  user.wallet = Math.max(0, Math.min(ec.maxBalance, amount));
+  const diff = user.wallet - prev;
+  if (diff > 0) { user.totalEarned += diff; ec.circulation += diff; }
+  if (diff < 0) { user.totalSpent += -diff; ec.circulation += diff; }
   saveEconomy(guildId, ec);
-  logTransaction(guildId, userId, user.credits - prev, 'staff_set', prev, user.credits, staffId);
-  return user.credits;
+  logTransaction(guildId, userId, diff, 'staff_set', prev, user.wallet);
+  return user.wallet;
 }
 
-function logTransaction(guildId, userId, amount, type, prevBalance, newBalance, staffId = null) {
+function logTransaction(guildId, userId, amount, type, prev, next) {
   const ec = getEconomy(guildId);
-  ec.logs.push({
-    userId,
-    amount,
-    type,
-    prevBalance,
-    newBalance,
-    timestamp: Date.now(),
-    source: type,
-    staffId,
-  });
+  ec.logs.push({ userId, amount, type, prev, next, timestamp: Date.now() });
   if (ec.logs.length > 5000) ec.logs = ec.logs.slice(-2500);
   saveEconomy(guildId, ec);
-
-  // Also send to log channel if configured
-  if (ec.logChannelId) {
-    // This is handled async by the caller if they have access to client
-  }
 }
 
 async function sendEconomyLog(client, guildId, embed) {
@@ -371,65 +203,13 @@ async function sendEconomyLog(client, guildId, embed) {
   } catch {}
 }
 
-// ══════════════════════════════════════════════════════════
-// QUEST HELPERS
-// ══════════════════════════════════════════════════════════
-
-function checkQuestCompletion(guildId, userId) {
-  const ec = getEconomy(guildId);
-  const user = getUserEconomy(guildId, userId);
-  let completed = false;
-  for (const q of user.quests) {
-    if (!q.completed && q.progress >= q.target) {
-      q.completed = true;
-      user.questsCompleted++;
-      const reward = Math.round(q.reward * getEventMultiplier(guildId, 'quest'));
-      addCredits(guildId, userId, reward, 'quest');
-      completed = true;
-    }
-  }
-  // If all completed, generate new ones
-  if (user.quests.every(q => q.completed)) {
-    user.quests = generateQuests(ec);
-  }
-  if (completed) saveEconomy(guildId, ec);
-  return completed;
-}
-
-function progressQuest(guildId, userId, type, amount = 1) {
-  const ec = getEconomy(guildId);
-  const user = getUserEconomy(guildId, userId);
-  let changed = false;
-  for (const q of user.quests) {
-    if (q.completed) continue;
-    if (q.type === type) {
-      q.progress = Math.min(q.target, q.progress + amount);
-      changed = true;
-    }
-    if (type === 'credits_earned' && q.type === 'earn') {
-      q.progress = Math.min(q.target, q.progress + amount);
-      changed = true;
-    }
-  }
-  if (changed) {
-    saveEconomy(guildId, ec);
-    checkQuestCompletion(guildId, userId);
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// EVENT MULTIPLIERS
-// ══════════════════════════════════════════════════════════
-
 function getEventMultiplier(guildId, category) {
   const ec = getEconomy(guildId);
   if (!ec.activeEvents) return 1;
   let mult = 1;
-  if (ec.activeEvents.doubleRewards && ['work', 'daily', 'quest', 'minigame'].includes(category)) mult = ec.eventMultipliers.work || 2;
-  if (ec.activeEvents.quizHour && category === 'trivia') mult = ec.eventMultipliers.trivia || 2;
+  if (ec.activeEvents.doubleRewards && ['work','daily','crime'].includes(category)) mult = ec.eventMultipliers.work || 2;
   if (ec.activeEvents.payday && category === 'work') mult = ec.eventMultipliers.work || 2;
-  if (ec.activeEvents.questRush && category === 'quest') mult = ec.eventMultipliers.quest || 2;
-  if (ec.activeEvents.casinoHour && ['slots', 'wheel', 'scratch', 'mines', 'cups', 'highlow'].includes(category)) mult = ec.eventMultipliers.casino || 2;
+  if (ec.activeEvents.casinoHour && ['slots','blackjack','mines','crash','gamble','roulette','plinko','ladder','dice','bombs'].includes(category)) mult = ec.eventMultipliers.casino || 2;
   return mult;
 }
 
@@ -438,157 +218,289 @@ function getActiveEventNames(guildId) {
   if (!ec.activeEvents) return [];
   const names = [];
   if (ec.activeEvents.doubleRewards) names.push('⚡ Double Rewards');
-  if (ec.activeEvents.quizHour) names.push('🧠 Quiz Hour');
   if (ec.activeEvents.payday) names.push('💰 Payday');
-  if (ec.activeEvents.questRush) names.push('🎯 Quest Rush');
-  if (ec.activeEvents.casinoHour) names.push('🎰 Casino Arcade Hour');
+  if (ec.activeEvents.casinoHour) names.push('🎰 Casino Hour');
   return names;
 }
 
+function trackEconomyMessage(guildId, userId, content, isCommand = false) {
+  const ec = getEconomy(guildId);
+  const user = getUserEconomy(guildId, userId);
+  const now = Date.now();
+  const tracker = user.messageTracker;
+  if (now - tracker.lastTime < ec.messageCooldown) return { ok: false };
+  if (content.trim().toLowerCase() === tracker.lastContent.toLowerCase()) return { ok: false };
+  if (now - tracker.windowStart > ec.antiSpamWindow) {
+    tracker.windowStart = now;
+    tracker.messageCount = 0;
+  }
+  tracker.messageCount++;
+  if (tracker.messageCount > ec.antiSpamThreshold) return { ok: false };
+  tracker.lastContent = content;
+  tracker.lastTime = now;
+  saveEconomy(guildId, ec);
+  return { ok: true };
+}
+
+function setCooldown(guildId, userId, key) {
+  const ec = getEconomy(guildId);
+  const user = ec.users[userId];
+  if (user) user[`last${key.charAt(0).toUpperCase() + key.slice(1)}`] = Date.now();
+  saveEconomy(guildId, ec);
+}
+
+function getDefaultShopItems() {
+  return [];
+}
+
+function parseDuration(str) {
+  if (!str) return null;
+  const match = str.match(/^(\d+)([smhd])$/i);
+  if (!match) return null;
+  const num = parseInt(match[1]);
+  const unit = match[2].toLowerCase();
+  const mult = { s: 1000, m: 60000, h: 3600000, d: 86400000 };
+  return num * (mult[unit] || 0);
+}
+
 // ══════════════════════════════════════════════════════════
-// COMMANDS: CORE ECONOMY
+// COMMANDS: CORE
 // ══════════════════════════════════════════════════════════
 
 async function handleBalance(message, args) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled in this server. Staff can use `,economy setup`.'));
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled. Staff can use `,economy enable`.'));
   const target = message.mentions.users.first() || message.author;
   const user = getUserEconomy(message.guild.id, target.id);
-  const ec = getEconomy(message.guild.id);
+  const total = user.wallet + user.bank;
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle(target.id === message.author.id ? '💳 YOUR ECONOMY' : `💳 ${target.username}'s ECONOMY`)
-    .setThumbnail(target.displayAvatarURL())
-    .addFields(
-      { name: '💰 Credits', value: `**${formatNumber(user.credits)}**`, inline: true },
-      { name: '📈 Lifetime Earned', value: `**${formatNumber(user.lifetimeEarned)}**`, inline: true },
-      { name: '💸 Lifetime Spent', value: `**${formatNumber(user.lifetimeSpent)}**`, inline: true },
-      { name: '🎯 Quests Completed', value: `**${formatNumber(user.questsCompleted)}**`, inline: true },
-      { name: '🛍️ Items Owned', value: `**${formatNumber(user.inventory.length)}**`, inline: true },
-      { name: '🎮 Games Played', value: `**${formatNumber(user.stats.gamesPlayed)}**`, inline: true },
-    )
-    .setFooter({ text: 'Use ,profile for full details' })
-    .setTimestamp();
-
-  const events = getActiveEventNames(message.guild.id);
-  if (events.length) {
-    embed.addFields({ name: '🔥 Active Events', value: events.join('\n'), inline: false });
-  }
-
+  const embed = makeEmbed(
+    target.id === message.author.id ? 'Your Balance' : `${target.username}'s Balance`,
+    `**Wallet:** ${formatNumber(user.wallet)}\n**Bank:** ${formatNumber(user.bank)}\n**Total:** ${formatNumber(total)}`,
+    '#5865F2',
+    'Use ,deposit or ,withdraw to move funds'
+  );
   return message.reply({ embeds: [embed] });
 }
 
 async function handleDaily(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled.'));
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
 
-  const remaining = (user.cooldowns.daily || 0) + ec.cooldowns.daily - Date.now();
+  const remaining = (user.lastDaily || 0) + 86400000 - Date.now();
   if (remaining > 0) {
-    return message.reply(err(`You already claimed your daily reward!`, `Come back in **${formatDuration(remaining)}**.`));
+    return message.reply(err(`Daily reward already claimed. Come back in **${formatDuration(remaining)}**.`));
   }
 
   const mult = getEventMultiplier(guildId, 'daily');
-  const base = ec.rewards.daily;
-  const reward = Math.round(base * mult);
-
+  const reward = Math.round(ec.dailyAmount * mult);
   addCredits(guildId, userId, reward, 'daily');
-  setCooldown(guildId, userId, 'daily');
-  user.stats.dailyClaims++;
+  user.lastDaily = Date.now();
   saveEconomy(guildId, ec);
-  progressQuest(guildId, userId, 'daily');
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.success)
-    .setTitle('📅 Daily Reward Claimed!')
-    .setDescription(`You received **+${formatNumber(reward)}** Credits!\n\n💰 New Balance: **${formatNumber(user.credits)}**`)
-    .setTimestamp();
-  if (mult > 1) embed.setFooter({ text: `Event Bonus: ${mult}x` });
-
+  const embed = makeEmbed('Daily Reward', `You received **+${formatNumber(reward)}** ${ec.currencyName}.\n\n**New Balance:** ${formatNumber(user.wallet)}`, '#57F287', mult > 1 ? 'Event Bonus Active' : null);
   return message.reply({ embeds: [embed] });
 }
 
 async function handleWork(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled.'));
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
 
-  const remaining = (user.cooldowns.work || 0) + ec.cooldowns.work - Date.now();
+  const remaining = (user.lastWork || 0) + ec.workCooldown - Date.now();
   if (remaining > 0) {
-    return message.reply(err(`You're still on the clock!`, `Come back in **${formatDuration(remaining)}**.`));
+    return message.reply(err(`You're still on the clock. Come back in **${formatDuration(remaining)}**.`));
   }
 
-  const job = WORK_JOBS[Math.floor(Math.random() * WORK_JOBS.length)];
+  const jobName = args[0];
+  let job = ec.jobs[Math.floor(Math.random() * ec.jobs.length)];
+  if (jobName) {
+    const found = ec.jobs.find(j => j.name.toLowerCase() === jobName.toLowerCase());
+    if (found) job = found;
+  }
+
   const mult = getEventMultiplier(guildId, 'work');
   const base = Math.floor(Math.random() * (job.max - job.min + 1)) + job.min;
   const reward = Math.round(base * mult);
-
   addCredits(guildId, userId, reward, 'work');
-  setCooldown(guildId, userId, 'work');
-  user.stats.workCount++;
+  user.lastWork = Date.now();
   saveEconomy(guildId, ec);
-  progressQuest(guildId, userId, 'work');
-  progressQuest(guildId, userId, 'credits_earned', reward);
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.success)
-    .setTitle('🔨 Work Complete!')
-    .setDescription(`**${job.text}**\n\n💰 **+${formatNumber(reward)}** Credits`)
-    .setFooter({ text: `New Balance: ${formatNumber(user.credits)}${mult > 1 ? ' • Event Bonus Active!' : ''}` })
-    .setTimestamp();
-
+  const embed = makeEmbed('Work Complete', `**${job.name}** — ${job.description}\n\nYou earned **+${formatNumber(reward)}** ${ec.currencyName}.`, '#57F287', `Balance: ${formatNumber(user.wallet)}${mult > 1 ? ' • Bonus Active' : ''}`);
   return message.reply({ embeds: [embed] });
 }
 
-async function handleQuests(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled.'));
+async function handleCrime(message) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🎯 Your Quests')
-    .setDescription(user.quests.map((q, i) => {
-      const status = q.completed ? '✅' : '⬜';
-      const bar = '█'.repeat(Math.floor((q.progress / q.target) * 10)) + '░'.repeat(10 - Math.floor((q.progress / q.target) * 10));
-      return `${status} **${q.name}**\n\`[${bar}]\` ${q.progress}/${q.target} → 💰 ${formatNumber(q.reward)}`;
-    }).join('\n\n'))
-    .setFooter({ text: `Total Completed: ${user.questsCompleted} • Use ,quest for detailed progress` })
-    .setTimestamp();
+  const outcomes = [
+    { text: 'You robbed a convenience store', min: 100, max: 500, success: true },
+    { text: 'You hacked an ATM', min: 200, max: 800, success: true },
+    { text: 'You pickpocketed a wealthy tourist', min: 50, max: 300, success: true },
+    { text: 'You tried to rob a bank but got caught', min: 50, max: 200, success: false, fine: true },
+    { text: 'You attempted fraud but failed', min: 0, max: 0, success: false },
+    { text: 'You stole a wallet', min: 75, max: 400, success: true },
+  ];
 
+  const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+  const mult = getEventMultiplier(guildId, 'crime');
+
+  if (outcome.success) {
+    const reward = Math.round((Math.floor(Math.random() * (outcome.max - outcome.min + 1)) + outcome.min) * mult);
+    addCredits(guildId, userId, reward, 'crime');
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Crime Committed', `${outcome.text} and got away with **+${formatNumber(reward)}** ${ec.currencyName}.`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else {
+    let desc = outcome.text;
+    if (outcome.fine) {
+      const fine = Math.floor(Math.random() * 100) + 50;
+      removeCredits(guildId, userId, fine, 'crime_fine');
+      desc += ` and paid a **${formatNumber(fine)}** ${ec.currencyName} fine.`;
+    } else {
+      desc += ' and earned nothing.';
+    }
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Crime Failed', desc, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  }
+}
+
+async function handleOpen(message) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const rewards = [
+    { type: 'credits', min: 50, max: 300, weight: 50 },
+    { type: 'credits', min: 300, max: 800, weight: 20 },
+    { type: 'credits', min: 800, max: 2000, weight: 5 },
+    { type: 'nothing', weight: 25 },
+  ];
+
+  const totalWeight = rewards.reduce((a, b) => a + b.weight, 0);
+  let rand = Math.random() * totalWeight;
+  let reward = rewards[0];
+  for (const r of rewards) {
+    rand -= r.weight;
+    if (rand <= 0) { reward = r; break; }
+  }
+
+  if (reward.type === 'nothing') {
+    const embed = makeEmbed('Crate Opened', 'You opened the crate but it was empty.', '#2F3136', 'Better luck next time');
+    return message.reply({ embeds: [embed] });
+  }
+
+  const amount = Math.floor(Math.random() * (reward.max - reward.min + 1)) + reward.min;
+  addCredits(guildId, userId, amount, 'crate');
+  saveEconomy(guildId, ec);
+  const embed = makeEmbed('Crate Opened', `You found **+${formatNumber(amount)}** ${ec.currencyName} inside!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
   return message.reply({ embeds: [embed] });
 }
 
-async function handleQuest(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled.'));
+// ══════════════════════════════════════════════════════════
+// COMMANDS: BANKING
+// ══════════════════════════════════════════════════════════
+
+async function handleDeposit(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.info)
-    .setTitle('📋 Quest Progress')
-    .addFields(user.quests.map(q => ({
-      name: `${q.completed ? '✅' : '📌'} ${q.name}`,
-      value: `Progress: **${q.progress} / ${q.target}**\nReward: **${formatNumber(q.reward)}** Credits\nStatus: **${q.completed ? 'Completed' : 'In Progress'}**`,
-      inline: false,
-    })))
-    .setFooter({ text: 'Complete all quests to get new ones!' })
-    .setTimestamp();
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,deposit <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}** in your wallet.`));
 
+  user.wallet -= amount;
+  user.bank += amount;
+  saveEconomy(guildId, ec);
+
+  const embed = makeEmbed('Deposit Successful', `**+${formatNumber(amount)}** ${ec.currencyName} moved to your bank.`, '#57F287', `Wallet: ${formatNumber(user.wallet)} | Bank: ${formatNumber(user.bank)}`);
+  return message.reply({ embeds: [embed] });
+}
+
+async function handleWithdraw(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'bank');
+  if (amount === null) return message.reply(err('Usage: `,withdraw <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.bank < amount) return message.reply(err(`You only have **${formatNumber(user.bank)}** in your bank.`));
+
+  user.bank -= amount;
+  user.wallet += amount;
+  saveEconomy(guildId, ec);
+
+  const embed = makeEmbed('Withdrawal Successful', `**+${formatNumber(amount)}** ${ec.currencyName} moved to your wallet.`, '#57F287', `Wallet: ${formatNumber(user.wallet)} | Bank: ${formatNumber(user.bank)}`);
+  return message.reply({ embeds: [embed] });
+}
+
+async function handleTransfer(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const target = message.mentions.users.first();
+  if (!target) return message.reply(err('Mention a user: `,transfer @user <amount>`'));
+  if (target.id === userId) return message.reply(err('You cannot transfer to yourself.'));
+
+  const amount = parseAmount(args[1], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,transfer @user <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}** in your wallet.`));
+
+  const targetUser = getUserEconomy(guildId, target.id);
+  user.wallet -= amount;
+  targetUser.wallet += amount;
+  saveEconomy(guildId, ec);
+
+  const embed = makeEmbed('Transfer Complete', `You sent **${formatNumber(amount)}** ${ec.currencyName} to **${target.username}**.`, '#57F287', `Wallet: ${formatNumber(user.wallet)}`);
+  return message.reply({ embeds: [embed] });
+}
+
+// ══════════════════════════════════════════════════════════
+// COMMANDS: INFO
+// ══════════════════════════════════════════════════════════
+
+async function handleCirculation(message) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const ec = getEconomy(message.guild.id);
+  const userCount = Object.keys(ec.users).length;
+  const totalWallet = Object.values(ec.users).reduce((a, u) => a + (u.wallet || 0), 0);
+  const totalBank = Object.values(ec.users).reduce((a, u) => a + (u.bank || 0), 0);
+  const total = totalWallet + totalBank;
+
+  const embed = makeEmbed('Economy Circulation', `**Total Users:** ${formatNumber(userCount)}\n**Wallet Total:** ${formatNumber(totalWallet)}\n**Bank Total:** ${formatNumber(totalBank)}\n**Combined:** ${formatNumber(total)} ${ec.currencyName}`, '#5865F2', 'Real-time statistics');
   return message.reply({ embeds: [embed] });
 }
 
 async function handleLeaderboard(message, args, client) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled.'));
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const ec = getEconomy(guildId);
-  const users = Object.entries(ec.users).filter(([, u]) => u.credits > 0).sort((a, b) => b[1].credits - a[1].credits);
+  const users = Object.entries(ec.users)
+    .map(([id, u]) => ({ id, total: (u.wallet || 0) + (u.bank || 0) }))
+    .filter(u => u.total > 0)
+    .sort((a, b) => b.total - a.total);
 
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
@@ -601,110 +513,82 @@ async function handleLeaderboard(message, args, client) {
 
   let desc = '';
   for (let i = 0; i < pageUsers.length; i++) {
-    const [uid, u] = pageUsers[i];
+    const u = pageUsers[i];
     const rank = start + i + 1;
     const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
-    const member = await message.guild.members.fetch(uid).catch(() => null);
+    const member = await message.guild.members.fetch(u.id).catch(() => null);
     const name = member ? member.user.username : 'Unknown';
-    desc += `${medal} **${name}** — ${formatNumber(u.credits)} Credits\n`;
+    desc += `${medal} **${name}** — ${formatNumber(u.total)} ${ec.currencyName}\n`;
   }
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.gold)
-    .setTitle('🏆 Economy Leaderboard')
-    .setDescription(desc || 'No economy data yet.')
-    .setFooter({ text: `Page ${page}/${totalPages} • Use ,leaderboard <page>` })
-    .setTimestamp();
-
+  const embed = makeEmbed('Economy Leaderboard', desc || 'No economy data yet.', '#FFD700', `Page ${page}/${totalPages}`);
   const row = new ActionRowBuilder();
-  if (page > 1) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page - 1}`).setLabel('◀ Previous').setStyle(ButtonStyle.Primary));
-  if (page < totalPages) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page + 1}`).setLabel('Next ▶').setStyle(ButtonStyle.Primary));
-
+  if (page > 1) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page - 1}`).setLabel('◀').setStyle(ButtonStyle.Primary));
+  if (page < totalPages) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page + 1}`).setLabel('▶').setStyle(ButtonStyle.Primary));
   return message.reply({ embeds: [embed], components: row.components.length ? [row] : [] });
 }
 
 async function handleProfile(message, args, client) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('The economy system is not enabled.'));
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const target = message.mentions.users.first() || message.author;
   const guildId = message.guild.id;
   const user = getUserEconomy(guildId, target.id);
+  const total = user.wallet + user.bank;
 
-  const equippedBadges = Object.entries(user.equipped)
-    .filter(([, v]) => v)
-    .map(([k, v]) => {
-      const item = getDefaultShopItems().find(i => i.id === v) || { emoji: '⭐', name: 'Unknown' };
-      return `${item.emoji} ${item.name}`;
-    });
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle(`👤 ${target.username}'s Economy Profile`)
-    .setThumbnail(target.displayAvatarURL())
-    .addFields(
-      { name: '💰 Credits', value: formatNumber(user.credits), inline: true },
-      { name: '📈 Lifetime Earned', value: formatNumber(user.lifetimeEarned), inline: true },
-      { name: '💸 Lifetime Spent', value: formatNumber(user.lifetimeSpent), inline: true },
-      { name: '🎯 Quests Completed', value: formatNumber(user.questsCompleted), inline: true },
-      { name: '🛍️ Items Owned', value: formatNumber(user.inventory.length), inline: true },
-      { name: '📅 Daily Claims', value: formatNumber(user.stats.dailyClaims), inline: true },
-      { name: '🔨 Work Sessions', value: formatNumber(user.stats.workCount), inline: true },
-      { name: '🎮 Games Played', value: formatNumber(user.stats.gamesPlayed), inline: true },
-      { name: '🏆 Games Won', value: formatNumber(user.stats.gamesWon), inline: true },
-      { name: '🛒 Shop Purchases', value: formatNumber(user.stats.shopPurchases), inline: true },
-      { name: '💬 Messages Sent', value: formatNumber(user.stats.messagesSent), inline: true },
-      { name: '⌨️ Commands Used', value: formatNumber(user.stats.commandsUsed), inline: true },
-    )
-    .setTimestamp();
-
-  if (equippedBadges.length) {
-    embed.addFields({ name: '🎖️ Equipped', value: equippedBadges.join(' | '), inline: false });
-  }
-
-  const events = getActiveEventNames(guildId);
-  if (events.length) {
-    embed.addFields({ name: '🔥 Active Events', value: events.join('\n'), inline: false });
-  }
-
+  const embed = makeEmbed(`${target.username}'s Profile`, `**Wallet:** ${formatNumber(user.wallet)}\n**Bank:** ${formatNumber(user.bank)}\n**Total:** ${formatNumber(total)}\n**Earned:** ${formatNumber(user.totalEarned)}\n**Spent:** ${formatNumber(user.totalSpent)}\n**Games Played:** ${formatNumber(user.gamesPlayed)}\n**Games Won:** ${formatNumber(user.gamesWon)}`, '#5865F2', 'Economy Profile');
   return message.reply({ embeds: [embed] });
 }
 
 // ══════════════════════════════════════════════════════════
-// COMMANDS: ADMIN CONFIG
+// COMMANDS: JOBS
+// ══════════════════════════════════════════════════════════
+
+async function handleJobAdd(message, args) {
+  if (!hasDiscordPerm(message.member, 'ManageGuild')) return message.reply(err('You need **Manage Server** permission.'));
+  const guildId = message.guild.id;
+  const ec = getEconomy(guildId);
+
+  const name = args[0];
+  const min = parseInt(args[1]);
+  const max = parseInt(args[2]);
+  const description = args.slice(3).join(' ') || 'No description';
+
+  if (!name || isNaN(min) || isNaN(max)) {
+    return message.reply(err('Usage: `,job add <name> <min payout> <max payout> [description]`'));
+  }
+
+  ec.jobs.push({ name, min, max, description });
+  saveEconomy(guildId, ec);
+  return message.reply(ok(`Added job **${name}** (${min}-${max} ${ec.currencyName}).`));
+}
+
+async function handleJobRemove(message, args) {
+  if (!hasDiscordPerm(message.member, 'ManageGuild')) return message.reply(err('You need **Manage Server** permission.'));
+  const guildId = message.guild.id;
+  const ec = getEconomy(guildId);
+  const name = args.join(' ');
+  if (!name) return message.reply(err('Usage: `,job remove <name>`'));
+
+  const idx = ec.jobs.findIndex(j => j.name.toLowerCase() === name.toLowerCase());
+  if (idx === -1) return message.reply(err(`Job **${name}** not found.`));
+
+  ec.jobs.splice(idx, 1);
+  saveEconomy(guildId, ec);
+  return message.reply(ok(`Removed job **${name}**.`));
+}
+
+// ══════════════════════════════════════════════════════════
+// COMMANDS: ADMIN
 // ══════════════════════════════════════════════════════════
 
 async function handleEconomyConfig(message, args) {
   if (!hasDiscordPerm(message.member, 'ManageGuild')) {
-    return message.reply(err('You need the **Manage Server** permission to configure the economy.'));
+    return message.reply(err('You need **Manage Server** permission.'));
   }
 
   const guildId = message.guild.id;
   const ec = getEconomy(guildId);
   const sub = args[0]?.toLowerCase();
-
-  if (sub === 'setup') {
-    ec.enabled = true;
-    saveEconomy(guildId, ec);
-    return message.reply(ok('Economy system has been set up and **enabled**!'));
-  }
-
-  if (sub === 'config') {
-    const embed = new EmbedBuilder()
-      .setColor(COLORS.info)
-      .setTitle('⚙️ Economy Configuration')
-      .addFields(
-        { name: 'Status', value: ec.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
-        { name: 'Log Channel', value: ec.logChannelId ? `<#${ec.logChannelId}>` : 'Not set', inline: true },
-        { name: 'Events', value: ec.events.enabled ? '🟢 Auto' : '🔴 Manual', inline: true },
-        { name: 'Daily Reward', value: `${formatNumber(ec.rewards.daily)}`, inline: true },
-        { name: 'Work Range', value: `${formatNumber(ec.rewards.workMin)} - ${formatNumber(ec.rewards.workMax)}`, inline: true },
-        { name: 'Quest Reward', value: `${formatNumber(ec.rewards.quest)}`, inline: true },
-        { name: 'Max Balance', value: `${formatNumber(ec.maxBalance)}`, inline: true },
-        { name: 'Daily Earn Limit', value: `${formatNumber(ec.dailyRewardLimit)}`, inline: true },
-      )
-      .setFooter({ text: 'Use ,economy rewards/cooldowns to view detailed settings' })
-      .setTimestamp();
-    return message.reply({ embeds: [embed] });
-  }
 
   if (sub === 'enable') {
     ec.enabled = true;
@@ -718,199 +602,130 @@ async function handleEconomyConfig(message, args) {
     return message.reply(ok('Economy system **disabled**.'));
   }
 
+  if (sub === 'preset') {
+    const preset = args[1]?.toLowerCase();
+    if (!preset || !PRESETS[preset]) {
+      return message.reply(err(`Valid presets: ${Object.keys(PRESETS).join(', ')}`));
+    }
+    Object.assign(ec, PRESETS[preset]);
+    saveEconomy(guildId, ec);
+    return message.reply(ok(`Applied **${preset}** preset.`));
+  }
+
   if (sub === 'reset') {
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('eco_reset_confirm').setLabel('✅ Confirm Reset').setStyle(ButtonStyle.Danger),
-      new ButtonBuilder().setCustomId('eco_reset_cancel').setLabel('❌ Cancel').setStyle(ButtonStyle.Secondary),
-    );
-    return message.reply({
-      embeds: [mkError('⚠️ Confirm Economy Reset', 'This will **delete all economy data** for this server. This action cannot be undone!')],
-      components: [row],
-    });
-  }
-
-  if (sub === 'logs') {
-    const ch = message.mentions.channels.first();
-    if (!ch) return message.reply(err('Mention a channel: `,economy logs #channel`'));
-    ec.logChannelId = ch.id;
+    const target = message.mentions.users.first() || (args[1]?.match(/^\d+$/) ? await message.client.users.fetch(args[1]).catch(() => null) : null);
+    if (!target) return message.reply(err('Usage: `,economy reset @user`'));
+    delete ec.users[target.id];
     saveEconomy(guildId, ec);
-    return message.reply(ok(`Economy log channel set to <#${ch.id}>.`));
+    return message.reply(ok(`Reset **${target.username}**'s economy data.`));
   }
 
-  if (sub === 'rewards') {
-    const rewardType = args[1]?.toLowerCase();
-    const val = parseInt(args[2]);
-    if (!rewardType || isNaN(val)) {
-      let desc = '';
-      for (const [k, v] of Object.entries(ec.rewards)) {
-        desc += `\`${k}\` → ${Array.isArray(v) ? v.join(', ') : formatNumber(v)}\n`;
-      }
-      return message.reply({ embeds: [mkInfo('💰 Reward Settings', desc + '\n**Usage:** `,economy rewards <type> <amount>`')] });
+  if (sub === 'config') {
+    const embed = makeEmbed('Economy Configuration',
+      `**Status:** ${ec.enabled ? 'Enabled' : 'Disabled'}\n**Mode:** ${ec.mode}\n**Daily:** ${formatNumber(ec.dailyAmount)}\n**Work Cooldown:** ${formatDuration(ec.workCooldown)}\n**Max Balance:** ${formatNumber(ec.maxBalance)}\n**Jobs:** ${ec.jobs.length}\n**Shop Items:** ${ec.shop.length}`,
+      '#5865F2', 'Use ,economy enable/disable to toggle');
+    return message.reply({ embeds: [embed] });
+  }
+
+  if (sub === 'mode') {
+    const mode = args[1]?.toLowerCase();
+    if (!mode || !['guild', 'global'].includes(mode)) {
+      return message.reply(err('Usage: `,economy mode <guild | global>`'));
     }
-    if (ec.rewards[rewardType] === undefined) return message.reply(err(`Unknown reward type. Valid: ${Object.keys(ec.rewards).join(', ')}`));
-    ec.rewards[rewardType] = val;
+    ec.mode = mode;
     saveEconomy(guildId, ec);
-    return message.reply(ok(`Reward \`${rewardType}\` set to **${formatNumber(val)}**.`));
+    return message.reply(ok(`Economy mode set to **${mode}**.`));
   }
 
-  if (sub === 'cooldowns') {
-    const cdType = args[1]?.toLowerCase();
-    const val = args[2];
-    if (!cdType || !val) {
-      let desc = '';
-      for (const [k, v] of Object.entries(ec.cooldowns)) {
-        desc += `\`${k}\` → ${formatDuration(v)}\n`;
-      }
-      return message.reply({ embeds: [mkInfo('⏱️ Cooldown Settings', desc + '\n**Usage:** `,economy cooldowns <type> <duration>`\nExamples: `10m`, `1h`, `30s`')] });
-    }
-    if (ec.cooldowns[cdType] === undefined) return message.reply(err(`Unknown cooldown type. Valid: ${Object.keys(ec.cooldowns).join(', ')}`));
-    const ms = parseDuration(val);
-    if (!ms) return message.reply(err('Invalid duration. Use: `10m`, `1h`, `30s`'));
-    ec.cooldowns[cdType] = ms;
-    saveEconomy(guildId, ec);
-    return message.reply(ok(`Cooldown \`${cdType}\` set to **${formatDuration(ms)}**.`));
+  if (sub === 'leaderboard') {
+    return handleLeaderboard(message, args.slice(1), message.client);
   }
 
-  if (sub === 'events') {
-    const toggle = args[1]?.toLowerCase();
-    if (toggle === 'on' || toggle === 'enable') {
-      ec.events.enabled = true;
-      saveEconomy(guildId, ec);
-      return message.reply(ok('Automatic economy events **enabled**.'));
-    }
-    if (toggle === 'off' || toggle === 'disable') {
-      ec.events.enabled = false;
-      saveEconomy(guildId, ec);
-      return message.reply(ok('Automatic economy events **disabled**.'));
-    }
-    return message.reply({ embeds: [mkInfo('🎉 Economy Events', `Auto events: **${ec.events.enabled ? 'Enabled' : 'Disabled'}**\n\nUsage: \`,economy events on/off\``)] });
-  }
-
-  return message.reply({ embeds: [mkInfo('⚙️ Economy Admin', `
-\`,economy setup\` — Initialize economy
+  return message.reply(info('Economy Admin', `
+\`,economy enable\` — Enable economy
+\`,economy disable\` — Disable economy
+\`,economy preset <name>\` — Apply preset
+\`,economy reset @user\` — Reset user data
 \`,economy config\` — View configuration
-\`,economy enable/disable\` — Toggle economy
-\`,economy reset\` — Reset all data (requires confirmation)
-\`,economy logs #channel\` — Set log channel
-\`,economy rewards [type] [amount]\` — Configure rewards
-\`,economy cooldowns [type] [duration]\` — Configure cooldowns
-\`,economy events on/off\` — Toggle auto events
-`)] });
+\`,economy mode <guild | global>\` — Switch mode
+\`,economy leaderboard\` — View leaderboard
+`));
 }
 
-// ══════════════════════════════════════════════════════════
-// COMMANDS: STAFF MANAGEMENT
-// ══════════════════════════════════════════════════════════
+async function handleGive(message, args) {
+  if (!hasDiscordPerm(message.member, 'Administrator')) return message.reply(err('You need **Administrator** permission.'));
+  const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
+  const amount = parseInt(args[1]);
+  if (!target || isNaN(amount) || amount <= 0) return message.reply(err('Usage: `,give @user <amount>`'));
 
+  const guildId = message.guild.id;
+  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
+
+  addCredits(guildId, target.id, amount, 'admin_give');
+  const user = getUserEconomy(guildId, target.id);
+  return message.reply(ok(`Gave **+${formatNumber(amount)}** to **${target.username}**. New balance: **${formatNumber(user.wallet)}**`));
+}
+
+async function handleTake(message, args) {
+  if (!hasDiscordPerm(message.member, 'Administrator')) return message.reply(err('You need **Administrator** permission.'));
+  const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
+  const amount = parseInt(args[1]);
+  if (!target || isNaN(amount) || amount <= 0) return message.reply(err('Usage: `,take @user <amount>`'));
+
+  const guildId = message.guild.id;
+  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
+
+  removeCredits(guildId, target.id, amount, 'admin_take');
+  const user = getUserEconomy(guildId, target.id);
+  return message.reply(ok(`Took **-${formatNumber(amount)}** from **${target.username}**. New balance: **${formatNumber(user.wallet)}**`));
+}
+
+async function handleReset(message, args) {
+  if (!hasDiscordPerm(message.member, 'Administrator')) return message.reply(err('You need **Administrator** permission.'));
+  const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
+  if (!target) return message.reply(err('Usage: `,reset @user`'));
+
+  const guildId = message.guild.id;
+  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
+
+  const ec = getEconomy(guildId);
+  delete ec.users[target.id];
+  saveEconomy(guildId, ec);
+  return message.reply(ok(`Reset **${target.username}**'s economy data.`));
+}
+
+async function handleDestroy(message, args) {
+  if (!hasDiscordPerm(message.member, 'Administrator')) return message.reply(err('You need **Administrator** permission.'));
+  const amount = parseInt(args[0]);
+  if (isNaN(amount) || amount <= 0) return message.reply(err('Usage: `,destroy <amount>`'));
+
+  const guildId = message.guild.id;
+  const ec = getEconomy(guildId);
+  ec.circulation = Math.max(0, ec.circulation - amount);
+  saveEconomy(guildId, ec);
+  return message.reply(ok(`Destroyed **${formatNumber(amount)}** ${ec.currencyName} from circulation.`));
+}
+
+// Legacy admin commands (for compatibility)
 async function handleAddCredits(message, args) {
-  if (!hasDiscordPerm(message.member, 'Administrator')) {
-    return message.reply(err('You need the **Administrator** permission.'));
-  }
-  const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
-  const amount = parseInt(args[1]);
-  if (!target || isNaN(amount) || amount <= 0) return message.reply(err('Usage: `,addcredits @user <amount>`'));
-
-  const guildId = message.guild.id;
-  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
-
-  const actual = addCredits(guildId, target.id, amount, 'staff_add', message.author.id);
-  const user = getUserEconomy(guildId, target.id);
-
-  const logEmbed = new EmbedBuilder()
-    .setColor(COLORS.warning)
-    .setTitle('🛡️ Economy Adjustment')
-    .addFields(
-      { name: 'User', value: `<@${target.id}>`, inline: true },
-      { name: 'Action', value: 'Added Credits', inline: true },
-      { name: 'Amount', value: `+${formatNumber(actual)}`, inline: true },
-      { name: 'Moderator', value: `<@${message.author.id}>`, inline: true },
-      { name: 'New Balance', value: formatNumber(user.credits), inline: true },
-    )
-    .setTimestamp();
-
-  await sendEconomyLog(message.client, guildId, logEmbed);
-  return message.reply(ok(`Added **+${formatNumber(actual)}** Credits to **${target.username}**.\nNew balance: **${formatNumber(user.credits)}**`));
+  return handleGive(message, args);
 }
-
 async function handleRemoveCredits(message, args) {
-  if (!hasDiscordPerm(message.member, 'Administrator')) {
-    return message.reply(err('You need the **Administrator** permission.'));
-  }
-  const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
-  const amount = parseInt(args[1]);
-  if (!target || isNaN(amount) || amount <= 0) return message.reply(err('Usage: `,removecredits @user <amount>`'));
-
-  const guildId = message.guild.id;
-  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
-
-  const actual = removeCredits(guildId, target.id, amount, 'staff_remove', message.author.id);
-  const user = getUserEconomy(guildId, target.id);
-
-  const logEmbed = new EmbedBuilder()
-    .setColor(COLORS.error)
-    .setTitle('🛡️ Economy Adjustment')
-    .addFields(
-      { name: 'User', value: `<@${target.id}>`, inline: true },
-      { name: 'Action', value: 'Removed Credits', inline: true },
-      { name: 'Amount', value: `-${formatNumber(actual)}`, inline: true },
-      { name: 'Moderator', value: `<@${message.author.id}>`, inline: true },
-      { name: 'New Balance', value: formatNumber(user.credits), inline: true },
-    )
-    .setTimestamp();
-
-  await sendEconomyLog(message.client, guildId, logEmbed);
-  return message.reply(ok(`Removed **-${formatNumber(actual)}** Credits from **${target.username}**.\nNew balance: **${formatNumber(user.credits)}**`));
+  return handleTake(message, args);
 }
-
 async function handleSetCredits(message, args) {
-  if (!hasDiscordPerm(message.member, 'Administrator')) {
-    return message.reply(err('You need the **Administrator** permission.'));
-  }
+  if (!hasDiscordPerm(message.member, 'Administrator')) return message.reply(err('You need **Administrator** permission.'));
   const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
   const amount = parseInt(args[1]);
   if (!target || isNaN(amount) || amount < 0) return message.reply(err('Usage: `,setcredits @user <amount>`'));
 
   const guildId = message.guild.id;
-  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
-
-  const prev = getUserEconomy(guildId, target.id).credits;
-  setCredits(guildId, target.id, amount, message.author.id);
+  setCredits(guildId, target.id, amount);
   const user = getUserEconomy(guildId, target.id);
-
-  const logEmbed = new EmbedBuilder()
-    .setColor(COLORS.warning)
-    .setTitle('🛡️ Economy Adjustment')
-    .addFields(
-      { name: 'User', value: `<@${target.id}>`, inline: true },
-      { name: 'Action', value: 'Set Credits', inline: true },
-      { name: 'Previous', value: formatNumber(prev), inline: true },
-      { name: 'New', value: formatNumber(user.credits), inline: true },
-      { name: 'Moderator', value: `<@${message.author.id}>`, inline: true },
-    )
-    .setTimestamp();
-
-  await sendEconomyLog(message.client, guildId, logEmbed);
-  return message.reply(ok(`Set **${target.username}**'s balance to **${formatNumber(user.credits)}**.`));
+  return message.reply(ok(`Set **${target.username}**'s balance to **${formatNumber(user.wallet)}**`));
 }
-
 async function handleResetUser(message, args) {
-  if (!hasDiscordPerm(message.member, 'Administrator')) {
-    return message.reply(err('You need the **Administrator** permission.'));
-  }
-  const target = message.mentions.users.first() || (args[0]?.match(/^\d+$/) ? await message.client.users.fetch(args[0]).catch(() => null) : null);
-  if (!target) return message.reply(err('Usage: `,resetuser @user`'));
-
-  const guildId = message.guild.id;
-  if (!isEconomyEnabled(guildId)) return message.reply(err('Economy is not enabled.'));
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId(`eco_resetuser_${target.id}`).setLabel('✅ Confirm Reset').setStyle(ButtonStyle.Danger),
-    new ButtonBuilder().setCustomId('eco_resetuser_cancel').setLabel('❌ Cancel').setStyle(ButtonStyle.Secondary),
-  );
-  return message.reply({
-    embeds: [mkError('⚠️ Confirm User Reset', `This will reset ALL economy data for **${target.username}**.`)],
-    components: [row],
-  });
+  return handleReset(message, args);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -919,45 +734,14 @@ async function handleResetUser(message, args) {
 
 async function handleEconomyButton(interaction) {
   const id = interaction.customId;
-
-  if (id === 'eco_reset_confirm') {
-    if (!hasDiscordPerm(interaction.member, 'ManageGuild')) {
-      return interaction.reply({ content: '❌ No permission.', ephemeral: true });
-    }
-    const guildId = interaction.guild.id;
-    const ec = getEconomy(guildId);
-    ec.users = {};
-    ec.logs = [];
-    ec.activeEvents = {};
-    saveEconomy(guildId, ec);
-    return interaction.update({ embeds: [mkSuccess('Economy Reset', 'All economy data has been wiped.')], components: [] });
-  }
-
-  if (id === 'eco_reset_cancel') {
-    return interaction.update({ embeds: [mkInfo('Cancelled', 'Economy reset was cancelled.')], components: [] });
-  }
-
-  if (id === 'eco_resetuser_cancel') {
-    return interaction.update({ embeds: [mkInfo('Cancelled', 'User reset was cancelled.')], components: [] });
-  }
-
-  if (id.startsWith('eco_resetuser_')) {
-    if (!hasDiscordPerm(interaction.member, 'Administrator')) {
-      return interaction.reply({ content: '❌ No permission.', ephemeral: true });
-    }
-    const targetId = id.replace('eco_resetuser_', '');
-    const guildId = interaction.guild.id;
-    const ec = getEconomy(guildId);
-    if (ec.users[targetId]) delete ec.users[targetId];
-    saveEconomy(guildId, ec);
-    return interaction.update({ embeds: [mkSuccess('User Reset', `<@${targetId}>'s economy data has been reset.`)], components: [] });
-  }
-
   if (id.startsWith('ecolb_')) {
     const page = parseInt(id.replace('ecolb_', ''));
     const guildId = interaction.guild.id;
     const ec = getEconomy(guildId);
-    const users = Object.entries(ec.users).filter(([, u]) => u.credits > 0).sort((a, b) => b[1].credits - a[1].credits);
+    const users = Object.entries(ec.users)
+      .map(([uid, u]) => ({ id: uid, total: (u.wallet || 0) + (u.bank || 0) }))
+      .filter(u => u.total > 0)
+      .sort((a, b) => b.total - a.total);
     const pageSize = 10;
     const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
     const start = (page - 1) * pageSize;
@@ -965,41 +749,20 @@ async function handleEconomyButton(interaction) {
 
     let desc = '';
     for (let i = 0; i < pageUsers.length; i++) {
-      const [uid, u] = pageUsers[i];
+      const u = pageUsers[i];
       const rank = start + i + 1;
       const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
-      const member = await interaction.guild.members.fetch(uid).catch(() => null);
+      const member = await interaction.guild.members.fetch(u.id).catch(() => null);
       const name = member ? member.user.username : 'Unknown';
-      desc += `${medal} **${name}** — ${formatNumber(u.credits)} Credits\n`;
+      desc += `${medal} **${name}** — ${formatNumber(u.total)} ${ec.currencyName}\n`;
     }
 
-    const embed = new EmbedBuilder()
-      .setColor(COLORS.gold)
-      .setTitle('🏆 Economy Leaderboard')
-      .setDescription(desc || 'No economy data yet.')
-      .setFooter({ text: `Page ${page}/${totalPages}` })
-      .setTimestamp();
-
+    const embed = makeEmbed('Economy Leaderboard', desc || 'No data.', '#FFD700', `Page ${page}/${totalPages}`);
     const row = new ActionRowBuilder();
-    if (page > 1) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page - 1}`).setLabel('◀ Previous').setStyle(ButtonStyle.Primary));
-    if (page < totalPages) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page + 1}`).setLabel('Next ▶').setStyle(ButtonStyle.Primary));
-
+    if (page > 1) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page - 1}`).setLabel('◀').setStyle(ButtonStyle.Primary));
+    if (page < totalPages) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page + 1}`).setLabel('▶').setStyle(ButtonStyle.Primary));
     return interaction.update({ embeds: [embed], components: row.components.length ? [row] : [] });
   }
-}
-
-// ══════════════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════════════
-
-function parseDuration(str) {
-  if (!str) return null;
-  const match = str.match(/^(\d+)([smhd])$/i);
-  if (!match) return null;
-  const num = parseInt(match[1]);
-  const unit = match[2].toLowerCase();
-  const mult = { s: 1000, m: 60000, h: 3600000, d: 86400000 };
-  return num * (mult[unit] || 0);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1007,38 +770,22 @@ function parseDuration(str) {
 // ══════════════════════════════════════════════════════════
 
 module.exports = {
-  getEconomy,
-  saveEconomy,
-  getUserEconomy,
-  isEconomyEnabled,
-  addCredits,
-  removeCredits,
-  setCredits,
-  logTransaction,
-  sendEconomyLog,
-  formatNumber,
-  formatDuration,
-  getEventMultiplier,
-  getActiveEventNames,
-  progressQuest,
-  checkQuestCompletion,
-  trackEconomyMessage,
-  setCooldown,
-  getDefaultShopItems,
-  parseDuration,
-  // Commands
-  handleBalance,
-  handleDaily,
-  handleWork,
-  handleQuests,
-  handleQuest,
-  handleLeaderboard,
-  handleProfile,
-  handleEconomyConfig,
-  handleAddCredits,
-  handleRemoveCredits,
-  handleSetCredits,
-  handleResetUser,
+  getEconomy, saveEconomy, getUserEconomy, isEconomyEnabled,
+  addCredits, removeCredits, setCredits, logTransaction, sendEconomyLog,
+  formatNumber, formatDuration, getEventMultiplier, getActiveEventNames,
+  trackEconomyMessage, setCooldown, getDefaultShopItems, parseDuration,
+  parseAmount, makeEmbed,
+  // Core
+  handleBalance, handleDaily, handleWork, handleCrime, handleOpen,
+  // Banking
+  handleDeposit, handleWithdraw, handleTransfer,
+  // Info
+  handleCirculation, handleLeaderboard, handleProfile,
+  // Jobs
+  handleJobAdd, handleJobRemove,
+  // Admin
+  handleEconomyConfig, handleGive, handleTake, handleReset, handleDestroy,
+  handleAddCredits, handleRemoveCredits, handleSetCredits, handleResetUser,
   // Buttons
   handleEconomyButton,
 };

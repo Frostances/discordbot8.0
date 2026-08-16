@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 23231,
+      "xp": 23352,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2245,17 +2245,17 @@
           "2026-08-10": 9,
           "2026-08-12": 32,
           "2026-08-13": 76,
-          "2026-08-15": 134
+          "2026-08-15": 137
         },
         "weekly": {
           "2026-07-27": 33,
           "2026-08-03": 8,
-          "2026-08-10": 251
+          "2026-08-10": 254
         },
         "monthly": {
-          "2026-08": 292
+          "2026-08": 295
         },
-        "total": 292
+        "total": 295
       },
       "1278713831345881170": {
         "daily": {
@@ -2666,7 +2666,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786821144518
+    "1410668779347771402": 1786835279517
   },
   "antinuke": {
     "enabled": true,
@@ -2839,7 +2839,7 @@
     }
   },
   "commandUsage": {
-    "ping": 14,
+    "ping": 16,
     "antiraid": 1,
     "autoresponder": 23,
     "role": 31,
@@ -2849,7 +2849,7 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 28,
+    "help": 29,
     "levels": 7,
     "ask": 10,
     "who": 1,
@@ -3112,7 +3112,7 @@
           "gamesPlayed": 1,
           "gamesWon": 0,
           "shopPurchases": 0,
-          "messagesSent": 204,
+          "messagesSent": 206,
           "commandsUsed": 0
         },
         "cooldowns": {
@@ -3149,12 +3149,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",customize banner",
-          "lastTime": 1786821144520,
+          "lastContent": ",help",
+          "lastTime": 1786835279519,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786821144520
+          "windowStart": 1786835279519
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,

@@ -1,359 +1,391 @@
-/**
- * stats.js — User Stats System
- *
- * Commands:
- * .voicetime [@user] — voice time stats (today, week, month)
- * .messages [@user] — message stats (today, week, month)
- * .streamtime [@user] — stream time stats (today, week, month)
- * .cameratime [@user] — camera time stats (today, week, month)
- *
- * Storage (guild DB):
- * 'vcStats' → { [guildId]: { [userId]: { totalMs, daily, weekly, monthly, streamMs, cameraMs, streamDaily, cameraDaily, lastJoin, lastStreamJoin, lastCameraJoin, inVc, streaming, cameraOn } } }
- * 'messageStats' → { [guildId]: { [userId]: { daily: {}, weekly: {}, monthly: {}, total: 0 } } }
- */
+// ══════════════════════════════════════════════════════════
+// STATS MODULE
+// ══════════════════════════════════════════════════════════
 
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { getGuildDb } = require('./database');
-const { base, COLORS } = require('../utils/embeds');
+const { isStaffOrAdmin, formatTimeLeft } = require('./helpers');
+const { error: mkError, info: mkInfo, success: mkSuccess, COLORS } = require('../utils/embeds');
+const logger = require('../utils/logger');
 
-function getTodayStr() {
-  return new Date().toISOString().split('T')[0];
-}
+// ══════════════════════════════════════════════════════════
+// MESSAGE TRACKING
+// ══════════════════════════════════════════════════════════
 
-function getWeekKey() {
-  const d = new Date();
-  const day = d.getDay() || 7;
-  d.setDate(d.getDate() - day + 1);
-  return d.toISOString().split('T')[0];
-}
-
-function getMonthKey() {
-  const d = new Date();
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-}
-
-function formatDuration(ms) {
-  if (!ms || ms <= 0) return '0m';
-  const totalMinutes = Math.floor(ms / (1000 * 60));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (hours > 0 && minutes > 0) return hours + 'h ' + minutes + 'm';
-  if (hours > 0) return hours + 'h';
-  return minutes + 'm';
-}
-
-/**
- * Validate that the user's DB state matches their actual Discord voice state.
- * If they left while the bot was offline, this fixes stale inVc/streaming/cameraOn flags
- * and flushes any accumulated time to the daily buckets.
- * Returns true if state was fixed (data was mutated).
- */
-function validateVcState(guild, userId, userData) {
-  const member = guild.members.cache.get(userId);
-  const voiceChannel = member?.voice?.channel;
-  const now = Date.now();
-  let fixed = false;
-
-  // If DB says they're in VC but they're actually not — flush and reset
-  if (userData.inVc && !voiceChannel) {
-    if (userData.lastJoin) {
-      const duration = now - userData.lastJoin;
-      const today = getTodayStr();
-      const week = getWeekKey();
-      const month = getMonthKey();
-      userData.totalMs += duration;
-      userData.daily[today] = (userData.daily[today] || 0) + duration;
-      userData.weekly[week] = (userData.weekly[week] || 0) + duration;
-      userData.monthly[month] = (userData.monthly[month] || 0) + duration;
-    }
-    if (userData.streaming && userData.lastStreamJoin) {
-      const duration = now - userData.lastStreamJoin;
-      const today = getTodayStr();
-      userData.streamMs += duration;
-      userData.streamDaily[today] = (userData.streamDaily[today] || 0) + duration;
-    }
-    if (userData.cameraOn && userData.lastCameraJoin) {
-      const duration = now - userData.lastCameraJoin;
-      const today = getTodayStr();
-      userData.cameraMs += duration;
-      userData.cameraDaily[today] = (userData.cameraDaily[today] || 0) + duration;
-    }
-    userData.inVc = false;
-    userData.streaming = false;
-    userData.cameraOn = false;
-    userData.lastJoin = null;
-    userData.lastStreamJoin = null;
-    userData.lastCameraJoin = null;
-    fixed = true;
-  }
-
-  // If they ARE in a voice channel, verify streaming/camera flags match reality
-  if (voiceChannel) {
-    const isStreaming = member.voice.streaming || false;
-    const isCameraOn = member.voice.selfVideo || false;
-
-    if (userData.streaming && !isStreaming && userData.lastStreamJoin) {
-      const duration = now - userData.lastStreamJoin;
-      const today = getTodayStr();
-      userData.streamMs += duration;
-      userData.streamDaily[today] = (userData.streamDaily[today] || 0) + duration;
-      userData.streaming = false;
-      userData.lastStreamJoin = null;
-      fixed = true;
-    }
-    if (!userData.streaming && isStreaming) {
-      userData.streaming = true;
-      userData.lastStreamJoin = now;
-    }
-
-    if (userData.cameraOn && !isCameraOn && userData.lastCameraJoin) {
-      const duration = now - userData.lastCameraJoin;
-      const today = getTodayStr();
-      userData.cameraMs += duration;
-      userData.cameraDaily[today] = (userData.cameraDaily[today] || 0) + duration;
-      userData.cameraOn = false;
-      userData.lastCameraJoin = null;
-      fixed = true;
-    }
-    if (!userData.cameraOn && isCameraOn) {
-      userData.cameraOn = true;
-      userData.lastCameraJoin = now;
-    }
-  }
-
-  return fixed;
-}
-
-/**
- * Calculate total from daily entries for a given date range.
- * Validates actual Discord state before adding live time.
- */
-function getDailyTotal(guild, userId, userData, period, field) {
-  validateVcState(guild, userId, userData);
-  const obj = userData[field] || {};
-  if (period === 'today') {
-    return obj[getTodayStr()] || 0;
-  }
-  if (period === 'week') {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 6);
-    const cutoffStr = cutoff.toISOString().split('T')[0];
-    let total = 0;
-    for (const [date, ms] of Object.entries(obj)) {
-      if (date >= cutoffStr) total += ms;
-    }
-    return total;
-  }
-  if (period === 'month') {
-    // FIX: Use last 30 days instead of calendar month so month is always >= week
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 29);
-    const cutoffStr = cutoff.toISOString().split('T')[0];
-    let total = 0;
-    for (const [date, ms] of Object.entries(obj)) {
-      if (date >= cutoffStr) total += ms;
-    }
-    return total;
-  }
-  return 0;
-}
-
-/**
- * Add live session time if user is currently in VC/streaming/camera.
- * Validates actual Discord state first.
- */
-function addLiveTime(guild, userId, userData, field, period) {
-  validateVcState(guild, userId, userData);
-  const now = Date.now();
-  let extra = 0;
-
-  if (field === 'daily' && userData.inVc && userData.lastJoin) {
-    extra = now - userData.lastJoin;
-  }
-  if (field === 'streamDaily' && userData.streaming && userData.lastStreamJoin) {
-    extra = now - userData.lastStreamJoin;
-  }
-  if (field === 'cameraDaily' && userData.cameraOn && userData.lastCameraJoin) {
-    extra = now - userData.lastCameraJoin;
-  }
-
-  // For week/month, only add if the session started within the period
-  if (period === 'today') return extra;
-  if (period === 'week') {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 6);
-    const sessionStart = field === 'daily' ? userData.lastJoin :
-      field === 'streamDaily' ? userData.lastStreamJoin :
-      field === 'cameraDaily' ? userData.lastCameraJoin : null;
-    if (sessionStart) {
-      const sessionStartStr = new Date(sessionStart).toISOString().split('T')[0];
-      if (sessionStartStr >= cutoff.toISOString().split('T')[0]) return extra;
-    }
-    return 0;
-  }
-  if (period === 'month') {
-    // FIX: Use last 30 days cutoff to match getDailyTotal
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 29);
-    const sessionStart = field === 'daily' ? userData.lastJoin :
-      field === 'streamDaily' ? userData.lastStreamJoin :
-      field === 'cameraDaily' ? userData.lastCameraJoin : null;
-    if (sessionStart) {
-      const sessionStartStr = new Date(sessionStart).toISOString().split('T')[0];
-      if (sessionStartStr >= cutoff.toISOString().split('T')[0]) return extra;
-    }
-    return 0;
-  }
-  return 0;
-}
-
-// ─── Message Tracking ───────────────────────────────────────────────────────────
-
-function trackMessage(guildId, userId, db) {
-  const stats = db.get('messageStats', {});
-  if (!stats[guildId]) stats[guildId] = {};
-  if (!stats[guildId][userId]) {
-    stats[guildId][userId] = { daily: {}, weekly: {}, monthly: {}, total: 0 };
-  }
-  const today = getTodayStr();
-  const week = getWeekKey();
-  const month = getMonthKey();
-
-  stats[guildId][userId].daily[today] = (stats[guildId][userId].daily[today] || 0) + 1;
-  stats[guildId][userId].weekly[week] = (stats[guildId][userId].weekly[week] || 0) + 1;
-  stats[guildId][userId].monthly[month] = (stats[guildId][userId].monthly[month] || 0) + 1;
-  stats[guildId][userId].total += 1;
+function trackMessage(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  let stats = db.get('messageStats', null);
+  if (!stats) { stats = {}; db.set('messageStats', stats); }
+  if (!stats[userId]) stats[userId] = { total: 0, channels: {} };
+  stats[userId].total++;
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].channels[channelId]++;
   db.set('messageStats', stats);
 }
 
-// ─── Stats Embed Builder ──────────────────────────────────────────────────────
-
-async function buildStatsEmbed(title, icon, color, target, todayVal, weekVal, monthVal, formatter) {
-  return new EmbedBuilder()
-    .setColor(color)
-    .setTitle(icon + ' ' + title + ' — ' + (target.displayName || target.user?.username || 'Unknown'))
-    .setThumbnail(target.displayAvatarURL?.() || target.user?.displayAvatarURL?.() || null)
-    .addFields(
-      { name: '\u200B', value: '**📅 Today**\n' + formatter(todayVal), inline: true },
-      { name: '\u200B', value: '**📆 This Week**\n' + formatter(weekVal), inline: true },
-      { name: '\u200B', value: '**📊 This Month**\n' + formatter(monthVal), inline: true },
-    )
-    .setTimestamp()
-    .setFooter({ text: 'Kaido Stats' });
+function getMessageStats(guildId, userId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('messageStats', {});
+  return stats[userId] || { total: 0, channels: {} };
 }
 
-// ─── Command Handlers ─────────────────────────────────────────────────────────
+function getTopMessageUsers(guildId, limit = 10) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('messageStats', {});
+  return Object.entries(stats)
+    .map(([id, data]) => ({ id, total: data.total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+}
 
-async function handleVoiceTimeStats(message, args) {
-  const target = message.mentions.members?.first() || message.member;
-  const db = getGuildDb(message.guild.id);
-  const stats = db.get('vcStats', {});
-  if (!stats[message.guild.id]) stats[message.guild.id] = {};
-  if (!stats[message.guild.id][target.id]) {
-    stats[message.guild.id][target.id] = {
-      totalMs: 0, daily: {}, weekly: {}, monthly: {},
-      streamMs: 0, cameraMs: 0, streamDaily: {}, cameraDaily: {},
-      lastJoin: null, lastStreamJoin: null, lastCameraJoin: null,
-      inVc: false, streaming: false, cameraOn: false,
-    };
+// ══════════════════════════════════════════════════════════
+// VOICE TRACKING
+// ══════════════════════════════════════════════════════════
+
+function trackVoiceJoin(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  let stats = db.get('voiceStats', null);
+  if (!stats) { stats = {}; db.set('voiceStats', stats); }
+  if (!stats[userId]) stats[userId] = { total: 0, channels: {} };
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].joinTime = Date.now();
+  db.set('voiceStats', stats);
+}
+
+function trackVoiceLeave(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('voiceStats', {});
+  if (!stats[userId]) return;
+  const joinTime = stats[userId].joinTime;
+  if (!joinTime) return;
+  const duration = Date.now() - joinTime;
+  stats[userId].total += duration;
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].channels[channelId] += duration;
+  stats[userId].joinTime = null;
+  db.set('voiceStats', stats);
+}
+
+function getVoiceStats(guildId, userId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('voiceStats', {});
+  const userStats = stats[userId] || { total: 0, channels: {} };
+  if (userStats.joinTime) {
+    userStats.total += Date.now() - userStats.joinTime;
   }
-  const userData = stats[message.guild.id][target.id];
-
-  const todayMs = getDailyTotal(message.guild, target.id, userData, 'today', 'daily') + addLiveTime(message.guild, target.id, userData, 'daily', 'today');
-  const weekMs = getDailyTotal(message.guild, target.id, userData, 'week', 'daily') + addLiveTime(message.guild, target.id, userData, 'daily', 'week');
-  const monthMs = getDailyTotal(message.guild, target.id, userData, 'month', 'daily') + addLiveTime(message.guild, target.id, userData, 'daily', 'month');
-
-  // FIX: Save any state fixes (stale inVc flushes) back to DB so they persist
-  db.set('vcStats', stats);
-
-  const embed = await buildStatsEmbed('Voice Time', '\uD83C\uDF99', '#5865F2', target, todayMs, weekMs, monthMs, formatDuration);
-  return message.reply({ embeds: [embed] });
+  return userStats;
 }
+
+function getTopVoiceUsers(guildId, limit = 10) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('voiceStats', {});
+  return Object.entries(stats)
+    .map(([id, data]) => {
+      let total = data.total || 0;
+      if (data.joinTime) total += Date.now() - data.joinTime;
+      return { id, total };
+    })
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+}
+
+// ══════════════════════════════════════════════════════════
+// CAMERA / STREAM TRACKING
+// ══════════════════════════════════════════════════════════
+
+function trackCameraStart(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  let stats = db.get('cameraStats', null);
+  if (!stats) { stats = {}; db.set('cameraStats', stats); }
+  if (!stats[userId]) stats[userId] = { total: 0, channels: {} };
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].startTime = Date.now();
+  db.set('cameraStats', stats);
+}
+
+function trackCameraStop(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('cameraStats', {});
+  if (!stats[userId]) return;
+  const startTime = stats[userId].startTime;
+  if (!startTime) return;
+  const duration = Date.now() - startTime;
+  stats[userId].total += duration;
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].channels[channelId] += duration;
+  stats[userId].startTime = null;
+  db.set('cameraStats', stats);
+}
+
+function getCameraStats(guildId, userId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('cameraStats', {});
+  const userStats = stats[userId] || { total: 0, channels: {} };
+  if (userStats.startTime) {
+    userStats.total += Date.now() - userStats.startTime;
+  }
+  return userStats;
+}
+
+function getTopCameraUsers(guildId, limit = 10) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('cameraStats', {});
+  return Object.entries(stats)
+    .map(([id, data]) => {
+      let total = data.total || 0;
+      if (data.startTime) total += Date.now() - data.startTime;
+      return { id, total };
+    })
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+}
+
+function trackStreamStart(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  let stats = db.get('streamStats', null);
+  if (!stats) { stats = {}; db.set('streamStats', stats); }
+  if (!stats[userId]) stats[userId] = { total: 0, channels: {} };
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].startTime = Date.now();
+  db.set('streamStats', stats);
+}
+
+function trackStreamStop(guildId, userId, channelId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('streamStats', {});
+  if (!stats[userId]) return;
+  const startTime = stats[userId].startTime;
+  if (!startTime) return;
+  const duration = Date.now() - startTime;
+  stats[userId].total += duration;
+  if (!stats[userId].channels[channelId]) stats[userId].channels[channelId] = 0;
+  stats[userId].channels[channelId] += duration;
+  stats[userId].startTime = null;
+  db.set('streamStats', stats);
+}
+
+function getStreamStats(guildId, userId) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('streamStats', {});
+  const userStats = stats[userId] || { total: 0, channels: {} };
+  if (userStats.startTime) {
+    userStats.total += Date.now() - userStats.startTime;
+  }
+  return userStats;
+}
+
+function getTopStreamUsers(guildId, limit = 10) {
+  const db = getGuildDb(guildId);
+  const stats = db.get('streamStats', {});
+  return Object.entries(stats)
+    .map(([id, data]) => {
+      let total = data.total || 0;
+      if (data.startTime) total += Date.now() - data.startTime;
+      return { id, total };
+    })
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+}
+
+// ══════════════════════════════════════════════════════════
+// FORMATTERS
+// ══════════════════════════════════════════════════════════
+
+function formatDuration(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const h = Math.floor(m / 60);
+  const d = Math.floor(h / 24);
+  const parts = [];
+  if (d > 0) parts.push(`${d}d`);
+  if (h % 24 > 0) parts.push(`${h % 24}h`);
+  if (m % 60 > 0) parts.push(`${m % 60}m`);
+  if (s % 60 > 0 || parts.length === 0) parts.push(`${s % 60}s`);
+  return parts.join(' ');
+}
+
+function formatNumber(n) {
+  return n.toLocaleString('en-US');
+}
+
+// ══════════════════════════════════════════════════════════
+// COMMANDS
+// ══════════════════════════════════════════════════════════
 
 async function handleMessageStats(message, args) {
-  const target = message.mentions.members?.first() || message.member;
-  const db = getGuildDb(message.guild.id);
-  const stats = db.get('messageStats', {});
-  const userData = (stats[message.guild.id] || {})[target.id] || { daily: {}, weekly: {}, monthly: {}, total: 0 };
+  const target = message.mentions.users.first() || message.author;
+  const stats = getMessageStats(message.guild.id, target.id);
+  const top = getTopMessageUsers(message.guild.id, 10);
+  const rank = top.findIndex(u => u.id === target.id) + 1;
 
-  const todayCount = userData.daily[getTodayStr()] || 0;
-  const weekCount = userData.weekly[getWeekKey()] || 0;
-  const monthCount = userData.monthly[getMonthKey()] || 0;
+  const embed = new EmbedBuilder()
+    .setColor('#5865F2')
+    .setTitle(`Message Stats — ${target.username}`)
+    .setDescription(`**Total Messages:** ${formatNumber(stats.total)}\n**Server Rank:** ${rank ? `#${rank}` : 'Unranked'}`)
+    .setFooter({ text: 'Tracking since bot joined' })
+    .setTimestamp();
 
-  const embed = await buildStatsEmbed('Messages', '\uD83D\uDCAC', '#57F287', target, todayCount, weekCount, monthCount, v => (v || 0) + ' messages');
+  if (Object.keys(stats.channels).length > 0) {
+    const topChannels = Object.entries(stats.channels)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([id, count]) => {
+        const ch = message.guild.channels.cache.get(id);
+        return `• ${ch ? ch.toString() : 'Unknown'} — ${formatNumber(count)}`;
+      })
+      .join('\n');
+    embed.addFields({ name: 'Top Channels', value: topChannels || 'None', inline: false });
+  }
+
   return message.reply({ embeds: [embed] });
 }
 
-async function handleStreamTimeStats(message, args) {
-  const target = message.mentions.members?.first() || message.member;
-  const db = getGuildDb(message.guild.id);
-  const stats = db.get('vcStats', {});
-  if (!stats[message.guild.id]) stats[message.guild.id] = {};
-  if (!stats[message.guild.id][target.id]) {
-    stats[message.guild.id][target.id] = {
-      totalMs: 0, daily: {}, weekly: {}, monthly: {},
-      streamMs: 0, cameraMs: 0, streamDaily: {}, cameraDaily: {},
-      lastJoin: null, lastStreamJoin: null, lastCameraJoin: null,
-      inVc: false, streaming: false, cameraOn: false,
-    };
+async function handleVoiceStats(message, args) {
+  const target = message.mentions.users.first() || message.author;
+  const stats = getVoiceStats(message.guild.id, target.id);
+  const top = getTopVoiceUsers(message.guild.id, 10);
+  const rank = top.findIndex(u => u.id === target.id) + 1;
+
+  const embed = new EmbedBuilder()
+    .setColor('#57F287')
+    .setTitle(`Voice Stats — ${target.username}`)
+    .setDescription(`**Total Time:** ${formatDuration(stats.total)}\n**Server Rank:** ${rank ? `#${rank}` : 'Unranked'}`)
+    .setFooter({ text: 'Tracking since bot joined' })
+    .setTimestamp();
+
+  if (Object.keys(stats.channels).length > 0) {
+    const topChannels = Object.entries(stats.channels)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([id, count]) => {
+        const ch = message.guild.channels.cache.get(id);
+        return `• ${ch ? ch.name : 'Unknown'} — ${formatDuration(count)}`;
+      })
+      .join('\n');
+    embed.addFields({ name: 'Top Channels', value: topChannels || 'None', inline: false });
   }
-  const userData = stats[message.guild.id][target.id];
 
-  const todayMs = getDailyTotal(message.guild, target.id, userData, 'today', 'streamDaily') + addLiveTime(message.guild, target.id, userData, 'streamDaily', 'today');
-  const weekMs = getDailyTotal(message.guild, target.id, userData, 'week', 'streamDaily') + addLiveTime(message.guild, target.id, userData, 'streamDaily', 'week');
-  const monthMs = getDailyTotal(message.guild, target.id, userData, 'month', 'streamDaily') + addLiveTime(message.guild, target.id, userData, 'streamDaily', 'month');
-
-  // FIX: Save any state fixes back to DB
-  db.set('vcStats', stats);
-
-  const embed = await buildStatsEmbed('Stream Time', '\uD83D\uDCE1', '#FF69B4', target, todayMs, weekMs, monthMs, formatDuration);
   return message.reply({ embeds: [embed] });
 }
 
-async function handleCameraTimeStats(message, args) {
-  const target = message.mentions.members?.first() || message.member;
-  const db = getGuildDb(message.guild.id);
-  const stats = db.get('vcStats', {});
-  if (!stats[message.guild.id]) stats[message.guild.id] = {};
-  if (!stats[message.guild.id][target.id]) {
-    stats[message.guild.id][target.id] = {
-      totalMs: 0, daily: {}, weekly: {}, monthly: {},
-      streamMs: 0, cameraMs: 0, streamDaily: {}, cameraDaily: {},
-      lastJoin: null, lastStreamJoin: null, lastCameraJoin: null,
-      inVc: false, streaming: false, cameraOn: false,
-    };
-  }
-  const userData = stats[message.guild.id][target.id];
+async function handleCameraStats(message, args) {
+  const target = message.mentions.users.first() || message.author;
+  const stats = getCameraStats(message.guild.id, target.id);
+  const top = getTopCameraUsers(message.guild.id, 10);
+  const rank = top.findIndex(u => u.id === target.id) + 1;
 
-  const todayMs = getDailyTotal(message.guild, target.id, userData, 'today', 'cameraDaily') + addLiveTime(message.guild, target.id, userData, 'cameraDaily', 'today');
-  const weekMs = getDailyTotal(message.guild, target.id, userData, 'week', 'cameraDaily') + addLiveTime(message.guild, target.id, userData, 'cameraDaily', 'week');
-  const monthMs = getDailyTotal(message.guild, target.id, userData, 'month', 'cameraDaily') + addLiveTime(message.guild, target.id, userData, 'cameraDaily', 'month');
+  const embed = new EmbedBuilder()
+    .setColor('#FEE75C')
+    .setTitle(`Camera Stats — ${target.username}`)
+    .setDescription(`**Total Time:** ${formatDuration(stats.total)}\n**Server Rank:** ${rank ? `#${rank}` : 'Unranked'}`)
+    .setFooter({ text: 'Tracking since bot joined' })
+    .setTimestamp();
 
-  // FIX: Save any state fixes back to DB
-  db.set('vcStats', stats);
-
-  const embed = await buildStatsEmbed('Camera Time', '\uD83D\uDCF7', '#FF8C00', target, todayMs, weekMs, monthMs, formatDuration);
   return message.reply({ embeds: [embed] });
 }
 
-async function handleStatsClear(message) {
-  const { isAdmin } = require('./helpers');
-  if (!isAdmin(message.member)) {
-    return message.reply({ content: '❌ Only the server owner or bot admins can clear stats data.', ephemeral: true });
+async function handleStreamStats(message, args) {
+  const target = message.mentions.users.first() || message.author;
+  const stats = getStreamStats(message.guild.id, target.id);
+  const top = getTopStreamUsers(message.guild.id, 10);
+  const rank = top.findIndex(u => u.id === target.id) + 1;
+
+  const embed = new EmbedBuilder()
+    .setColor('#EB459E')
+    .setTitle(`Stream Stats — ${target.username}`)
+    .setDescription(`**Total Time:** ${formatDuration(stats.total)}\n**Server Rank:** ${rank ? `#${rank}` : 'Unranked'}`)
+    .setFooter({ text: 'Tracking since bot joined' })
+    .setTimestamp();
+
+  return message.reply({ embeds: [embed] });
+}
+
+async function handleStatsTop(message, args) {
+  const type = args[0]?.toLowerCase() || 'messages';
+  const limit = Math.min(parseInt(args[1]) || 10, 25);
+
+  let topUsers, title, color;
+  if (type === 'voice') {
+    topUsers = getTopVoiceUsers(message.guild.id, limit);
+    title = 'Top Voice Users';
+    color = '#57F287';
+  } else if (type === 'camera') {
+    topUsers = getTopCameraUsers(message.guild.id, limit);
+    title = 'Top Camera Users';
+    color = '#FEE75C';
+  } else if (type === 'stream') {
+    topUsers = getTopStreamUsers(message.guild.id, limit);
+    title = 'Top Stream Users';
+    color = '#EB459E';
+  } else {
+    topUsers = getTopMessageUsers(message.guild.id, limit);
+    title = 'Top Message Users';
+    color = '#5865F2';
+  }
+
+  let desc = '';
+  for (let i = 0; i < topUsers.length; i++) {
+    const u = topUsers[i];
+    const member = await message.guild.members.fetch(u.id).catch(() => null);
+    const name = member ? member.user.username : 'Unknown';
+    const value = type === 'messages' ? formatNumber(u.total) : formatDuration(u.total);
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+    desc += `${medal} **${name}** — ${value}\n`;
+  }
+
+  const embed = new EmbedBuilder()
+    .setColor(color)
+    .setTitle(title)
+    .setDescription(desc || 'No data yet.')
+    .setFooter({ text: `Top ${limit} users` })
+    .setTimestamp();
+
+  return message.reply({ embeds: [embed] });
+}
+
+async function handleStatsReset(message, args) {
+  if (!isStaffOrAdmin(message.member)) {
+    return message.reply(mkError('You need staff or admin permissions.'));
+  }
+
+  const type = args[0]?.toLowerCase();
+  const target = message.mentions.users.first();
+
+  if (!target) {
+    return message.reply(mkError('Mention a user to reset stats for.'));
   }
 
   const db = getGuildDb(message.guild.id);
-  db.set('vcStats', {});
-  db.set('messageStats', {});
+  const validTypes = ['messages', 'voice', 'camera', 'stream'];
 
-  return message.reply({ content: '✅ All stats data (voice time, stream time, camera time, and messages) has been cleared for this server.' });
+  if (!type || !validTypes.includes(type)) {
+    return message.reply(mkInfo('Valid stats types', validTypes.map(t => `• ${t}`).join('\n')));
+  }
+
+  const keyMap = {
+    messages: 'messageStats',
+    voice: 'voiceStats',
+    camera: 'cameraStats',
+    stream: 'streamStats',
+  };
+
+  const key = keyMap[type];
+  const stats = db.get(key, {});
+  delete stats[target.id];
+  db.set(key, stats);
+
+  return message.reply(mkSuccess(`Reset ${type} stats for **${target.username}**.`));
 }
+
+// ══════════════════════════════════════════════════════════
+// EXPORTS
+// ══════════════════════════════════════════════════════════
 
 module.exports = {
-  handleVoiceTimeStats,
-  handleMessageStats,
-  handleStreamTimeStats,
-  handleCameraTimeStats,
-  trackMessage,
-  handleStatsClear,
+  trackMessage, getMessageStats, getTopMessageUsers,
+  trackVoiceJoin, trackVoiceLeave, getVoiceStats, getTopVoiceUsers,
+  trackCameraStart, trackCameraStop, getCameraStats, getTopCameraUsers,
+  trackStreamStart, trackStreamStop, getStreamStats, getTopStreamUsers,
+  handleMessageStats, handleVoiceStats, handleCameraStats, handleStreamStats,
+  handleStatsTop, handleStatsReset,
 };

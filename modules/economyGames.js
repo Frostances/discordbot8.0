@@ -1,1152 +1,816 @@
 // ══════════════════════════════════════════════════════════
-// ECONOMY GAMES MODULE
-// Skill-based arcade + Casino Arcade (free-play)
+// ECONOMY GAMES MODULE — v2.0 Complete Rewrite
 // ══════════════════════════════════════════════════════════
 
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { getEconomy, getUserEconomy, isEconomyEnabled, addCredits, setCooldown, progressQuest, checkQuestCompletion, formatNumber, formatDuration, getEventMultiplier, sendEconomyLog, COLORS } = require('./economy');
-const { err, ok, info } = require('../utils/embeds');
-const logger = require('../utils/logger');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { getEconomy, getUserEconomy, isEconomyEnabled, addCredits, removeCredits, formatNumber, parseAmount, makeEmbed } = require('./economy');
+const { hasDiscordPerm } = require('./helpers');
+const { error: err, success: ok } = require('../utils/embeds');
 
 // ══════════════════════════════════════════════════════════
-// TRIVIA DATABASE
+// GAMES: CRASH
 // ══════════════════════════════════════════════════════════
 
-const TRIVIA_QUESTIONS = [
-  { q: 'What is the capital of France?', a: 'paris', options: ['Paris', 'London', 'Berlin', 'Madrid'] },
-  { q: 'What planet is known as the Red Planet?', a: 'mars', options: ['Venus', 'Mars', 'Jupiter', 'Saturn'] },
-  { q: 'What is the largest ocean on Earth?', a: 'pacific', options: ['Atlantic', 'Indian', 'Pacific', 'Arctic'] },
-  { q: 'Who wrote "Romeo and Juliet"?', a: 'shakespeare', options: ['Shakespeare', 'Dickens', 'Hemingway', 'Twain'] },
-  { q: 'What is the chemical symbol for gold?', a: 'au', options: ['Ag', 'Au', 'Fe', 'Cu'] },
-  { q: 'How many continents are there?', a: '7', options: ['5', '6', '7', '8'] },
-  { q: 'What is the speed of light (approx)?', a: '300000', options: ['150000', '300000', '500000', '1000000'] },
-  { q: 'What year did World War II end?', a: '1945', options: ['1943', '1944', '1945', '1946'] },
-  { q: 'What is the smallest prime number?', a: '2', options: ['0', '1', '2', '3'] },
-  { q: 'What gas do plants absorb from the atmosphere?', a: 'carbon dioxide', options: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Hydrogen'] },
-  { q: 'What is the hardest natural substance?', a: 'diamond', options: ['Gold', 'Iron', 'Diamond', 'Platinum'] },
-  { q: 'How many bones are in the adult human body?', a: '206', options: ['186', '196', '206', '216'] },
-  { q: 'What is the largest planet in our solar system?', a: 'jupiter', options: ['Earth', 'Saturn', 'Jupiter', 'Neptune'] },
-  { q: 'What element has the atomic number 1?', a: 'hydrogen', options: ['Helium', 'Hydrogen', 'Lithium', 'Carbon'] },
-  { q: 'In which country would you find the Great Pyramid of Giza?', a: 'egypt', options: ['Mexico', 'Egypt', 'Peru', 'Greece'] },
-  { q: 'What is the currency of Japan?', a: 'yen', options: ['Won', 'Yuan', 'Yen', 'Ringgit'] },
-  { q: 'What is the longest river in the world?', a: 'nile', options: ['Amazon', 'Nile', 'Yangtze', 'Mississippi'] },
-  { q: 'Who painted the Mona Lisa?', a: 'leonardo da vinci', options: ['Van Gogh', 'Picasso', 'Da Vinci', 'Michelangelo'] },
-  { q: 'What is the freezing point of water (°C)?', a: '0', options: ['-10', '0', '10', '32'] },
-  { q: 'What does CPU stand for?', a: 'central processing unit', options: ['Central Process Unit', 'Central Processing Unit', 'Computer Personal Unit', 'Central Processor Unit'] },
-  { q: 'What is the largest mammal?', a: 'blue whale', options: ['Elephant', 'Blue Whale', 'Giraffe', 'Hippo'] },
-  { q: 'What color is a ruby?', a: 'red', options: ['Blue', 'Green', 'Red', 'Yellow'] },
-  { q: 'What is the main ingredient in guacamole?', a: 'avocado', options: ['Tomato', 'Avocado', 'Onion', 'Pepper'] },
-  { q: 'What is the tallest mountain in the world?', a: 'everest', options: ['K2', 'Kilimanjaro', 'Everest', 'Makalu'] },
-  { q: 'What programming language is known as the language of the web?', a: 'javascript', options: ['Python', 'Java', 'C++', 'JavaScript'] },
-];
+const crashGames = new Map();
 
-// ══════════════════════════════════════════════════════════
-// FAST TYPE PHRASES
-// ══════════════════════════════════════════════════════════
-
-const FASTTYPE_PHRASES = [
-  'The quick brown fox jumps over the lazy dog',
-  'A journey of a thousand miles begins with a single step',
-  'To be or not to be that is the question',
-  'All that glitters is not gold',
-  'The early bird catches the worm',
-  'Actions speak louder than words',
-  'Where there is a will there is a way',
-  'Practice makes perfect',
-  'Knowledge is power',
-  'Time is money',
-  'Better late than never',
-  'Every cloud has a silver lining',
-  'Honesty is the best policy',
-  'When in Rome do as the Romans do',
-  'The pen is mightier than the sword',
-  'Two wrongs do not make a right',
-  'The grass is always greener on the other side',
-  'Do not count your chickens before they hatch',
-  'A picture is worth a thousand words',
-  'Birds of a feather flock together',
-];
-
-// ══════════════════════════════════════════════════════════
-// SCRAMBLE WORDS
-// ══════════════════════════════════════════════════════════
-
-const SCRAMBLE_WORDS = [
-  'algorithm', 'butterfly', 'chocolate', 'dinosaur', 'elephant',
-  'fireworks', 'giraffe', 'harmony', 'internet', 'jupiter',
-  'kangaroo', 'lighthouse', 'mountain', 'notebook', 'octopus',
-  'penguin', 'quantum', 'rainbow', 'sunshine', 'telescope',
-  'umbrella', 'volcano', 'whisper', 'xylophone', 'yesterday',
-  'zeppelin', 'adventure', 'beautiful', 'champion', 'diamond',
-  'eclipse', 'festival', 'galaxy', 'horizon', 'illusion',
-  'journey', 'kingdom', 'lantern', 'mystery', 'nebula',
-  'ocean', 'paradise', 'quest', 'radiant', 'silence',
-  'treasure', 'universe', 'victory', 'wonder', 'zenith',
-];
-
-// ══════════════════════════════════════════════════════════
-// MEMORY EMOJIS
-// ══════════════════════════════════════════════════════════
-
-const MEMORY_EMOJIS = ['🍎', '🍌', '🍇', '🍒', '🍓', '🍍', '🥝', '🍑'];
-
-// ══════════════════════════════════════════════════════════
-// SLOTS SYMBOLS
-// ══════════════════════════════════════════════════════════
-
-const SLOTS_SYMBOLS = ['🍒', '⭐', '💎', '🍋', '🍇', '7️⃣'];
-
-// ══════════════════════════════════════════════════════════
-// WHEEL SEGMENTS
-// ══════════════════════════════════════════════════════════
-
-const WHEEL_SEGMENTS = [
-  { label: '+50 Credits', value: 50, emoji: '💰' },
-  { label: '+100 Credits', value: 100, emoji: '💰' },
-  { label: '+250 Credits', value: 250, emoji: '💰' },
-  { label: '+500 Credits', value: 500, emoji: '💰' },
-  { label: '+1,000 Credits', value: 1000, emoji: '💰' },
-  { label: 'Bonus Quest', value: 'quest', emoji: '🎯' },
-  { label: 'Cosmetic', value: 'cosmetic', emoji: '🎨' },
-];
-
-// ══════════════════════════════════════════════════════════
-// SCRATCH REWARDS
-// ══════════════════════════════════════════════════════════
-
-const SCRATCH_REWARDS = [
-  { type: 'credits', value: 50, emoji: '💰' },
-  { type: 'credits', value: 100, emoji: '💰' },
-  { type: 'credits', value: 250, emoji: '💰' },
-  { type: 'credits', value: 500, emoji: '💰' },
-  { type: 'quest', value: 1, emoji: '🎯' },
-  { type: 'cosmetic', value: 1, emoji: '🎨' },
-];
-
-// ══════════════════════════════════════════════════════════
-// ACTIVE GAMES TRACKER
-// ══════════════════════════════════════════════════════════
-
-const activeGames = new Map(); // channelId -> { type, data, timeout }
-
-function cleanupGame(channelId) {
-  const game = activeGames.get(channelId);
-  if (game) {
-    clearTimeout(game.timeout);
-    activeGames.delete(channelId);
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// TRIVIA
-// ══════════════════════════════════════════════════════════
-
-async function handleTrivia(message) {
+async function handleCrash(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
 
-  const remaining = (user.cooldowns.trivia || 0) + ec.cooldowns.trivia - Date.now();
-  if (remaining > 0) return message.reply(err(`Trivia cooldown!`, `Wait **${formatDuration(remaining)}**.`));
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,crash <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
 
-  const q = TRIVIA_QUESTIONS[Math.floor(Math.random() * TRIVIA_QUESTIONS.length)];
-  const mult = getEventMultiplier(guildId, 'trivia');
-  const reward = Math.round(ec.rewards.trivia * mult);
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🧠 Trivia Time!')
-    .setDescription(`**${q.q}**\n\n${q.options.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`).join('\n')}\n\n💰 Reward: **+${formatNumber(reward)}** Credits`)
-    .setFooter({ text: 'Reply with A, B, C, or D within 30 seconds!' });
-
-  const msg = await message.reply({ embeds: [embed] });
-  user.stats.gamesPlayed++;
+  removeCredits(guildId, userId, amount, 'crash_bet');
   saveEconomy(guildId, ec);
 
-  const correctIndex = q.options.findIndex(o => o.toLowerCase() === q.a.toLowerCase());
-  const correctLetter = String.fromCharCode(65 + correctIndex);
+  const crashMult = 1 + Math.random() * 4; // crashes between 1.0x and 5.0x
+  let current = 1.0;
+  const step = 0.1;
 
-  const filter = m => m.author.id === userId && /^[a-dA-D]$/.test(m.content.trim());
-  try {
-    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] });
-    const answer = collected.first().content.trim().toUpperCase();
-    setCooldown(guildId, userId, 'trivia');
+  const embed = makeEmbed('Crash Game', `Multiplier: **${current.toFixed(1)}x**\nBet: **${formatNumber(amount)}** ${ec.currencyName}\n\nReact with 💰 to cash out!`, '#5865F2', 'Cash out before it crashes!');
+  const msg = await message.reply({ embeds: [embed] });
+  await msg.react('💰');
 
-    if (answer === correctLetter) {
-      addCredits(guildId, userId, reward, 'trivia');
-      user.stats.gamesWon++;
-      saveEconomy(guildId, ec);
-      progressQuest(guildId, userId, 'trivia');
-      progressQuest(guildId, userId, 'minigames');
-      checkQuestCompletion(guildId, userId);
+  const filter = (reaction, user) => reaction.emoji.name === '💰' && user.id === userId;
+  const collector = msg.createReactionCollector({ filter, time: 15000 });
 
-      const winEmbed = new EmbedBuilder()
-        .setColor(COLORS.success)
-        .setTitle('✅ Correct!')
-        .setDescription(`**${q.options[correctIndex]}** is right!\n\n💰 **+${formatNumber(reward)}** Credits`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}${mult > 1 ? ' • Event Bonus!' : ''}` });
-      return msg.edit({ embeds: [winEmbed] });
+  let cashed = false;
+  let finalMult = 1.0;
+
+  collector.on('collect', () => {
+    cashed = true;
+    collector.stop();
+  });
+
+  const interval = setInterval(async () => {
+    current += step;
+    if (current >= crashMult || cashed) {
+      clearInterval(interval);
+      collector.stop();
+      finalMult = cashed ? current : 0;
+
+      if (cashed) {
+        const win = Math.floor(amount * finalMult);
+        addCredits(guildId, userId, win, 'crash_win');
+        saveEconomy(guildId, ec);
+        const winEmbed = makeEmbed('Crash — Cashed Out!', `Cashed at **${finalMult.toFixed(1)}x**\nWon **${formatNumber(win)}** ${ec.currencyName}\n\n**Profit:** +${formatNumber(win - amount)}`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+        await msg.edit({ embeds: [winEmbed] });
+        await msg.reactions.removeAll();
+      } else {
+        const loseEmbed = makeEmbed('Crash — Busted!', `Crashed at **${crashMult.toFixed(1)}x**\nYou lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+        await msg.edit({ embeds: [loseEmbed] });
+        await msg.reactions.removeAll();
+      }
     } else {
-      const loseEmbed = new EmbedBuilder()
-        .setColor(COLORS.error)
-        .setTitle('❌ Wrong!')
-        .setDescription(`The correct answer was **${q.options[correctIndex]}**.\n\nNo reward this time. Better luck next time!`);
-      return msg.edit({ embeds: [loseEmbed] });
+      const updateEmbed = makeEmbed('Crash Game', `Multiplier: **${current.toFixed(1)}x**\nBet: **${formatNumber(amount)}** ${ec.currencyName}\n\nReact with 💰 to cash out!`, '#5865F2', 'Cash out before it crashes!');
+      await msg.edit({ embeds: [updateEmbed] }).catch(() => {});
     }
-  } catch {
-    setCooldown(guildId, userId, 'trivia');
-    const timeoutEmbed = new EmbedBuilder()
-      .setColor(COLORS.muted)
-      .setTitle('⏰ Time\'s Up!')
-      .setDescription(`The correct answer was **${q.options[correctIndex]}**.`);
-    return msg.edit({ embeds: [timeoutEmbed] });
+  }, 1000);
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: GAMBLE (50/50 + Random Multiplier)
+// ══════════════════════════════════════════════════════════
+
+async function handleGamble(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  const side = args[1]?.toLowerCase();
+
+  if (amount === null) return message.reply(err('Usage: `,gamble <amount | all | half | quarter> [heads | tails]`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'gamble_bet');
+  user.gamesPlayed++;
+
+  if (side && ['heads', 'tails', 'h', 't'].includes(side)) {
+    // 50/50 mode
+    const win = Math.random() < 0.5;
+    if (win) {
+      const payout = amount * 2;
+      addCredits(guildId, userId, payout, 'gamble_win');
+      user.gamesWon++;
+      saveEconomy(guildId, ec);
+      const embed = makeEmbed('Gamble — Winner!', `You chose **${side}** and won!\n**+${formatNumber(payout)}** ${ec.currencyName}\n\n**Profit:** +${formatNumber(amount)}`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+      return message.reply({ embeds: [embed] });
+    } else {
+      saveEconomy(guildId, ec);
+      const embed = makeEmbed('Gamble — Lost', `You chose **${side}** and lost.\n**-${formatNumber(amount)}** ${ec.currencyName}`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+      return message.reply({ embeds: [embed] });
+    }
+  } else {
+    // Random multiplier mode
+    const multipliers = [0, 0.5, 1, 1.5, 2, 3, 5];
+    const weights = [20, 15, 25, 15, 10, 3, 2];
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    let rand = Math.random() * totalWeight;
+    let mult = multipliers[0];
+    for (let i = 0; i < multipliers.length; i++) {
+      rand -= weights[i];
+      if (rand <= 0) { mult = multipliers[i]; break; }
+    }
+
+    const payout = Math.floor(amount * mult);
+    if (payout > 0) {
+      addCredits(guildId, userId, payout, 'gamble_win');
+      if (mult >= 1) user.gamesWon++;
+    }
+    saveEconomy(guildId, ec);
+
+    const profit = payout - amount;
+    const color = profit > 0 ? '#57F287' : profit < 0 ? '#ED4245' : '#2F3136';
+    const title = profit > 0 ? 'Gamble — Big Win!' : profit < 0 ? 'Gamble — Unlucky' : 'Gamble — Break Even';
+    const embed = makeEmbed(title, `Multiplier: **${mult}x**\nPayout: **${formatNumber(payout)}** ${ec.currencyName}\n**Profit:** ${profit >= 0 ? '+' : ''}${formatNumber(profit)}`, color, `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
   }
 }
 
 // ══════════════════════════════════════════════════════════
-// SCRAMBLE
+// GAMES: BOMBS (MINESWEEPER)
 // ══════════════════════════════════════════════════════════
 
-async function handleScramble(message, args, client) {
+async function handleBombs(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
-  const channelId = message.channel.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
 
-  if (activeGames.has(channelId)) return message.reply(err('A game is already active in this channel!'));
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,bombs <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
 
-  const word = SCRAMBLE_WORDS[Math.floor(Math.random() * SCRAMBLE_WORDS.length)];
-  const scrambled = word.split('').sort(() => Math.random() - 0.5).join('');
-  const mult = getEventMultiplier(guildId, 'scramble');
-  const reward = Math.round(ec.rewards.scramble * mult);
+  removeCredits(guildId, userId, amount, 'bombs_bet');
+  user.gamesPlayed++;
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🔤 Word Scramble!')
-    .setDescription(`Unscramble this word:\n\n**${scrambled.toUpperCase()}**\n\n💰 First correct answer wins **+${formatNumber(reward)}** Credits!\n⏰ You have 30 seconds.`)
-    .setFooter({ text: 'Type the correct word!' });
+  const gridSize = 25; // 5x5
+  const bombCount = 5;
+  const bombs = new Set();
+  while (bombs.size < bombCount) bombs.add(Math.floor(Math.random() * gridSize));
 
+  const revealed = new Set();
+  let multiplier = 1.0;
+  let alive = true;
+
+  const renderGrid = () => {
+    let str = '';
+    for (let i = 0; i < gridSize; i++) {
+      if (i % 5 === 0 && i > 0) str += '\n';
+      if (revealed.has(i)) {
+        str += bombs.has(i) ? '💥 ' : '✅ ';
+      } else {
+        str += `\`${String(i + 1).padStart(2, '0')}\` `;
+      }
+    }
+    return str;
+  };
+
+  const embed = makeEmbed('Bombs — Minesweeper', `${renderGrid()}\n\nMultiplier: **${multiplier.toFixed(2)}x**\nPotential: **${formatNumber(Math.floor(amount * multiplier))}** ${ec.currencyName}\n\nType a number (1-25) to reveal. Type ",cashout" to stop.`, '#5865F2', 'Avoid the bombs!');
   const msg = await message.reply({ embeds: [embed] });
 
-  activeGames.set(channelId, { type: 'scramble', word: word.toLowerCase(), startTime: Date.now() });
+  const filter = m => m.author.id === userId && (m.content.toLowerCase() === ',cashout' || (!isNaN(parseInt(m.content)) && parseInt(m.content) >= 1 && parseInt(m.content) <= 25));
+  const collector = message.channel.createMessageCollector({ filter, time: 60000 });
 
-  const filter = m => m.content.trim().toLowerCase() === word.toLowerCase();
-  try {
-    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] });
-    const winner = collected.first().author;
-    cleanupGame(channelId);
-
-    const user = getUserEconomy(guildId, winner.id);
-    const remaining = (user.cooldowns.scramble || 0) + ec.cooldowns.scramble - Date.now();
-    if (remaining > 0) {
-      return msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.warning).setTitle('⏳ Cooldown').setDescription(`<@${winner.id}> got it right, but they're on cooldown! The word was **${word}**.`)] });
+  collector.on('collect', async m => {
+    if (m.content.toLowerCase() === ',cashout') {
+      collector.stop();
+      const win = Math.floor(amount * multiplier);
+      if (win > 0) addCredits(guildId, userId, win, 'bombs_cashout');
+      user.gamesWon++;
+      saveEconomy(guildId, ec);
+      const cashEmbed = makeEmbed('Bombs — Cashed Out!', `Cashed at **${multiplier.toFixed(2)}x**\nWon **${formatNumber(win)}** ${ec.currencyName}\n**Profit:** +${formatNumber(win - amount)}`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [cashEmbed] });
+      return;
     }
 
-    setCooldown(guildId, winner.id, 'scramble');
-    addCredits(guildId, winner.id, reward, 'scramble');
-    user.stats.gamesPlayed++;
-    user.stats.gamesWon++;
-    saveEconomy(guildId, ec);
-    progressQuest(guildId, winner.id, 'minigames');
-    checkQuestCompletion(guildId, winner.id);
+    const num = parseInt(m.content) - 1;
+    if (revealed.has(num)) return;
+    revealed.add(num);
 
-    const winEmbed = new EmbedBuilder()
-      .setColor(COLORS.success)
-      .setTitle('🏆 Winner!')
-      .setDescription(`<@${winner.id}> unscrambled **${word}**!\n\n💰 **+${formatNumber(reward)}** Credits`)
-      .setFooter({ text: `New Balance: ${formatNumber(user.credits)}` });
+    if (bombs.has(num)) {
+      alive = false;
+      collector.stop();
+      saveEconomy(guildId, ec);
+      const loseEmbed = makeEmbed('Bombs — BOOM!', `${renderGrid()}\n\nYou hit a bomb! Lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [loseEmbed] });
+      return;
+    }
+
+    multiplier += 0.25;
+    const potential = Math.floor(amount * multiplier);
+    const updateEmbed = makeEmbed('Bombs — Safe!', `${renderGrid()}\n\nMultiplier: **${multiplier.toFixed(2)}x**\nPotential: **${formatNumber(potential)}** ${ec.currencyName}\n\nType a number (1-25) or ",cashout"`, '#57F287', `${revealed.size}/${gridSize - bombCount} safe spots found`);
+    await msg.edit({ embeds: [updateEmbed] });
+  });
+
+  collector.on('end', () => {
+    if (alive && revealed.size > 0) {
+      const win = Math.floor(amount * multiplier);
+      if (win > 0) addCredits(guildId, userId, win, 'bombs_timeout');
+      saveEconomy(guildId, ec);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: SCRATCH CARD
+// ══════════════════════════════════════════════════════════
+
+async function handleScratch(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,scratch <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'scratch_bet');
+  user.gamesPlayed++;
+
+  const symbols = ['💎', '🔔', '7️⃣', '🍒', '🍋'];
+  const card = Array.from({ length: 9 }, () => symbols[Math.floor(Math.random() * symbols.length)]);
+
+  let winAmount = 0;
+  // Check rows
+  for (let i = 0; i < 9; i += 3) {
+    if (card[i] === card[i+1] && card[i] === card[i+2]) {
+      winAmount += Math.floor(amount * (card[i] === '💎' ? 10 : card[i] === '7️⃣' ? 5 : 2));
+    }
+  }
+  // Check columns
+  for (let i = 0; i < 3; i++) {
+    if (card[i] === card[i+3] && card[i] === card[i+6]) {
+      winAmount += Math.floor(amount * (card[i] === '💎' ? 10 : card[i] === '7️⃣' ? 5 : 2));
+    }
+  }
+
+  const grid = `| ${card[0]} ${card[1]} ${card[2]} |\n| ${card[3]} ${card[4]} ${card[5]} |\n| ${card[6]} ${card[7]} ${card[8]} |`;
+
+  if (winAmount > 0) {
+    addCredits(guildId, userId, winAmount, 'scratch_win');
+    user.gamesWon++;
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Scratch Card — Winner!', `${grid}\n\nYou won **${formatNumber(winAmount)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else {
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Scratch Card — No Match', `${grid}\n\nNo winning lines. Lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: ROULETTE
+// ══════════════════════════════════════════════════════════
+
+async function handleRoulette(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const betType = args[0]?.toLowerCase();
+  const amount = parseAmount(args[1], user, 'wallet');
+
+  const validBets = ['red', 'black', 'green', 'odd', 'even'];
+  if (!betType || !validBets.includes(betType)) {
+    return message.reply(err('Usage: `,roulette <red | black | green | odd | even> <amount>`'));
+  }
+  if (amount === null) return message.reply(err('Invalid amount. Use a number, all, half, or quarter.'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'roulette_bet');
+  user.gamesPlayed++;
+
+  const number = Math.floor(Math.random() * 37); // 0-36
+  const isRed = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(number);
+  const isBlack = number !== 0 && !isRed;
+  const isGreen = number === 0;
+  const isOdd = number !== 0 && number % 2 === 1;
+  const isEven = number !== 0 && number % 2 === 0;
+
+  let win = false;
+  let multiplier = 0;
+
+  if (betType === 'red' && isRed) { win = true; multiplier = 2; }
+  if (betType === 'black' && isBlack) { win = true; multiplier = 2; }
+  if (betType === 'green' && isGreen) { win = true; multiplier = 14; }
+  if (betType === 'odd' && isOdd) { win = true; multiplier = 2; }
+  if (betType === 'even' && isEven) { win = true; multiplier = 2; }
+
+  if (win) {
+    const payout = Math.floor(amount * multiplier);
+    addCredits(guildId, userId, payout, 'roulette_win');
+    user.gamesWon++;
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Roulette — Winner!', `The ball landed on **${number}** (${isRed ? 'Red' : isBlack ? 'Black' : 'Green'})\nYou bet on **${betType}** and won!\n**+${formatNumber(payout)}** ${ec.currencyName}`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else {
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Roulette — Lost', `The ball landed on **${number}** (${isRed ? 'Red' : isBlack ? 'Black' : 'Green'})\nYou bet on **${betType}** and lost.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: ROB
+// ══════════════════════════════════════════════════════════
+
+async function handleRob(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const target = message.mentions.users.first();
+  if (!target) return message.reply(err('Mention a user: `,rob @user`'));
+  if (target.id === userId) return message.reply(err('You cannot rob yourself.'));
+
+  const targetUser = getUserEconomy(guildId, target.id);
+  if (targetUser.wallet < 100) return message.reply(err(`${target.username} doesn't have enough to rob.`));
+
+  user.robAttempts++;
+  const success = Math.random() < 0.4; // 40% success
+
+  if (success) {
+    const steal = Math.floor(Math.min(targetUser.wallet * 0.3, 5000));
+    targetUser.wallet -= steal;
+    user.wallet += steal;
+    user.robSuccess++;
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Robbery — Success!', `You robbed **${target.username}** and got away with **${formatNumber(steal)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else {
+    const fine = Math.floor(Math.random() * 200) + 50;
+    user.wallet = Math.max(0, user.wallet - fine);
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Robbery — Caught!', `You got caught and paid a **${formatNumber(fine)}** ${ec.currencyName} fine.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: PLINKO
+// ══════════════════════════════════════════════════════════
+
+async function handlePlinko(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,plinko <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'plinko_bet');
+  user.gamesPlayed++;
+
+  const slots = [0.2, 0.5, 1, 1.5, 2, 3, 5, 0.2, 0.5];
+  const weights = [5, 10, 20, 15, 10, 5, 2, 5, 10];
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let rand = Math.random() * totalWeight;
+  let mult = slots[0];
+  for (let i = 0; i < slots.length; i++) {
+    rand -= weights[i];
+    if (rand <= 0) { mult = slots[i]; break; }
+  }
+
+  const payout = Math.floor(amount * mult);
+  if (payout > 0) {
+    addCredits(guildId, userId, payout, 'plinko_win');
+    if (mult >= 1) user.gamesWon++;
+  }
+  saveEconomy(guildId, ec);
+
+  const profit = payout - amount;
+  const color = profit > 0 ? '#57F287' : profit < 0 ? '#ED4245' : '#2F3136';
+  const title = profit > 0 ? 'Plinko — Win!' : profit < 0 ? 'Plinko — Loss' : 'Plinko — Break Even';
+  const embed = makeEmbed(title, `Multiplier: **${mult}x**\nPayout: **${formatNumber(payout)}** ${ec.currencyName}\n**Profit:** ${profit >= 0 ? '+' : ''}${formatNumber(profit)}`, color, `Balance: ${formatNumber(user.wallet)}`);
+  return message.reply({ embeds: [embed] });
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: HIGHLOW
+// ══════════════════════════════════════════════════════════
+
+async function handleHighlow(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,highlow <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'highlow_bet');
+  user.gamesPlayed++;
+
+  const current = Math.floor(Math.random() * 13) + 1; // 1-13
+  const next = Math.floor(Math.random() * 13) + 1;
+
+  const embed = makeEmbed('High or Low?', `Current card: **${current}**\nBet: **${formatNumber(amount)}** ${ec.currencyName}\n\nWill the next card be **Higher** or **Lower**?`, '#5865F2', 'Type "higher" or "lower"');
+  const msg = await message.reply({ embeds: [embed] });
+
+  const filter = m => m.author.id === userId && ['higher', 'lower', 'h', 'l'].includes(m.content.toLowerCase());
+  const collected = await message.channel.awaitMessages({ filter, max: 1, time: 30000 });
+
+  if (!collected.size) {
+    saveEconomy(guildId, ec);
+    const timeoutEmbed = makeEmbed('HighLow — Timeout', `The next card was **${next}**. You lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return msg.edit({ embeds: [timeoutEmbed] });
+  }
+
+  const guess = collected.first().content.toLowerCase();
+  const isHigher = next > current;
+  const win = (guess === 'higher' || guess === 'h') ? isHigher : !isHigher;
+
+  if (win) {
+    const payout = amount * 2;
+    addCredits(guildId, userId, payout, 'highlow_win');
+    user.gamesWon++;
+    saveEconomy(guildId, ec);
+    const winEmbed = makeEmbed('HighLow — Correct!', `Card was **${next}** (vs **${current}**)\nYou won **${formatNumber(payout)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
     return msg.edit({ embeds: [winEmbed] });
-  } catch {
-    cleanupGame(channelId);
-    const loseEmbed = new EmbedBuilder()
-      .setColor(COLORS.error)
-      .setTitle('⏰ Time\'s Up!')
-      .setDescription(`Nobody got it. The word was **${word}**.`);
+  } else {
+    saveEconomy(guildId, ec);
+    const loseEmbed = makeEmbed('HighLow — Wrong', `Card was **${next}** (vs **${current}**)\nYou lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
     return msg.edit({ embeds: [loseEmbed] });
   }
 }
 
 // ══════════════════════════════════════════════════════════
-// MATH
+// GAMES: LADDER
 // ══════════════════════════════════════════════════════════
 
-async function handleMath(message, args, client) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const channelId = message.channel.id;
-  const ec = getEconomy(guildId);
-
-  if (activeGames.has(channelId)) return message.reply(err('A game is already active in this channel!'));
-
-  const difficulty = args[0]?.toLowerCase();
-  let a, b, op, answer, display;
-
-  if (difficulty === 'hard') {
-    a = Math.floor(Math.random() * 50) + 10;
-    b = Math.floor(Math.random() * 20) + 5;
-    const ops = ['*', '/', '+', '-'];
-    op = ops[Math.floor(Math.random() * ops.length)];
-  } else if (difficulty === 'medium') {
-    a = Math.floor(Math.random() * 20) + 5;
-    b = Math.floor(Math.random() * 15) + 2;
-    const ops = ['*', '+', '-'];
-    op = ops[Math.floor(Math.random() * ops.length)];
-  } else {
-    a = Math.floor(Math.random() * 20) + 1;
-    b = Math.floor(Math.random() * 20) + 1;
-    const ops = ['+', '-'];
-    op = ops[Math.floor(Math.random() * ops.length)];
-  }
-
-  switch (op) {
-    case '+': answer = a + b; display = `${a} + ${b}`; break;
-    case '-': answer = a - b; display = `${a} - ${b}`; break;
-    case '*': answer = a * b; display = `${a} × ${b}`; break;
-    case '/':
-      answer = a;
-      display = `${a * b} ÷ ${b}`;
-      break;
-  }
-
-  const mult = getEventMultiplier(guildId, 'math');
-  const reward = Math.round(ec.rewards.math * mult);
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🔢 Math Challenge!')
-    .setDescription(`Solve:\n\n**${display} = ?**\n\n💰 First correct answer wins **+${formatNumber(reward)}** Credits!\n⏰ You have 30 seconds.`)
-    .setFooter({ text: `Difficulty: ${difficulty || 'easy'}` });
-
-  const msg = await message.reply({ embeds: [embed] });
-  activeGames.set(channelId, { type: 'math', answer: String(answer), startTime: Date.now() });
-
-  const filter = m => !isNaN(parseInt(m.content.trim()));
-  try {
-    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] });
-    const winnerMsg = collected.first();
-    const winner = winnerMsg.author;
-    const guess = parseInt(winnerMsg.content.trim());
-    cleanupGame(channelId);
-
-    if (guess !== answer) {
-      return msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.error).setTitle('❌ Wrong!').setDescription(`<@${winner.id}> guessed **${guess}**, but the answer was **${answer}**.`)] });
-    }
-
-    const user = getUserEconomy(guildId, winner.id);
-    const remaining = (user.cooldowns.math || 0) + ec.cooldowns.math - Date.now();
-    if (remaining > 0) {
-      return msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.warning).setTitle('⏳ Cooldown').setDescription(`<@${winner.id}> got it right, but they're on cooldown! The answer was **${answer}**.`)] });
-    }
-
-    setCooldown(guildId, winner.id, 'math');
-    addCredits(guildId, winner.id, reward, 'math');
-    user.stats.gamesPlayed++;
-    user.stats.gamesWon++;
-    saveEconomy(guildId, ec);
-    progressQuest(guildId, winner.id, 'minigames');
-    checkQuestCompletion(guildId, winner.id);
-
-    const winEmbed = new EmbedBuilder()
-      .setColor(COLORS.success)
-      .setTitle('🏆 Winner!')
-      .setDescription(`<@${winner.id}> solved **${display} = ${answer}**!\n\n💰 **+${formatNumber(reward)}** Credits`)
-      .setFooter({ text: `New Balance: ${formatNumber(user.credits)}` });
-    return msg.edit({ embeds: [winEmbed] });
-  } catch {
-    cleanupGame(channelId);
-    return msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.error).setTitle('⏰ Time\'s Up!').setDescription(`Nobody got it. The answer was **${answer}**.`)] });
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// FAST TYPE
-// ══════════════════════════════════════════════════════════
-
-async function handleFasttype(message, args, client) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const channelId = message.channel.id;
-  const ec = getEconomy(guildId);
-
-  if (activeGames.has(channelId)) return message.reply(err('A game is already active in this channel!'));
-
-  const phrase = FASTTYPE_PHRASES[Math.floor(Math.random() * FASTTYPE_PHRASES.length)];
-  const mult = getEventMultiplier(guildId, 'fasttype');
-  const reward = Math.round(ec.rewards.fasttype * mult);
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('⌨️ Fast Type!')
-    .setDescription(`Type this phrase as fast as you can:\n\n**${phrase}**\n\n💰 First correct answer wins **+${formatNumber(reward)}** Credits!\n⏰ You have 20 seconds.`)
-    .setFooter({ text: 'Type it exactly!' });
-
-  const msg = await message.reply({ embeds: [embed] });
-  activeGames.set(channelId, { type: 'fasttype', phrase: phrase.toLowerCase(), startTime: Date.now() });
-
-  const filter = m => m.content.trim().toLowerCase() === phrase.toLowerCase();
-  try {
-    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] });
-    const winner = collected.first().author;
-    cleanupGame(channelId);
-
-    const user = getUserEconomy(guildId, winner.id);
-    const remaining = (user.cooldowns.fasttype || 0) + ec.cooldowns.fasttype - Date.now();
-    if (remaining > 0) {
-      return msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.warning).setTitle('⏳ Cooldown').setDescription(`<@${winner.id}> typed it first, but they're on cooldown!`)] });
-    }
-
-    setCooldown(guildId, winner.id, 'fasttype');
-    addCredits(guildId, winner.id, reward, 'fasttype');
-    user.stats.gamesPlayed++;
-    user.stats.gamesWon++;
-    saveEconomy(guildId, ec);
-    progressQuest(guildId, winner.id, 'minigames');
-    checkQuestCompletion(guildId, winner.id);
-
-    const winEmbed = new EmbedBuilder()
-      .setColor(COLORS.success)
-      .setTitle('🏆 Speed Demon!')
-      .setDescription(`<@${winner.id}> typed it perfectly!\n\n💰 **+${formatNumber(reward)}** Credits`)
-      .setFooter({ text: `New Balance: ${formatNumber(user.credits)}` });
-    return msg.edit({ embeds: [winEmbed] });
-  } catch {
-    cleanupGame(channelId);
-    return msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.error).setTitle('⏰ Time\'s Up!').setDescription('Nobody typed it in time.')] });
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// MEMORY
-// ══════════════════════════════════════════════════════════
-
-async function handleMemory(message, args, client) {
+async function handleLadder(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
 
-  const remaining = (user.cooldowns.memory || 0) + ec.cooldowns.memory - Date.now();
-  if (remaining > 0) return message.reply(err(`Memory game cooldown!`, `Wait **${formatDuration(remaining)}**.`));
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,ladder <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
 
-  const sequence = [];
-  for (let i = 0; i < 4; i++) {
-    sequence.push(MEMORY_EMOJIS[Math.floor(Math.random() * MEMORY_EMOJIS.length)]);
-  }
+  removeCredits(guildId, userId, amount, 'ladder_bet');
+  user.gamesPlayed++;
 
-  const mult = getEventMultiplier(guildId, 'memory');
-  const reward = Math.round(ec.rewards.memory * mult);
+  const rungs = [1.2, 1.5, 2, 2.5, 3, 5, 10];
+  let currentRung = 0;
+  let alive = true;
 
-  // Show sequence
-  const showEmbed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🧠 Memory Challenge!')
-    .setDescription(`Memorize this sequence:\n\n**${sequence.join(' ')}**\n\nThe buttons will appear in 3 seconds...\n\n💰 Reward: **+${formatNumber(reward)}** Credits`);
-
-  const msg = await message.reply({ embeds: [showEmbed] });
-
-  await new Promise(r => setTimeout(r, 3000));
-
-  // Build buttons
-  const rows = [];
-  const shuffledEmojis = [...MEMORY_EMOJIS].sort(() => Math.random() - 0.5);
-  for (let i = 0; i < 2; i++) {
-    const row = new ActionRowBuilder();
-    for (let j = 0; j < 4; j++) {
-      const emoji = shuffledEmojis[i * 4 + j];
-      row.addComponents(
-        new ButtonBuilder().setCustomId(`mem_${emoji}`).setEmoji(emoji).setStyle(ButtonStyle.Primary)
-      );
-    }
-    rows.push(row);
-  }
-
-  const playEmbed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🧠 Memory Challenge!')
-    .setDescription(`Click the emojis in the correct order:\n\n**${'❓ '.repeat(sequence.length)}**\n\nSequence: 0/${sequence.length}`);
-
-  await msg.edit({ embeds: [playEmbed], components: rows });
-
-  let step = 0;
-  const collector = msg.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 30000,
-    filter: i => i.user.id === userId,
-  });
-
-  collector.on('collect', async (interaction) => {
-    const emoji = interaction.customId.replace('mem_', '');
-    if (emoji === sequence[step]) {
-      step++;
-      if (step >= sequence.length) {
-        collector.stop('won');
-        setCooldown(guildId, userId, 'memory');
-        addCredits(guildId, userId, reward, 'memory');
-        user.stats.gamesPlayed++;
-        user.stats.gamesWon++;
-        saveEconomy(guildId, ec);
-        progressQuest(guildId, userId, 'minigames');
-        checkQuestCompletion(guildId, userId);
-
-        const winEmbed = new EmbedBuilder()
-          .setColor(COLORS.success)
-          .setTitle('🎉 Memory Master!')
-          .setDescription(`You remembered the sequence!\n\n💰 **+${formatNumber(reward)}** Credits`)
-          .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-        await interaction.update({ embeds: [winEmbed], components: [] });
-      } else {
-        const progressEmbed = new EmbedBuilder()
-          .setColor(COLORS.primary)
-          .setTitle('🧠 Memory Challenge!')
-          .setDescription(`Click the emojis in the correct order:\n\n${sequence.slice(0, step).join(' ')} ${'❓ '.repeat(sequence.length - step)}\n\nSequence: ${step}/${sequence.length}`);
-        await interaction.update({ embeds: [progressEmbed] });
-      }
-    } else {
-      collector.stop('lost');
-      const loseEmbed = new EmbedBuilder()
-        .setColor(COLORS.error)
-        .setTitle('❌ Wrong!')
-        .setDescription(`That was not the next emoji. The sequence was:\n\n**${sequence.join(' ')}**\n\nNo reward this time.`);
-      await interaction.update({ embeds: [loseEmbed], components: [] });
-    }
-  });
-
-  collector.on('end', async (collected, reason) => {
-    if (reason === 'time') {
-      const timeoutEmbed = new EmbedBuilder()
-        .setColor(COLORS.muted)
-        .setTitle('⏰ Time\'s Up!')
-        .setDescription(`The sequence was:\n\n**${sequence.join(' ')}**`);
-      await msg.edit({ embeds: [timeoutEmbed], components: [] });
-    }
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// SLOTS
-// ══════════════════════════════════════════════════════════
-
-async function handleSlots(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const userId = message.author.id;
-  const user = getUserEconomy(guildId, userId);
-  const ec = getEconomy(guildId);
-
-  const remaining = (user.cooldowns.slots || 0) + ec.cooldowns.slots - Date.now();
-  if (remaining > 0) return message.reply(err(`Slots cooldown!`, `Wait **${formatDuration(remaining)}**.`));
-
-  setCooldown(guildId, userId, 'slots');
-  user.stats.gamesPlayed++;
-  saveEconomy(guildId, ec);
-
-  const msg = await message.reply({ embeds: [new EmbedBuilder().setColor(COLORS.primary).setTitle('🎰 LUCKY SLOTS').setDescription('Spinning...\n\n`⬜ | ⬜ | ⬜`')] });
-
-  // Animation frames
-  for (let i = 0; i < 3; i++) {
-    await new Promise(r => setTimeout(r, 800));
-    const temp = [SLOTS_SYMBOLS[Math.floor(Math.random() * SLOTS_SYMBOLS.length)], SLOTS_SYMBOLS[Math.floor(Math.random() * SLOTS_SYMBOLS.length)], SLOTS_SYMBOLS[Math.floor(Math.random() * SLOTS_SYMBOLS.length)]];
-    await msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.primary).setTitle('🎰 LUCKY SLOTS').setDescription(`Spinning...\n\n\`${temp[0]} | ${temp[1]} | ${temp[2]}\``)] });
-  }
-
-  // Determine result
-  let result;
-  const rand = Math.random();
-  if (rand < 0.03) result = ['💎', '💎', '💎'];
-  else if (rand < 0.08) result = ['⭐', '⭐', '⭐'];
-  else if (rand < 0.18) result = ['🍒', '🍒', '🍒'];
-  else result = [SLOTS_SYMBOLS[Math.floor(Math.random() * SLOTS_SYMBOLS.length)], SLOTS_SYMBOLS[Math.floor(Math.random() * SLOTS_SYMBOLS.length)], SLOTS_SYMBOLS[Math.floor(Math.random() * SLOTS_SYMBOLS.length)]];
-
-  let reward = 0;
-  let title = '';
-  let color = COLORS.primary;
-
-  if (result[0] === result[1] && result[1] === result[2]) {
-    if (result[0] === '🍒') { reward = ec.rewards.slotsCherry; title = '🍒 JACKPOT! Triple Cherries!'; color = COLORS.success; }
-    else if (result[0] === '⭐') { reward = ec.rewards.slotsStar; title = '⭐ MEGA WIN! Triple Stars!'; color = COLORS.gold; }
-    else if (result[0] === '💎') { reward = ec.rewards.slotsDiamond; title = '💎 ULTRA WIN! Triple Diamonds!'; color = COLORS.gold; }
-    user.stats.gamesWon++;
-  } else {
-    reward = ec.rewards.slotsMixed;
-    title = '🎰 Result';
-  }
-
-  const mult = getEventMultiplier(guildId, 'slots');
-  reward = Math.round(reward * mult);
-  if (reward > 0) addCredits(guildId, userId, reward, 'slots');
-  saveEconomy(guildId, ec);
-
-  const embed = new EmbedBuilder()
-    .setColor(color)
-    .setTitle(title)
-    .setDescription(`\`${result[0]} | ${result[1]} | ${result[2]}\`\n\n💰 **+${formatNumber(reward)}** Credits`)
-    .setFooter({ text: `Balance: ${formatNumber(user.credits)}${mult > 1 ? ' • Event Bonus!' : ''}` });
-
-  return msg.edit({ embeds: [embed] });
-}
-
-// ══════════════════════════════════════════════════════════
-// WHEEL
-// ══════════════════════════════════════════════════════════
-
-async function handleWheel(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const userId = message.author.id;
-  const user = getUserEconomy(guildId, userId);
-  const ec = getEconomy(guildId);
-
-  const remaining = (user.cooldowns.wheel || 0) + ec.cooldowns.wheel - Date.now();
-  if (remaining > 0) return message.reply(err(`Wheel cooldown!`, `Wait **${formatDuration(remaining)}**.`));
-
-  setCooldown(guildId, userId, 'wheel');
-  user.stats.gamesPlayed++;
-  saveEconomy(guildId, ec);
-
-  const msg = await message.reply({ embeds: [new EmbedBuilder().setColor(COLORS.primary).setTitle('🎡 PRIZE WHEEL').setDescription('Spinning the wheel...\n\n🎡')] });
-
-  // Spin animation
-  for (let i = 0; i < 5; i++) {
-    await new Promise(r => setTimeout(r, 600));
-    const temp = WHEEL_SEGMENTS[Math.floor(Math.random() * WHEEL_SEGMENTS.length)];
-    await msg.edit({ embeds: [new EmbedBuilder().setColor(COLORS.primary).setTitle('🎡 PRIZE WHEEL').setDescription(`Spinning...\n\n${temp.emoji} **${temp.label}**`)] });
-  }
-
-  const result = WHEEL_SEGMENTS[Math.floor(Math.random() * WHEEL_SEGMENTS.length)];
-  let desc = `The wheel landed on:\n\n${result.emoji} **${result.label}**`;
-
-  if (typeof result.value === 'number') {
-    const mult = getEventMultiplier(guildId, 'wheel');
-    const reward = Math.round(result.value * mult);
-    addCredits(guildId, userId, reward, 'wheel');
-    if (reward > 0) user.stats.gamesWon++;
-    desc += `\n\n💰 **+${formatNumber(reward)}** Credits`;
-    saveEconomy(guildId, ec);
-  } else if (result.value === 'quest') {
-    progressQuest(guildId, userId, 'minigames', 2);
-    checkQuestCompletion(guildId, userId);
-    desc += `\n\n🎯 **Quest progress boosted!**`;
-  } else if (result.value === 'cosmetic') {
-    desc += `\n\n🎨 **Cosmetic reward!** (Check your inventory)`;
-  }
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.success)
-    .setTitle('🎡 Prize Wheel Result')
-    .setDescription(desc)
-    .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-
-  return msg.edit({ embeds: [embed] });
-}
-
-// ══════════════════════════════════════════════════════════
-// SCRATCH
-// ══════════════════════════════════════════════════════════
-
-async function handleScratch(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const userId = message.author.id;
-  const user = getUserEconomy(guildId, userId);
-  const ec = getEconomy(guildId);
-
-  const remaining = (user.cooldowns.scratch || 0) + ec.cooldowns.scratch - Date.now();
-  if (remaining > 0) return message.reply(err(`Scratch card cooldown!`, `Wait **${formatDuration(remaining)}**.`));
-
-  setCooldown(guildId, userId, 'scratch');
-  user.stats.gamesPlayed++;
-  saveEconomy(guildId, ec);
-
-  // Generate 3x3 grid
-  const grid = [];
-  for (let i = 0; i < 9; i++) {
-    const reward = SCRATCH_REWARDS[Math.floor(Math.random() * SCRATCH_REWARDS.length)];
-    grid.push({ id: i, revealed: false, reward });
-  }
-
-  const buildButtons = () => {
-    const rows = [];
-    for (let i = 0; i < 3; i++) {
-      const row = new ActionRowBuilder();
-      for (let j = 0; j < 3; j++) {
-        const cell = grid[i * 3 + j];
-        const label = cell.revealed ? (cell.reward.type === 'credits' ? `${cell.reward.value}` : cell.reward.emoji) : '❓';
-        const style = cell.revealed ? ButtonStyle.Success : ButtonStyle.Secondary;
-        row.addComponents(new ButtonBuilder().setCustomId(`scratch_${i * 3 + j}`).setLabel(label).setStyle(style).setDisabled(cell.revealed));
-      }
-      rows.push(row);
-    }
-    return rows;
+  const renderLadder = () => {
+    return rungs.map((r, i) => {
+      const marker = i === currentRung ? '👉' : i < currentRung ? '✅' : '⬜';
+      return `${marker} **${r}x**`;
+    }).join('\n');
   };
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🎫 Scratch Card')
-    .setDescription('Click the buttons to reveal hidden rewards!\n\n💰 Find Credits, 🎯 Quest Progress, or 🎨 Cosmetics!')
-    .setFooter({ text: 'Reveal all 9 tiles!' });
+  const embed = makeEmbed('Ladder Climb', `${renderLadder()}\n\nBet: **${formatNumber(amount)}** ${ec.currencyName}\n\nType ",climb" to go up or ",cashout" to stop.`, '#5865F2', 'Risk it for the biscuit');
+  const msg = await message.reply({ embeds: [embed] });
 
-  const msg = await message.reply({ embeds: [embed], components: buildButtons() });
+  const filter = m => m.author.id === userId && [',climb', ',cashout'].includes(m.content.toLowerCase());
+  const collector = message.channel.createMessageCollector({ filter, time: 60000 });
 
-  const collector = msg.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 60000,
-    filter: i => i.user.id === userId,
-  });
-
-  let revealedCount = 0;
-  let totalCredits = 0;
-
-  collector.on('collect', async (interaction) => {
-    const idx = parseInt(interaction.customId.replace('scratch_', ''));
-    if (grid[idx].revealed) return interaction.reply({ content: 'Already revealed!', ephemeral: true });
-
-    grid[idx].revealed = true;
-    revealedCount++;
-
-    const r = grid[idx].reward;
-    if (r.type === 'credits') {
-      totalCredits += r.value;
-    }
-
-    const allRevealed = revealedCount >= 9;
-    const desc = allRevealed
-      ? `All tiles revealed!\n\n💰 Total Credits: **+${formatNumber(totalCredits)}**\n\n${grid.map((c, i) => `${c.revealed ? (c.reward.type === 'credits' ? '💰' : c.reward.emoji) : '❓'}`).join(' ')}`
-      : `Click the buttons to reveal hidden rewards!\n\n💰 Current Total: **${formatNumber(totalCredits)}**\n\n${grid.map((c, i) => `${c.revealed ? (c.reward.type === 'credits' ? '💰' : c.reward.emoji) : '❓'}`).join(' ')}`;
-
-    const newEmbed = new EmbedBuilder()
-      .setColor(allRevealed ? COLORS.success : COLORS.primary)
-      .setTitle('🎫 Scratch Card')
-      .setDescription(desc)
-      .setFooter({ text: allRevealed ? 'Card complete!' : `${9 - revealedCount} tiles remaining` });
-
-    await interaction.update({ embeds: [newEmbed], components: allRevealed ? [] : buildButtons() });
-
-    if (allRevealed) {
+  collector.on('collect', async m => {
+    if (m.content.toLowerCase() === ',cashout') {
       collector.stop();
-      if (totalCredits > 0) {
-        addCredits(guildId, userId, totalCredits, 'scratch');
-        user.stats.gamesWon++;
-      }
-      // Count quest/cosmetic rewards
-      const questBoosts = grid.filter(c => c.reward.type === 'quest').length;
-      const cosmetics = grid.filter(c => c.reward.type === 'cosmetic').length;
-      if (questBoosts > 0) progressQuest(guildId, userId, 'minigames', questBoosts);
+      const mult = rungs[currentRung] || 1;
+      const win = Math.floor(amount * mult);
+      if (win > 0) addCredits(guildId, userId, win, 'ladder_cashout');
+      user.gamesWon++;
       saveEconomy(guildId, ec);
-      checkQuestCompletion(guildId, userId);
+      const cashEmbed = makeEmbed('Ladder — Cashed Out!', `Cashed at **${mult}x**\nWon **${formatNumber(win)}** ${ec.currencyName}\n**Profit:** +${formatNumber(win - amount)}`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [cashEmbed] });
+      return;
     }
-  });
 
-  collector.on('end', async (collected, reason) => {
-    if (reason === 'time') {
-      const timeoutEmbed = new EmbedBuilder()
-        .setColor(COLORS.muted)
-        .setTitle('⏰ Scratch Card Expired')
-        .setDescription('The scratch card has expired. Any unrevealed rewards are lost.');
-      await msg.edit({ embeds: [timeoutEmbed], components: [] });
+    if (Math.random() < 0.35) {
+      alive = false;
+      collector.stop();
+      saveEconomy(guildId, ec);
+      const fallEmbed = makeEmbed('Ladder — You Fell!', `You slipped and fell from rung **${rungs[currentRung]}x**!\nLost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [fallEmbed] });
+      return;
     }
+
+    currentRung++;
+    if (currentRung >= rungs.length) {
+      collector.stop();
+      const win = Math.floor(amount * rungs[rungs.length - 1]);
+      addCredits(guildId, userId, win, 'ladder_max');
+      user.gamesWon++;
+      saveEconomy(guildId, ec);
+      const maxEmbed = makeEmbed('Ladder — MAX WIN!', `You reached the top! **${rungs[rungs.length - 1]}x**\nWon **${formatNumber(win)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [maxEmbed] });
+      return;
+    }
+
+    const updateEmbed = makeEmbed('Ladder Climb', `${renderLadder()}\n\nBet: **${formatNumber(amount)}** ${ec.currencyName}\n\nType ",climb" or ",cashout"`, '#57F287', `Current: ${rungs[currentRung]}x`);
+    await msg.edit({ embeds: [updateEmbed] });
   });
 }
 
 // ══════════════════════════════════════════════════════════
-// MINES
+// GAMES: DICE
 // ══════════════════════════════════════════════════════════
 
-async function handleMines(message) {
+async function handleDice(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
 
-  const remaining = (user.cooldowns.mines || 0) + ec.cooldowns.mines - Date.now();
-  if (remaining > 0) return message.reply(err(`Mines cooldown!`, `Wait **${formatDuration(remaining)}**.`));
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,dice <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
 
-  setCooldown(guildId, userId, 'mines');
-  user.stats.gamesPlayed++;
+  removeCredits(guildId, userId, amount, 'dice_bet');
+  user.gamesPlayed++;
+
+  const playerRoll = Math.floor(Math.random() * 6) + 1;
+  const botRoll = Math.floor(Math.random() * 6) + 1;
+
+  if (playerRoll > botRoll) {
+    const payout = amount * 2;
+    addCredits(guildId, userId, payout, 'dice_win');
+    user.gamesWon++;
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Dice — You Win!', `You rolled **${playerRoll}** vs Bot **${botRoll}**\nWon **${formatNumber(payout)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else if (playerRoll < botRoll) {
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Dice — You Lose', `You rolled **${playerRoll}** vs Bot **${botRoll}**\nLost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else {
+    addCredits(guildId, userId, amount, 'dice_tie');
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Dice — Tie!', `You both rolled **${playerRoll}**\nYour bet was returned.`, '#2F3136', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: SLOTS
+// ══════════════════════════════════════════════════════════
+
+async function handleSlots(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,slots <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'slots_bet');
+  user.gamesPlayed++;
+
+  const symbols = ['🍒', '🍋', '🔔', '💎', '7️⃣', '⭐'];
+  const reel1 = symbols[Math.floor(Math.random() * symbols.length)];
+  const reel2 = symbols[Math.floor(Math.random() * symbols.length)];
+  const reel3 = symbols[Math.floor(Math.random() * symbols.length)];
+
+  let payout = 0;
+  if (reel1 === reel2 && reel2 === reel3) {
+    const mult = reel1 === '7️⃣' ? 50 : reel1 === '💎' ? 20 : reel1 === '⭐' ? 15 : 10;
+    payout = amount * mult;
+  } else if (reel1 === reel2 || reel2 === reel3 || reel1 === reel3) {
+    payout = Math.floor(amount * 1.5);
+  }
+
+  if (payout > 0) {
+    addCredits(guildId, userId, payout, 'slots_win');
+    user.gamesWon++;
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Slots — Jackpot!', `| ${reel1} | ${reel2} | ${reel3} |\n\nYou won **${formatNumber(payout)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  } else {
+    saveEconomy(guildId, ec);
+    const embed = makeEmbed('Slots — No Luck', `| ${reel1} | ${reel2} | ${reel3} |\n\nLost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    return message.reply({ embeds: [embed] });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: BLACKJACK
+// ══════════════════════════════════════════════════════════
+
+const blackjackGames = new Map();
+
+function drawCard() {
+  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const suits = ['♠', '♥', '♦', '♣'];
+  return { value: values[Math.floor(Math.random() * values.length)], suit: suits[Math.floor(Math.random() * suits.length)] };
+}
+
+function handValue(hand) {
+  let total = 0;
+  let aces = 0;
+  for (const card of hand) {
+    if (card.value === 'A') { aces++; total += 11; }
+    else if (['J', 'Q', 'K'].includes(card.value)) total += 10;
+    else total += parseInt(card.value);
+  }
+  while (total > 21 && aces > 0) { total -= 10; aces--; }
+  return total;
+}
+
+function formatHand(hand) {
+  return hand.map(c => `\`${c.value}${c.suit}\``).join(' ');
+}
+
+async function handleBlackjack(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,blackjack <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'blackjack_bet');
+  user.gamesPlayed++;
   saveEconomy(guildId, ec);
 
-  // 4x4 grid, 4 mines
-  const grid = [];
-  const minePositions = new Set();
-  while (minePositions.size < 4) minePositions.add(Math.floor(Math.random() * 16));
-  for (let i = 0; i < 16; i++) {
-    grid.push({ id: i, isMine: minePositions.has(i), revealed: false });
-  }
+  const playerHand = [drawCard(), drawCard()];
+  const dealerHand = [drawCard(), drawCard()];
 
-  let safePicks = 0;
-  let earned = 0;
-  const maxSafe = 8;
-  const baseReward = ec.rewards.minesBase;
-  const increment = ec.rewards.minesIncrement;
+  const embed = makeEmbed('Blackjack', `Your hand: ${formatHand(playerHand)} = **${handValue(playerHand)}**\nDealer shows: \`${dealerHand[0].value}${dealerHand[0].suit}\` **?**\n\nType ",hit" or ",stand"`, '#5865F2', `Bet: ${formatNumber(amount)} ${ec.currencyName}`);
+  const msg = await message.reply({ embeds: [embed] });
 
-  const buildButtons = () => {
-    const rows = [];
-    for (let i = 0; i < 4; i++) {
-      const row = new ActionRowBuilder();
-      for (let j = 0; j < 4; j++) {
-        const cell = grid[i * 4 + j];
-        let label, style, disabled;
-        if (cell.revealed) {
-          label = cell.isMine ? '💣' : '💎';
-          style = cell.isMine ? ButtonStyle.Danger : ButtonStyle.Success;
-          disabled = true;
-        } else {
-          label = '⬜';
-          style = ButtonStyle.Secondary;
-          disabled = false;
-        }
-        row.addComponents(new ButtonBuilder().setCustomId(`mine_${i * 4 + j}`).setLabel(label).setStyle(style).setDisabled(disabled));
+  blackjackGames.set(userId, { guildId, userId, amount, playerHand, dealerHand, msg });
+
+  const filter = m => m.author.id === userId && [',hit', ',stand'].includes(m.content.toLowerCase());
+  const collector = message.channel.createMessageCollector({ filter, time: 60000 });
+
+  collector.on('collect', async m => {
+    const game = blackjackGames.get(userId);
+    if (!game) return;
+
+    if (m.content.toLowerCase() === ',hit') {
+      game.playerHand.push(drawCard());
+      const pv = handValue(game.playerHand);
+
+      if (pv > 21) {
+        collector.stop();
+        blackjackGames.delete(userId);
+        const loseEmbed = makeEmbed('Blackjack — Bust!', `Your hand: ${formatHand(game.playerHand)} = **${pv}** (Bust!)\nDealer: ${formatHand(game.dealerHand)} = **${handValue(game.dealerHand)}**\n\nYou lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+        await game.msg.edit({ embeds: [loseEmbed] });
+        return;
       }
-      rows.push(row);
+
+      const updateEmbed = makeEmbed('Blackjack', `Your hand: ${formatHand(game.playerHand)} = **${pv}**\nDealer shows: \`${game.dealerHand[0].value}${game.dealerHand[0].suit}\` **?**\n\nType ",hit" or ",stand"`, '#5865F2', `Bet: ${formatNumber(amount)} ${ec.currencyName}`);
+      await game.msg.edit({ embeds: [updateEmbed] });
     }
-    return rows;
+
+    if (m.content.toLowerCase() === ',stand') {
+      collector.stop();
+      blackjackGames.delete(userId);
+
+      let dealerVal = handValue(game.dealerHand);
+      while (dealerVal < 17) {
+        game.dealerHand.push(drawCard());
+        dealerVal = handValue(game.dealerHand);
+      }
+
+      const playerVal = handValue(game.playerHand);
+      let win = false;
+      let tie = false;
+
+      if (dealerVal > 21) win = true;
+      else if (playerVal > dealerVal) win = true;
+      else if (playerVal === dealerVal) tie = true;
+
+      if (win) {
+        const payout = amount * 2;
+        addCredits(guildId, userId, payout, 'blackjack_win');
+        user.gamesWon++;
+        saveEconomy(guildId, ec);
+        const winEmbed = makeEmbed('Blackjack — You Win!', `Your hand: ${formatHand(game.playerHand)} = **${playerVal}**\nDealer: ${formatHand(game.dealerHand)} = **${dealerVal}**\n\nWon **${formatNumber(payout)}** ${ec.currencyName}!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+        await game.msg.edit({ embeds: [winEmbed] });
+      } else if (tie) {
+        addCredits(guildId, userId, amount, 'blackjack_tie');
+        saveEconomy(guildId, ec);
+        const tieEmbed = makeEmbed('Blackjack — Push', `Your hand: ${formatHand(game.playerHand)} = **${playerVal}**\nDealer: ${formatHand(game.dealerHand)} = **${dealerVal}**\n\nIt's a tie. Bet returned.`, '#2F3136', `Balance: ${formatNumber(user.wallet)}`);
+        await game.msg.edit({ embeds: [tieEmbed] });
+      } else {
+        const loseEmbed = makeEmbed('Blackjack — Dealer Wins', `Your hand: ${formatHand(game.playerHand)} = **${playerVal}**\nDealer: ${formatHand(game.dealerHand)} = **${dealerVal}**\n\nYou lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+        await game.msg.edit({ embeds: [loseEmbed] });
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// GAMES: MINES
+// ══════════════════════════════════════════════════════════
+
+async function handleMines(message, args) {
+  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  const userId = message.author.id;
+  const user = getUserEconomy(guildId, userId);
+  const ec = getEconomy(guildId);
+
+  const amount = parseAmount(args[0], user, 'wallet');
+  if (amount === null) return message.reply(err('Usage: `,mines <amount | all | half | quarter>`'));
+  if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
+  if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}**.`));
+
+  removeCredits(guildId, userId, amount, 'mines_bet');
+  user.gamesPlayed++;
+
+  const gridSize = 25;
+  const bombCount = 3;
+  const bombs = new Set();
+  while (bombs.size < bombCount) bombs.add(Math.floor(Math.random() * gridSize));
+
+  const revealed = new Set();
+  let multiplier = 1.0;
+
+  const renderGrid = () => {
+    let str = '';
+    for (let i = 0; i < gridSize; i++) {
+      if (i % 5 === 0 && i > 0) str += '\n';
+      if (revealed.has(i)) {
+        str += bombs.has(i) ? '💥 ' : '💎 ';
+      } else {
+        str += `\`${String(i + 1).padStart(2, '0')}\` `;
+      }
+    }
+    return str;
   };
 
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('💣 MINES')
-    .setDescription('Click tiles to find diamonds! Avoid the mines!\n\n💎 Safe = Credits\n💣 Mine = Round Over (keep earned credits)\n\n**Reward: +0 Credits**\n**Safe picks: 0/8**')
-    .setFooter({ text: 'Pick a tile!' });
+  const embed = makeEmbed('Mines', `${renderGrid()}\n\nMultiplier: **${multiplier.toFixed(2)}x**\nPotential: **${formatNumber(Math.floor(amount * multiplier))}** ${ec.currencyName}\n\nType a number (1-25) or ",cashout"`, '#5865F2', '3 bombs hidden');
+  const msg = await message.reply({ embeds: [embed] });
 
-  const msg = await message.reply({ embeds: [embed], components: buildButtons() });
+  const filter = m => m.author.id === userId && (m.content.toLowerCase() === ',cashout' || (!isNaN(parseInt(m.content)) && parseInt(m.content) >= 1 && parseInt(m.content) <= 25));
+  const collector = message.channel.createMessageCollector({ filter, time: 60000 });
 
-  const collector = msg.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 120000,
-    filter: i => i.user.id === userId,
-  });
-
-  collector.on('collect', async (interaction) => {
-    const idx = parseInt(interaction.customId.replace('mine_', ''));
-    if (grid[idx].revealed) return interaction.reply({ content: 'Already picked!', ephemeral: true });
-
-    grid[idx].revealed = true;
-
-    if (grid[idx].isMine) {
-      collector.stop('mine');
-      const loseEmbed = new EmbedBuilder()
-        .setColor(COLORS.error)
-        .setTitle('💥 MINE!')
-        .setDescription(`You hit a mine!\n\n💰 Credits earned this round: **${formatNumber(earned)}**\n❌ Credits lost: **0**\n\nYour previously earned rewards remain safe!`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      return interaction.update({ embeds: [loseEmbed], components: buildButtons() });
-    }
-
-    safePicks++;
-    const pickReward = Math.round((baseReward + (safePicks - 1) * increment) * getEventMultiplier(guildId, 'mines'));
-    earned += pickReward;
-
-    if (safePicks >= maxSafe) {
-      collector.stop('max');
-      addCredits(guildId, userId, earned, 'mines');
-      user.stats.gamesWon++;
+  collector.on('collect', async m => {
+    if (m.content.toLowerCase() === ',cashout') {
+      collector.stop();
+      const win = Math.floor(amount * multiplier);
+      if (win > 0) addCredits(guildId, userId, win, 'mines_cashout');
+      user.gamesWon++;
       saveEconomy(guildId, ec);
-      progressQuest(guildId, userId, 'minigames');
-      checkQuestCompletion(guildId, userId);
-
-      const winEmbed = new EmbedBuilder()
-        .setColor(COLORS.success)
-        .setTitle('🎉 MAXIMUM SAFE PICKS!')
-        .setDescription(`You cleared ${maxSafe} safe tiles!\n\n💰 Total earned: **+${formatNumber(earned)}** Credits`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      return interaction.update({ embeds: [winEmbed], components: buildButtons() });
+      const cashEmbed = makeEmbed('Mines — Cashed Out!', `Cashed at **${multiplier.toFixed(2)}x**\nWon **${formatNumber(win)}** ${ec.currencyName}\n**Profit:** +${formatNumber(win - amount)}`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [cashEmbed] });
+      return;
     }
 
-    const contEmbed = new EmbedBuilder()
-      .setColor(COLORS.success)
-      .setTitle('💎 Safe Tile!')
-      .setDescription(`**Reward: +${formatNumber(pickReward)} Credits**\n\n💰 Total this round: **${formatNumber(earned)}**\n**Safe picks: ${safePicks}/${maxSafe}**\n\nContinue or cash out?`)
-      .setFooter({ text: 'Pick another tile or finish!' });
+    const num = parseInt(m.content) - 1;
+    if (revealed.has(num)) return;
+    revealed.add(num);
 
-    await interaction.update({ embeds: [contEmbed], components: buildButtons() });
-  });
-
-  collector.on('end', async (collected, reason) => {
-    if (reason === 'time') {
-      if (earned > 0) addCredits(guildId, userId, earned, 'mines');
-      const timeoutEmbed = new EmbedBuilder()
-        .setColor(COLORS.muted)
-        .setTitle('⏰ Round Expired')
-        .setDescription(`Time's up! You earned **${formatNumber(earned)}** Credits this round.`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      await msg.edit({ embeds: [timeoutEmbed], components: [] });
-    }
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// CUPS
-// ══════════════════════════════════════════════════════════
-
-async function handleCups(message, args) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const userId = message.author.id;
-  const user = getUserEconomy(guildId, userId);
-  const ec = getEconomy(guildId);
-
-  const remaining = (user.cooldowns.cups || 0) + ec.cooldowns.cups - Date.now();
-  if (remaining > 0) return message.reply(err(`Cups cooldown!`, `Wait **${formatDuration(remaining)}**.`));
-
-  const difficulty = args[0]?.toLowerCase();
-  let reward;
-  if (difficulty === 'hard') reward = ec.rewards.cupsHard;
-  else if (difficulty === 'medium') reward = ec.rewards.cupsMedium;
-  else reward = ec.rewards.cupsEasy;
-
-  const correctCup = Math.random() < 0.5 ? 'red' : 'blue';
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('🔴🔵 Red Cup / Blue Cup')
-    .setDescription(`Where is the ball hidden?\n\n💰 Correct guess = **+${formatNumber(reward)}** Credits\n❌ Wrong guess = **0** Credits lost`)
-    .setFooter({ text: `Difficulty: ${difficulty || 'easy'}` });
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId('cup_red').setLabel('RED CUP').setEmoji('🔴').setStyle(ButtonStyle.Danger),
-    new ButtonBuilder().setCustomId('cup_blue').setLabel('BLUE CUP').setEmoji('🔵').setStyle(ButtonStyle.Primary),
-  );
-
-  const msg = await message.reply({ embeds: [embed], components: [row] });
-
-  const collector = msg.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 30000,
-    max: 1,
-    filter: i => i.user.id === userId,
-  });
-
-  collector.on('collect', async (interaction) => {
-    setCooldown(guildId, userId, 'cups');
-    user.stats.gamesPlayed++;
-    const picked = interaction.customId.replace('cup_', '');
-
-    if (picked === correctCup) {
-      addCredits(guildId, userId, reward, 'cups');
-      user.stats.gamesWon++;
+    if (bombs.has(num)) {
+      collector.stop();
       saveEconomy(guildId, ec);
-      progressQuest(guildId, userId, 'minigames');
-      checkQuestCompletion(guildId, userId);
-
-      const winEmbed = new EmbedBuilder()
-        .setColor(COLORS.success)
-        .setTitle('🎉 CORRECT!')
-        .setDescription(`You found the ball under the **${correctCup.toUpperCase()}** cup!\n\n💰 **+${formatNumber(reward)}** Credits`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      return interaction.update({ embeds: [winEmbed], components: [] });
-    } else {
-      const loseEmbed = new EmbedBuilder()
-        .setColor(COLORS.error)
-        .setTitle('❌ Wrong Cup!')
-        .setDescription(`The ball was under the **${correctCup.toUpperCase()}** cup.\n\n💰 Credits lost: **0**`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      return interaction.update({ embeds: [loseEmbed], components: [] });
+      const loseEmbed = makeEmbed('Mines — BOOM!', `${renderGrid()}\n\nYou hit a bomb! Lost **${formatNumber(amount)}** ${ec.currencyName}.`, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+      await msg.edit({ embeds: [loseEmbed] });
+      return;
     }
+
+    multiplier += 0.35;
+    const potential = Math.floor(amount * multiplier);
+    const updateEmbed = makeEmbed('Mines — Safe!', `${renderGrid()}\n\nMultiplier: **${multiplier.toFixed(2)}x**\nPotential: **${formatNumber(potential)}** ${ec.currencyName}\n\nType a number or ",cashout"`, '#57F287', `${revealed.size}/${gridSize - bombCount} safe spots found`);
+    await msg.edit({ embeds: [updateEmbed] });
   });
-
-  collector.on('end', async (collected, reason) => {
-    if (reason === 'time') {
-      const timeoutEmbed = new EmbedBuilder()
-        .setColor(COLORS.muted)
-        .setTitle('⏰ Time\'s Up!')
-        .setDescription(`The ball was under the **${correctCup.toUpperCase()}** cup.`);
-      await msg.edit({ embeds: [timeoutEmbed], components: [] });
-    }
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// HIGH / LOW
-// ══════════════════════════════════════════════════════════
-
-async function handleHighlow(message) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const userId = message.author.id;
-  const user = getUserEconomy(guildId, userId);
-  const ec = getEconomy(guildId);
-
-  const remaining = (user.cooldowns.highlow || 0) + ec.cooldowns.highlow - Date.now();
-  if (remaining > 0) return message.reply(err(`High/Low cooldown!`, `Wait **${formatDuration(remaining)}**.`));
-
-  const current = Math.floor(Math.random() * 100) + 1;
-  const next = Math.floor(Math.random() * 100) + 1;
-  const reward = Math.round(ec.rewards.highlow * getEventMultiplier(guildId, 'highlow'));
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.primary)
-    .setTitle('📈 High / Low')
-    .setDescription(`Current number: **${current}**\n\nWill the next number be **HIGHER** or **LOWER**?\n\n💰 Correct guess = **+${formatNumber(reward)}** Credits`)
-    .setFooter({ text: 'Choose wisely!' });
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId('hl_high').setLabel('HIGHER ⬆️').setStyle(ButtonStyle.Success),
-    new ButtonBuilder().setCustomId('hl_low').setLabel('LOWER ⬇️').setStyle(ButtonStyle.Danger),
-  );
-
-  const msg = await message.reply({ embeds: [embed], components: [row] });
-
-  const collector = msg.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 30000,
-    max: 1,
-    filter: i => i.user.id === userId,
-  });
-
-  collector.on('collect', async (interaction) => {
-    setCooldown(guildId, userId, 'highlow');
-    user.stats.gamesPlayed++;
-    const guess = interaction.customId.replace('hl_', '');
-    const isHigher = next > current;
-    const correct = (guess === 'high' && isHigher) || (guess === 'low' && !isHigher);
-
-    if (correct) {
-      addCredits(guildId, userId, reward, 'highlow');
-      user.stats.gamesWon++;
-      saveEconomy(guildId, ec);
-      progressQuest(guildId, userId, 'minigames');
-      checkQuestCompletion(guildId, userId);
-
-      const winEmbed = new EmbedBuilder()
-        .setColor(COLORS.success)
-        .setTitle('✅ Correct!')
-        .setDescription(`The next number was **${next}**!\n\n💰 **+${formatNumber(reward)}** Credits`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      return interaction.update({ embeds: [winEmbed], components: [] });
-    } else {
-      const loseEmbed = new EmbedBuilder()
-        .setColor(COLORS.error)
-        .setTitle('❌ Wrong!')
-        .setDescription(`The next number was **${next}**!\n\nNo reward this time.`)
-        .setFooter({ text: `Balance: ${formatNumber(user.credits)}` });
-      return interaction.update({ embeds: [loseEmbed], components: [] });
-    }
-  });
-
-  collector.on('end', async (collected, reason) => {
-    if (reason === 'time') {
-      const timeoutEmbed = new EmbedBuilder()
-        .setColor(COLORS.muted)
-        .setTitle('⏰ Time\'s Up!')
-        .setDescription(`The next number was **${next}**.`);
-      await msg.edit({ embeds: [timeoutEmbed], components: [] });
-    }
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// JACKPOT
-// ══════════════════════════════════════════════════════════
-
-const activeJackpots = new Map(); // guildId -> { participants: Set, message, timeout, reward }
-
-async function handleJackpot(message, args, client) {
-  if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
-  const guildId = message.guild.id;
-  const userId = message.author.id;
-  const user = getUserEconomy(guildId, userId);
-  const ec = getEconomy(guildId);
-
-  const remaining = (user.cooldowns.jackpot || 0) + ec.cooldowns.jackpot - Date.now();
-  if (remaining > 0) return message.reply(err(`Jackpot cooldown!`, `Wait **${formatDuration(remaining)}**.`));
-
-  if (activeJackpots.has(guildId)) {
-    // User is joining an existing jackpot
-    const jp = activeJackpots.get(guildId);
-    if (jp.participants.has(userId)) {
-      return message.reply(err('You already joined this jackpot!'));
-    }
-    // Check if user has cooldown
-    const u = getUserEconomy(guildId, userId);
-    const cd = (u.cooldowns.jackpot || 0) + ec.cooldowns.jackpot - Date.now();
-    if (cd > 0) return message.reply(err(`Jackpot participation cooldown!`, `Wait **${formatDuration(cd)}**.`));
-
-    jp.participants.add(userId);
-    const embed = new EmbedBuilder()
-      .setColor(COLORS.gold)
-      .setTitle('🎰 SERVER JACKPOT')
-      .setDescription(`A jackpot event is running!\n\n💰 Prize: **${formatNumber(jp.reward)}** Credits\n👥 Participants: **${jp.participants.size}**\n⏰ Ends in 60 seconds!\n\nClick **JOIN** to enter for free!`)
-      .setFooter({ text: 'Free entry! One entry per user!' });
-    await jp.message.edit({ embeds: [embed] });
-    return message.reply(ok('You joined the jackpot! Good luck!'));
-  }
-
-  // Start new jackpot
-  const reward = Math.round(ec.rewards.jackpot * getEventMultiplier(guildId, 'jackpot'));
-  const participants = new Set([userId]);
-
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.gold)
-    .setTitle('🎰 SERVER JACKPOT')
-    .setDescription(`A jackpot event is starting!\n\n💰 Prize: **${formatNumber(reward)}** Credits\n👥 Participants: **1**\n⏰ Ends in 60 seconds!\n\nClick **JOIN** to enter for free!`)
-    .setFooter({ text: 'Free entry! One entry per user!' });
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId('jackpot_join').setLabel('JOIN').setEmoji('🎰').setStyle(ButtonStyle.Success),
-  );
-
-  const msg = await message.channel.send({ embeds: [embed], components: [row] });
-  activeJackpots.set(guildId, { participants, message: msg, reward, channelId: message.channel.id });
-
-  // End jackpot after 60 seconds
-  setTimeout(async () => {
-    const jp = activeJackpots.get(guildId);
-    if (!jp) return;
-    activeJackpots.delete(guildId);
-
-    const list = Array.from(jp.participants);
-    if (list.length === 0) {
-      const noEmbed = new EmbedBuilder().setColor(COLORS.muted).setTitle('🎰 Jackpot Cancelled').setDescription('Nobody joined the jackpot.');
-      return msg.edit({ embeds: [noEmbed], components: [] });
-    }
-
-    const winnerId = list[Math.floor(Math.random() * list.length)];
-    addCredits(guildId, winnerId, reward, 'jackpot');
-    const winner = getUserEconomy(guildId, winnerId);
-    winner.stats.gamesWon++;
-    saveEconomy(guildId, ec);
-
-    // Set cooldown for all participants
-    for (const pid of list) {
-      const pu = getUserEconomy(guildId, pid);
-      pu.cooldowns.jackpot = Date.now();
-    }
-    saveEconomy(guildId, ec);
-
-    const winEmbed = new EmbedBuilder()
-      .setColor(COLORS.gold)
-      .setTitle('🎰 JACKPOT WINNER!')
-      .setDescription(`**${list.length}** users entered...\n\n🏆 <@${winnerId}> wins **${formatNumber(reward)}** Credits!`)
-      .setFooter({ text: `New Balance: ${formatNumber(winner.credits)}` });
-    await msg.edit({ embeds: [winEmbed], components: [] });
-  }, 60000);
-}
-
-async function handleJackpotButton(interaction) {
-  if (interaction.customId !== 'jackpot_join') return false;
-  const guildId = interaction.guild.id;
-  const userId = interaction.user.id;
-  const ec = getEconomy(guildId);
-
-  const jp = activeJackpots.get(guildId);
-  if (!jp) return interaction.reply({ content: '❌ This jackpot has ended.', ephemeral: true });
-  if (jp.participants.has(userId)) return interaction.reply({ content: '❌ You already joined!', ephemeral: true });
-
-  const u = getUserEconomy(guildId, userId);
-  const cd = (u.cooldowns.jackpot || 0) + ec.cooldowns.jackpot - Date.now();
-  if (cd > 0) return interaction.reply({ content: `❌ Jackpot cooldown! Wait ${formatDuration(cd)}.`, ephemeral: true });
-
-  jp.participants.add(userId);
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.gold)
-    .setTitle('🎰 SERVER JACKPOT')
-    .setDescription(`A jackpot event is running!\n\n💰 Prize: **${formatNumber(jp.reward)}** Credits\n👥 Participants: **${jp.participants.size}**\n⏰ Ends in 60 seconds!\n\nClick **JOIN** to enter for free!`)
-    .setFooter({ text: 'Free entry! One entry per user!' });
-  await jp.message.edit({ embeds: [embed] });
-  return interaction.reply({ content: '✅ You joined the jackpot! Good luck!', ephemeral: true });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1154,17 +818,8 @@ async function handleJackpotButton(interaction) {
 // ══════════════════════════════════════════════════════════
 
 module.exports = {
-  handleTrivia,
-  handleScramble,
-  handleMath,
-  handleFasttype,
-  handleMemory,
-  handleSlots,
-  handleWheel,
-  handleScratch,
-  handleMines,
-  handleCups,
-  handleHighlow,
-  handleJackpot,
-  handleJackpotButton,
+  handleCrash, handleGamble, handleBombs, handleScratch,
+  handleRoulette, handlePlinko, handleHighlow, handleLadder,
+  handleDice, handleSlots, handleBlackjack, handleMines,
+  handleRob,
 };
