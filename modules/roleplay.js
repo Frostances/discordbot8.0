@@ -49,7 +49,7 @@ const ACTIONS = {
         emoji: '💋',
         target: true,
         color: '#FF1493',
-        customGif: 'https://animesher.com/orig/1/167/1673/16736/animesher.com_gif-couple-kiss-1673657.gif'
+        customGif: 'https://klipy.com/gifs/nene-nene-amano-12'
     },
     pat: {
         api: 'nekos',
