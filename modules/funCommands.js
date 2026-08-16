@@ -196,31 +196,49 @@ async function handleDuckDuckGo(ctx, args) {
 // ══════════════════════════════════════════════════════════
 const blackteaGames = new Map();
 const THREE_LETTER_WORDS = [
-  'ace','act','add','age','aid','aim','air','ale','all','and','ant','any','ape','apt','arc','are','ark','arm','art','ash',
-  'ask','ate','awe','axe','bad','bag','ban','bar','bat','bay','bed','bee','beg','bet','bid','big','bin','bit','bob','bog',
-  'boo','bow','box','boy','bra','bud','bug','bum','bun','bus','but','buy','bye','cab','cad','cam','can','cap','car','cat',
-  'cop','cot','cow','coy','cry','cub','cue','cup','cut','dad','dam','day','den','dew','did','die','dig','dim','din','dip',
-  'dog','dot','dry','dub','dud','due','dug','dun','duo','dye','ear','eat','ebb','eel','egg','ego','elf','elk','elm','end',
-  'era','eve','eye','fad','fan','far','fat','fax','fay','fed','fee','fen','few','fig','fin','fir','fit','fix','flu','fly',
-  'fog','foe','fop','for','fox','fro','fry','fun','fur','gab','gad','gag','gal','gap','gas','gay','gee','gel','gem',
-  'get','gig','gin','god','got','gum','gun','gut','guy','gym','had','hag','ham','has','hat','hay','hem','hen','her','hew',
-  'hex','hid','him','hip','his','hit','hob','hoe','hog','hop','hot','how','hub','hue','hug','huh','hum','hut','ice','icy',
-  'ink','inn','ion','ire','irk','ivy','jab','jag','jam','jar','jaw','jay','jet','jew','jig','job','jog','jot','joy','jug',
-  'jut','keg','ken','key','kid','kin','kit','lab','lad','lag','lam','lap','law','lax','lay','lea','led','lee','leg','let',
-  'lid','lie','lip','lit','lob','log','lop','lot','low','lox','lug','lux','lye','mad','man','map','mar','mat','maw','max',
-  'may','men','met','mew','mid','mil','mix','mob','mod','mop','mow','mud','mug','mum','nab','nag','nap','nay','nee','net',
-  'new','nil','nip','nod','nor','not','now','nub','nun','nut','oaf','oak','oar','oat','odd','ode','off','oft','ohm','oho',
-  'oil','old','one','ooh','opt','orb','ore','our','out','ova','owe','owl','own','pad','pal','pan','par','pat','paw','pay',
-  'pea','peg','pen','pep','per','pet','pew','phi','pic','pie','pig','pin','pip','pit','ply','pod','poi','pop','pot','pow',
-  'pox','pro','pry','pub','pug','pun','pup','pus','put','rag','rah','ram','ran','rap','rat','raw','ray','red','ref','rep',
-  'rev','rib','rid','rig','rim','rip','rob','rod','roe','rot','row','rub','rue','rug','rum','run','rut','rye','sac','sad',
-  'sag','sap','sat','saw','sax','say','sea','sec','see','set','sew','sex','shy','sib','sic','sin','sip','sir','sit','six',
-  'ski','sky','sly','sob','sod','sol','son','sop','sot','sow','soy','spa','spy','sty','sub','sue','sum','sun','sup','tab',
-  'tad','tag','tam','tan','tap','tar','tat','tax','tea','tee','ten','the','thy','tic','tie','tin','tip','toe','tog','tom',
-  'ton','too','top','tor','tot','tow','toy','try','tub','tug','tun','tux','two','use','van','vat','vet','vex','via','vie',
-  'vim','vow','wad','wag','wan','war','was','wax','way','web','wed','wee','wet','who','why','wig','win','wit','woe','won',
-  'woo','wow','wry','yak','yam','yap','yaw','yea','yen','yep','yes','yet','yew','yip','yod','yon','you','yow','yuk','yum',
-  'yup','zag','zap','zed','zen','zip','zit','zoo'
+    // 🟢 EASY — 90 (30%)
+    'pla','app','ban','car','cat','dog','sun','run','man','hat',
+    'pen','red','big','hot','new','old','day','way','win','air',
+    'sea','tea','bed','box','boy','bus','cup','fan','far','fun',
+    'get','god','ham','job','key','leg','map','top','use','you',
+    'and','are','all','any','one','two','our','out','but','can',
+    'for','not','now','how','who','why','her','him','his','she',
+    'was','has','had','let','put','say','see','too','got','hit',
+    'run','ran','red','big','bad','good','old','new','low','low',
+    'pay','buy','eat','win','won','try','yes','yet','day','way',
+
+    // 🟡 MEDIUM — 120 (40%)
+    'str','ing','ion','ent','ter','est','ear','ate','ver','con',
+    'com','pro','pre','tra','sta','act','ill','ful','ble','der',
+    'per','res','ure','tio','nce','nch','and','ant','art','cal',
+    'cha','che','chi','col','cou','cre','den','dis','eco','edu',
+    'ele','ene','fin','for','gen','her','ima','inf','int','lan',
+    'lea','les','men','nat','ope','par','rea','ser','tal','tic',
+    'tri','age','ain','ake','ale','ame','ase','ast','ave','bel',
+    'ber','cer','cha','cle','cor','dar','del','des','dif','dom',
+    'ear','ers','eve','fac','fer','fic','fig','ger','han','hap',
+    'hea','hel','ing','ins','ish','ist','ive','kin','lar','lic',
+    'lin','lit','loc','log','lov','mar','mat','mil','min','mod',
+    'mon','mor','mov','mus','ope','org','par','pas','pla','por',
+    'pos','pow','pre','pro','rea','rec','rel','rep','res','ret',
+    'rou','sch','sta','sub','sup','sys','tem','tim','tra','ver',
+
+    // 🔴 HARD — 75 (25%)
+    'ght','sch','scr','spl','thr','phr','chr','spr','shr','dge',
+    'tch','igh','nth','rth','lth','mpt','rch','rph','mph','nks',
+    'rks','rds','lps','lks','fts','pts','cts','xtr','squ','qui',
+    'que','gua','gue','psy','rld','lly','nly','tly','bly','rly',
+    'awk','ept','eck','eld','elf','elk','elm','elt','emp','eng',
+    'enk','egr','eiv','eiz','ict','ild','ilm','ilt','imb','ind',
+    'ink','ird','irk','ism','ith','izz','omp','ond','ong','onk',
+    'ood','ook','ool','oon','oot','ord','ork','orm','orn','ort',
+    'oun','ous','uck','ude','ugh','ult','umb','ump','und','unk',
+    'urt','ush','ust','ute','yth',
+
+    // 🟣 TRICKY — 15 (5%)
+    'xyl','zyg','eau','pht','sph',
+    'mnk','pss','xth','zth','qth',
+    'jth','vth','wth','kth','bth'
 ];
 
 async function handleBlacktea(ctx, args) {
