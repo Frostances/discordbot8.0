@@ -8,7 +8,8 @@ const {
 } = require('discord.js');
 const fs   = require('fs');
 const path = require('path');
-// const { SimpleShardingStrategy } = require('@discordjs/ws');
+const { createRequire } = require('node:module');
+const { SimpleShardingStrategy } = createRequire(require.resolve('discord.js'))('@discordjs/ws');
 const { ActivityType } = require('discord.js');
 const { applyMutePermsToNewChannel } = require('./modules/mute');
 const { updateSeen } = require('./modules/information');
@@ -189,8 +190,8 @@ const { handleGiveawayCommand, handleGiveawayButton,
 const { handleTopVcCommand, trackTopVcVoiceState,
         refreshTopVcLeaderboards, handleTopVcClear }    = require('./modules/topvc');
 const { handleVoiceTimeStats, handleMessageStats,
-        handleStreamTimeStats, handleCameraTimeStats,
-        trackMessage, handleStatsClear }                 = require('./modules/stats');
+ handleStreamTimeStats, handleCameraTimeStats,
+ trackMessage, trackVcStats, handleStatsClear } = require('./modules/stats');
 const { setAfk, checkAfkReturn, checkAfkMentions } = require('./modules/afk');
 const { handleCustomize } = require('./modules/customize');
 
@@ -331,13 +332,16 @@ const client = new Client({
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.GuildEmojisAndStickers,
     ],
-    ws: {
-        identifyProperties: {
-            browser: 'Discord Android',
-            device: 'Discord Android',
-            os: 'android',
-        },
+ws: {
+    buildStrategy: (manager) => {
+      manager.options.identifyProperties = {
+        browser: 'Discord Android',
+        device: 'Discord Android',
+        os: 'android',
+      };
+      return new SimpleShardingStrategy(manager);
     },
+  },
 });
 
 attachGlobalHandlers(client);
@@ -2317,8 +2321,9 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     if (oldState.channelId && tempVCOwners.has(oldState.channelId))
         await handleVoiceMasterLeave(oldState).catch(() => {});
 
-    // Voice time tracking
-    await trackVoiceTime(oldState, newState).catch(() => {});
+     // Voice time tracking
+     await trackVoiceTime(oldState, newState).catch(() => {});
+     await trackVcStats(oldState, newState).catch(() => {});
 
     // TOPVC voice/stream/camera tracking
     await trackTopVcVoiceState(oldState, newState, client).catch(() => {});
