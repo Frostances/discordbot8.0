@@ -20,6 +20,7 @@ const MODULES = {
   guessword: 'Guess Word',
   filters: 'Filters',
   roleplay: 'Roleplay',
+  economy: 'Economy',
 };
 
 const MODULE_ORDER = [
@@ -35,6 +36,7 @@ const MODULE_ORDER = [
   'guessword',
   'filters',
   'roleplay',
+  'economy',
 ];
 
 // ══════════════════════════════════════════════════════════

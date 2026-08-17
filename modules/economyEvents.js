@@ -4,7 +4,8 @@
 // ══════════════════════════════════════════════════════════
 
 const { EmbedBuilder } = require('discord.js');
-const { getEconomy, saveEconomy, getActiveEventNames, COLORS } = require('./economy');
+const { getEconomy, saveEconomy, getActiveEventNames } = require('./economy');
+const { COLORS } = require('../utils/embeds');
 const logger = require('../utils/logger');
 
 // ══════════════════════════════════════════════════════════

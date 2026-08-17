@@ -1876,7 +1876,7 @@ client.on('messageCreate', async (message) => {
          // Economy Core
          if (command === 'balance') return handleBalance(message, args);
          if (command === 'daily') return handleDaily(message);
-         if (command === 'work') return handleWork(message);
+         if (command === 'work') return handleWork(message, args);
          if (command === 'leaderboard') return handleLeaderboard(message, args, client);
          if (command === 'profile') return handleProfile(message, args, client);
          if (command === 'economy') return handleEconomyConfig(message, args);

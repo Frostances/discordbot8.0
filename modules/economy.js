@@ -6,6 +6,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFl
 const { getGuildDb } = require('./database');
 const { isAdmin, isBotOwner, hasDiscordPerm } = require('./helpers');
 const { success: mkSuccess, error: mkError, info, ok, err, COLORS } = require('../utils/embeds');
+const { isModuleEnabled } = require('./moduleSystem');
 const logger = require('../utils/logger');
 
 // ══════════════════════════════════════════════════════════
@@ -102,6 +103,7 @@ function getUserEconomy(guildId, userId) {
 }
 
 function isEconomyEnabled(guildId) {
+  if (!isModuleEnabled(guildId, 'economy')) return false;
   const ec = getEconomy(guildId);
   return ec.enabled === true;
 }
@@ -771,6 +773,7 @@ async function handleEconomyButton(interaction) {
 
 module.exports = {
   getEconomy, saveEconomy, getUserEconomy, isEconomyEnabled,
+  COLORS,
   addCredits, removeCredits, setCredits, logTransaction, sendEconomyLog,
   formatNumber, formatDuration, getEventMultiplier, getActiveEventNames,
   trackEconomyMessage, setCooldown, getDefaultShopItems, parseDuration,

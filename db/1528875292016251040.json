@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 24836,
+      "xp": 24930,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2240,15 +2240,15 @@
     "1528875292016251040": {
       "1410668779347771402": {
         "daily": {
-          "2026-08-17": 11
+          "2026-08-17": 18
         },
         "weekly": {
-          "2026-08-17": 11
+          "2026-08-17": 18
         },
         "monthly": {
-          "2026-08": 11
+          "2026-08": 18
         },
-        "total": 11
+        "total": 18
       }
     }
   },
@@ -2425,7 +2425,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786936583513
+    "1410668779347771402": 1786938472503
   },
   "antinuke": {
     "enabled": true,
@@ -2608,19 +2608,19 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 36,
+    "help": 37,
     "levels": 7,
     "ask": 10,
     "who": 1,
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 14,
+    "balance": 17,
     "daily": 2,
-    "economy": 9,
+    "economy": 10,
     "profile": 1,
-    "messages": 15,
-    "voicetime": 35,
+    "messages": 16,
+    "voicetime": 36,
     "nuke": 7,
     "botstats": 2,
     "play": 28,
@@ -2923,12 +2923,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",messages <@1278713831345881170>",
-          "lastTime": 1786936583515,
+          "lastContent": ",balance <@1410668779347771402>",
+          "lastTime": 1786938472504,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786936583515
+          "windowStart": 1786938472504
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
