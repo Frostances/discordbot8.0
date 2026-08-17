@@ -298,6 +298,7 @@ const {
   handleLeaderboard, handleProfile,
 } = require('./modules/economy');
 const {
+  handleCoinflip,
   handleCrash, handleGamble, handleBombs, handleScratch,
   handleRoulette, handlePlinko, handleHighlow, handleLadder,
   handleDice, handleSlots, handleBlackjack, handleMines,
@@ -1270,6 +1271,9 @@ const ALIASES = {
      slot: 'slots',
      hl: 'highlow',
      jk: 'jackpot',
+     cf: 'coinflip',
+     coin: 'coinflip',
+     flip2: 'coinflip',
      ecoadmin: 'economy',
      ecocfg: 'economy',
      vt: 'voicetime',
@@ -1400,7 +1404,7 @@ client.on('messageCreate', async (message) => {
       const economyCommands = new Set([
         'balance','daily','work','leaderboard','profile',
         'crash','gamble','bombs','scratch','roulette','plinko','highlow','ladder',
-        'dice','slots','blackjack','mines','rob','crime',
+        'dice','slots','blackjack','mines','rob','crime','coinflip',
         'shop','buy','inventory','use',
         'transfer','deposit','withdraw','circulation','open'
       ]);
@@ -1902,6 +1906,7 @@ client.on('messageCreate', async (message) => {
          if (command === 'crime') return handleCrime(message);
 
          // Economy Games
+         if (command === 'coinflip') return handleCoinflip(message, args);
          if (command === 'crash') return handleCrash(message, args);
          if (command === 'gamble') return handleGamble(message, args);
          if (command === 'bombs') return handleBombs(message, args);

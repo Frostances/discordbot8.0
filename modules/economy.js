@@ -290,7 +290,7 @@ async function handleBalance(message, args) {
   const total = user.wallet + user.bank;
 
   const embed = makeEmbed(
-    target.id === message.author.id ? 'Your Balance' : `${target.username}'s Balance`,
+    target.id === message.author.id ? '💼 Your Balance' : `💼 ${target.username}'s Balance`,
     `**Wallet:** ${formatNumber(user.wallet)}\n**Bank:** ${formatNumber(user.bank)}\n**Total:** ${formatNumber(total)}`,
     '#5865F2',
     'Use ,deposit or ,withdraw to move funds'
@@ -316,7 +316,7 @@ async function handleDaily(message) {
   user.lastDaily = Date.now();
   saveEconomy(guildId, ec);
 
-  const embed = makeEmbed('Daily Reward', `You received **+${formatNumber(reward)}** ${ec.currencyName}.\n\n**New Balance:** ${formatNumber(user.wallet)}`, '#57F287', mult > 1 ? 'Event Bonus Active' : null);
+  const embed = makeEmbed('🎁 Daily Reward', `You received **+${formatNumber(reward)}** ${ec.currencyName}.\n\n**New Balance:** ${formatNumber(user.wallet)}`, '#57F287', mult > 1 ? 'Event Bonus Active' : null);
   return message.reply({ embeds: [embed] });
 }
 
@@ -346,7 +346,7 @@ async function handleWork(message, args) {
   user.lastWork = Date.now();
   saveEconomy(guildId, ec);
 
-  const embed = makeEmbed('Work Complete', `**${job.name}** — ${job.description}\n\nYou earned **+${formatNumber(reward)}** ${ec.currencyName}.`, '#57F287', `Balance: ${formatNumber(user.wallet)}${mult > 1 ? ' • Bonus Active' : ''}`);
+  const embed = makeEmbed('💼 Work Complete', `**${job.name}** — ${job.description}\n\nYou earned **+${formatNumber(reward)}** ${ec.currencyName}.`, '#57F287', `Balance: ${formatNumber(user.wallet)}${mult > 1 ? ' • Bonus Active' : ''}`);
   return message.reply({ embeds: [embed] });
 }
 
@@ -356,6 +356,13 @@ async function handleCrime(message) {
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
+
+  // FIX: crimeCooldown from the economy config is now actually enforced
+  const remaining = (user.lastCrime || 0) + ec.crimeCooldown - Date.now();
+  if (remaining > 0) {
+    return message.reply(err(`You're laying low after your last job. Come back in **${formatDuration(remaining)}**.`));
+  }
+  user.lastCrime = Date.now();
 
   const outcomes = [
     { text: 'You robbed a convenience store', min: 100, max: 500, success: true },
@@ -373,7 +380,7 @@ async function handleCrime(message) {
     const reward = Math.round((Math.floor(Math.random() * (outcome.max - outcome.min + 1)) + outcome.min) * mult);
     addCredits(guildId, userId, reward, 'crime');
     saveEconomy(guildId, ec);
-    const embed = makeEmbed('Crime Committed', `${outcome.text} and got away with **+${formatNumber(reward)}** ${ec.currencyName}.`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+    const embed = makeEmbed('🥷 Crime Committed', `${outcome.text} and got away with **+${formatNumber(reward)}** ${ec.currencyName}.`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
     return message.reply({ embeds: [embed] });
   } else {
     let desc = outcome.text;
@@ -385,7 +392,7 @@ async function handleCrime(message) {
       desc += ' and earned nothing.';
     }
     saveEconomy(guildId, ec);
-    const embed = makeEmbed('Crime Failed', desc, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
+    const embed = makeEmbed('🚨 Crime Failed', desc, '#ED4245', `Balance: ${formatNumber(user.wallet)}`);
     return message.reply({ embeds: [embed] });
   }
 }
@@ -413,14 +420,14 @@ async function handleOpen(message) {
   }
 
   if (reward.type === 'nothing') {
-    const embed = makeEmbed('Crate Opened', 'You opened the crate but it was empty.', '#2F3136', 'Better luck next time');
+    const embed = makeEmbed('📦 Crate Opened', 'You opened the crate but it was empty.', '#2F3136', 'Better luck next time');
     return message.reply({ embeds: [embed] });
   }
 
   const amount = Math.floor(Math.random() * (reward.max - reward.min + 1)) + reward.min;
   addCredits(guildId, userId, amount, 'crate');
   saveEconomy(guildId, ec);
-  const embed = makeEmbed('Crate Opened', `You found **+${formatNumber(amount)}** ${ec.currencyName} inside!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
+  const embed = makeEmbed('📦 Crate Opened', `You found **+${formatNumber(amount)}** ${ec.currencyName} inside!`, '#57F287', `Balance: ${formatNumber(user.wallet)}`);
   return message.reply({ embeds: [embed] });
 }
 
@@ -444,7 +451,7 @@ async function handleDeposit(message, args) {
   user.bank += amount;
   saveEconomy(guildId, ec);
 
-  const embed = makeEmbed('Deposit Successful', `**+${formatNumber(amount)}** ${ec.currencyName} moved to your bank.`, '#57F287', `Wallet: ${formatNumber(user.wallet)} | Bank: ${formatNumber(user.bank)}`);
+  const embed = makeEmbed('🏦 Deposit Successful', `**+${formatNumber(amount)}** ${ec.currencyName} moved to your bank.`, '#57F287', `Wallet: ${formatNumber(user.wallet)} | Bank: ${formatNumber(user.bank)}`);
   return message.reply({ embeds: [embed] });
 }
 
@@ -464,7 +471,7 @@ async function handleWithdraw(message, args) {
   user.wallet += amount;
   saveEconomy(guildId, ec);
 
-  const embed = makeEmbed('Withdrawal Successful', `**+${formatNumber(amount)}** ${ec.currencyName} moved to your wallet.`, '#57F287', `Wallet: ${formatNumber(user.wallet)} | Bank: ${formatNumber(user.bank)}`);
+  const embed = makeEmbed('🏦 Withdrawal Successful', `**+${formatNumber(amount)}** ${ec.currencyName} moved to your wallet.`, '#57F287', `Wallet: ${formatNumber(user.wallet)} | Bank: ${formatNumber(user.bank)}`);
   return message.reply({ embeds: [embed] });
 }
 
@@ -489,7 +496,7 @@ async function handleTransfer(message, args) {
   targetUser.wallet += amount;
   saveEconomy(guildId, ec);
 
-  const embed = makeEmbed('Transfer Complete', `You sent **${formatNumber(amount)}** ${ec.currencyName} to **${target.username}**.`, '#57F287', `Wallet: ${formatNumber(user.wallet)}`);
+  const embed = makeEmbed('💸 Transfer Complete', `You sent **${formatNumber(amount)}** ${ec.currencyName} to **${target.username}**.`, '#57F287', `Wallet: ${formatNumber(user.wallet)}`);
   return message.reply({ embeds: [embed] });
 }
 
@@ -505,7 +512,7 @@ async function handleCirculation(message) {
   const totalBank = Object.values(ec.users).reduce((a, u) => a + (u.bank || 0), 0);
   const total = totalWallet + totalBank;
 
-  const embed = makeEmbed('Economy Circulation', `**Total Users:** ${formatNumber(userCount)}\n**Wallet Total:** ${formatNumber(totalWallet)}\n**Bank Total:** ${formatNumber(totalBank)}\n**Combined:** ${formatNumber(total)} ${ec.currencyName}`, '#5865F2', 'Real-time statistics');
+  const embed = makeEmbed('📊 Economy Circulation', `**Total Users:** ${formatNumber(userCount)}\n**Wallet Total:** ${formatNumber(totalWallet)}\n**Bank Total:** ${formatNumber(totalBank)}\n**Combined:** ${formatNumber(total)} ${ec.currencyName}`, '#5865F2', 'Real-time statistics');
   return message.reply({ embeds: [embed] });
 }
 
@@ -537,7 +544,7 @@ async function handleLeaderboard(message, args, client) {
     desc += `${medal} **${name}** — ${formatNumber(u.total)} ${ec.currencyName}\n`;
   }
 
-  const embed = makeEmbed('Economy Leaderboard', desc || 'No economy data yet.', '#FFD700', `Page ${page}/${totalPages}`);
+  const embed = makeEmbed('🏆 Economy Leaderboard', desc || 'No economy data yet.', '#FFD700', `Page ${page}/${totalPages}`);
   const row = new ActionRowBuilder();
   if (page > 1) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page - 1}`).setLabel('◀').setStyle(ButtonStyle.Primary));
   if (page < totalPages) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page + 1}`).setLabel('▶').setStyle(ButtonStyle.Primary));
@@ -551,7 +558,7 @@ async function handleProfile(message, args, client) {
   const user = getUserEconomy(guildId, target.id);
   const total = user.wallet + user.bank;
 
-  const embed = makeEmbed(`${target.username}'s Profile`, `**Wallet:** ${formatNumber(user.wallet)}\n**Bank:** ${formatNumber(user.bank)}\n**Total:** ${formatNumber(total)}\n**Earned:** ${formatNumber(user.totalEarned)}\n**Spent:** ${formatNumber(user.totalSpent)}\n**Games Played:** ${formatNumber(user.gamesPlayed)}\n**Games Won:** ${formatNumber(user.gamesWon)}`, '#5865F2', 'Economy Profile');
+  const embed = makeEmbed(`👤 ${target.username}'s Profile`, `**Wallet:** ${formatNumber(user.wallet)}\n**Bank:** ${formatNumber(user.bank)}\n**Total:** ${formatNumber(total)}\n**Earned:** ${formatNumber(user.totalEarned)}\n**Spent:** ${formatNumber(user.totalSpent)}\n**Games Played:** ${formatNumber(user.gamesPlayed)}\n**Games Won:** ${formatNumber(user.gamesWon)}`, '#5865F2', 'Economy Profile');
   return message.reply({ embeds: [embed] });
 }
 
@@ -637,7 +644,7 @@ async function handleEconomyConfig(message, args) {
   }
 
   if (sub === 'config') {
-    const embed = makeEmbed('Economy Configuration',
+    const embed = makeEmbed('⚙️ Economy Configuration',
       `**Status:** ${ec.enabled ? 'Enabled' : 'Disabled'}\n**Mode:** ${ec.mode}\n**Daily:** ${formatNumber(ec.dailyAmount)}\n**Work Cooldown:** ${formatDuration(ec.workCooldown)}\n**Max Balance:** ${formatNumber(ec.maxBalance)}\n**Jobs:** ${ec.jobs.length}\n**Shop Items:** ${ec.shop.length}`,
       '#5865F2', 'Use ,economy enable/disable to toggle');
     return message.reply({ embeds: [embed] });
@@ -773,7 +780,7 @@ async function handleEconomyButton(interaction) {
       desc += `${medal} **${name}** — ${formatNumber(u.total)} ${ec.currencyName}\n`;
     }
 
-    const embed = makeEmbed('Economy Leaderboard', desc || 'No data.', '#FFD700', `Page ${page}/${totalPages}`);
+    const embed = makeEmbed('🏆 Economy Leaderboard', desc || 'No data.', '#FFD700', `Page ${page}/${totalPages}`);
     const row = new ActionRowBuilder();
     if (page > 1) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page - 1}`).setLabel('◀').setStyle(ButtonStyle.Primary));
     if (page < totalPages) row.addComponents(new ButtonBuilder().setCustomId(`ecolb_${page + 1}`).setLabel('▶').setStyle(ButtonStyle.Primary));

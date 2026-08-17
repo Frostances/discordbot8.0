@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 24988,
+      "xp": 25038,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2240,15 +2240,15 @@
     "1528875292016251040": {
       "1410668779347771402": {
         "daily": {
-          "2026-08-17": 20
+          "2026-08-17": 27
         },
         "weekly": {
-          "2026-08-17": 20
+          "2026-08-17": 27
         },
         "monthly": {
-          "2026-08": 20
+          "2026-08": 27
         },
-        "total": 20
+        "total": 27
       }
     }
   },
@@ -2263,18 +2263,24 @@
   "vcStats": {
     "1528875292016251040": {
       "1410668779347771402": {
-        "totalMs": 0,
-        "daily": {},
-        "weekly": {},
-        "monthly": {},
+        "totalMs": 38574612,
+        "daily": {
+          "2026-08-17": 38574612
+        },
+        "weekly": {
+          "2026-08-17": 38574612
+        },
+        "monthly": {
+          "2026-08": 38574612
+        },
         "streamMs": 0,
         "cameraMs": 0,
         "streamDaily": {},
         "cameraDaily": {},
-        "lastJoin": 1786936053656,
+        "lastJoin": null,
         "lastStreamJoin": null,
         "lastCameraJoin": null,
-        "inVc": true,
+        "inVc": false,
         "streaming": false,
         "cameraOn": false
       }
@@ -2425,7 +2431,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786939108514
+    "1410668779347771402": 1786974637628
   },
   "antinuke": {
     "enabled": true,
@@ -2608,16 +2614,16 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 37,
+    "help": 38,
     "levels": 7,
     "ask": 10,
     "who": 1,
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 18,
+    "balance": 20,
     "daily": 2,
-    "economy": 10,
+    "economy": 11,
     "profile": 1,
     "messages": 16,
     "voicetime": 36,
@@ -2627,7 +2633,7 @@
     "pause": 8,
     "disconnect": 9,
     "unpause": 2,
-    "mines": 5,
+    "mines": 6,
     "resume": 5,
     "preset": 3,
     "skip": 4,
@@ -2648,7 +2654,7 @@
     "unlock": 1,
     "ticket": 1,
     "starboard": 3,
-    "work": 5,
+    "work": 6,
     "gamble": 2,
     "cups": 3,
     "vc": 16,
@@ -2689,7 +2695,8 @@
     "statsclear": 1,
     "topvc": 1,
     "cr": 1,
-    "sgs": 1
+    "sgs": 1,
+    "coinflip": 1
   },
   "economy": {
     "enabled": true,
@@ -2923,26 +2930,26 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",ping",
-          "lastTime": 1786939107078,
+          "lastContent": ",coinflip",
+          "lastTime": 1786974637631,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786939107078
+          "windowStart": 1786974637631
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
         "_dailyReset": 1786579215854,
-        "wallet": 0,
+        "wallet": 237,
         "lastDaily": 1786928524278,
         "bank": 0,
-        "totalEarned": 0,
+        "totalEarned": 237,
         "totalSpent": 0,
         "gamesPlayed": 0,
         "gamesWon": 0,
         "robAttempts": 0,
         "robSuccess": 0,
-        "lastWork": 0,
+        "lastWork": 1786974616283,
         "lastCrime": 0,
         "lastRob": 0
       }
@@ -2974,6 +2981,14 @@
         "type": "daily",
         "next": null,
         "timestamp": 1786928524277
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 237,
+        "type": "work",
+        "prev": 0,
+        "next": 237,
+        "timestamp": 1786974616266
       }
     ],
     "shop": [
@@ -3098,7 +3113,7 @@
         "description": "Break into systems (legally)"
       }
     ],
-    "circulation": 0
+    "circulation": 237
   },
   "pinsConfig": {
     "enabled": false,
