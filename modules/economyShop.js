@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════
 
 const { EmbedBuilder } = require('discord.js');
-const { getEconomy, getUserEconomy, isEconomyEnabled, addCredits, removeCredits, formatNumber, makeEmbed } = require('./economy');
+const { getEconomy, getUserEconomy, isEconomyEnabled, addCredits, removeCredits, saveEconomy, formatNumber, makeEmbed } = require('./economy');
 const { hasDiscordPerm } = require('./helpers');
 const { error: err, success: ok } = require('../utils/embeds');
 

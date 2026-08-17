@@ -5,7 +5,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 const { getGuildDb } = require('./database');
 const { isAdmin, isBotOwner, hasDiscordPerm } = require('./helpers');
-const { success: mkSuccess, error: mkError, info: mkInfo, ok, err, COLORS } = require('../utils/embeds');
+const { success: mkSuccess, error: mkError, info, ok, err, COLORS } = require('../utils/embeds');
 const logger = require('../utils/logger');
 
 // ══════════════════════════════════════════════════════════

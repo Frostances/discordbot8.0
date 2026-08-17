@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 23474,
+      "xp": 23729,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2354,9 +2354,9 @@
       }
     },
     "1410668779347771402": {
-      "total": 10,
+      "total": 29,
       "channels": {
-        "[object Object]": 10
+        "[object Object]": 29
       }
     }
   },
@@ -2674,7 +2674,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786925854448
+    "1410668779347771402": 1786928524247
   },
   "antinuke": {
     "enabled": true,
@@ -2857,19 +2857,19 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 30,
+    "help": 33,
     "levels": 7,
     "ask": 10,
     "who": 1,
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 9,
-    "daily": 1,
-    "economy": 5,
+    "balance": 11,
+    "daily": 2,
+    "economy": 7,
     "profile": 1,
-    "messages": 3,
-    "voicetime": 6,
+    "messages": 5,
+    "voicetime": 7,
     "nuke": 7,
     "botstats": 2,
     "play": 28,
@@ -2897,7 +2897,7 @@
     "unlock": 1,
     "ticket": 1,
     "starboard": 3,
-    "work": 2,
+    "work": 5,
     "gamble": 2,
     "cups": 3,
     "vc": 16,
@@ -2925,7 +2925,8 @@
     "clownboard": 1,
     "discord": 2,
     "msg": 1,
-    "cameratime": 2
+    "cameratime": 4,
+    "vtr": 1
   },
   "economy": {
     "enabled": true,
@@ -3159,16 +3160,18 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",economy",
-          "lastTime": 1786925854451,
-          "messageCount": 1,
+          "lastContent": ",daily",
+          "lastTime": 1786928524248,
+          "messageCount": 2,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786925854451
+          "windowStart": 1786928516859
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
-        "_dailyReset": 1786579215854
+        "_dailyReset": 1786579215854,
+        "wallet": null,
+        "lastDaily": 1786928524278
       }
     },
     "logs": [
@@ -3191,6 +3194,13 @@
         "timestamp": 1786579215856,
         "source": "work",
         "staffId": null
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 500,
+        "type": "daily",
+        "next": null,
+        "timestamp": 1786928524277
       }
     ],
     "shop": [

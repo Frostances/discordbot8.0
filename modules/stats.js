@@ -388,4 +388,10 @@ module.exports = {
   trackStreamStart, trackStreamStop, getStreamStats, getTopStreamUsers,
   handleMessageStats, handleVoiceStats, handleCameraStats, handleStreamStats,
   handleStatsTop, handleStatsReset,
+  // Aliases for index.js compatibility
+  handleVoiceTimeStats: handleVoiceStats,
+  handleCameraTimeStats: handleCameraStats,
+  handleStreamTimeStats: handleStreamStats,
+  handleStatsClear: handleStatsReset,
+  handleMessagesStats: handleMessageStats,
 };
