@@ -719,7 +719,7 @@ function buildVoiceMasterEmbed() {
             '<:minus:1528890512315121875> — **Decrease** — Remove 1 user slot\n' +
             '<:info:1528889479652446218> — **Info** — View channel info\n' +
             '<:trash:1528889380100636782> — **Delete** — Delete your VC\n' +
-            '-# type **,vc** for more commands (including `,vc permit @user`)'
+            '-# type **,vc** for more commands'
         )
         .setColor('#5865F2')
 }
