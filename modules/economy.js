@@ -57,18 +57,18 @@ const PRESETS = {
 function getEconomy(guildId) {
   const db = getGuildDb(guildId);
   let ec = db.get('economy', null);
-  if (!ec) {
+  if (!ec || typeof ec !== 'object' || Array.isArray(ec)) {
     ec = JSON.parse(JSON.stringify(DEFAULT_ECONOMY));
     db.set('economy', ec);
   }
   for (const key of Object.keys(DEFAULT_ECONOMY)) {
     if (ec[key] === undefined) ec[key] = JSON.parse(JSON.stringify(DEFAULT_ECONOMY[key]));
   }
-  if (!ec.users) ec.users = {};
-  if (!ec.logs) ec.logs = [];
-  if (!ec.shop) ec.shop = [];
-  if (!ec.jobs) ec.jobs = JSON.parse(JSON.stringify(DEFAULT_ECONOMY.jobs));
-  if (!ec.activeEvents) ec.activeEvents = {};
+  if (!ec.users || typeof ec.users !== 'object') ec.users = {};
+  if (!ec.logs || !Array.isArray(ec.logs)) ec.logs = [];
+  if (!ec.shop || !Array.isArray(ec.shop)) ec.shop = [];
+  if (!ec.jobs || !Array.isArray(ec.jobs)) ec.jobs = JSON.parse(JSON.stringify(DEFAULT_ECONOMY.jobs));
+  if (!ec.activeEvents || typeof ec.activeEvents !== 'object') ec.activeEvents = {};
   return ec;
 }
 
@@ -79,25 +79,38 @@ function saveEconomy(guildId, ec) {
 
 function getUserEconomy(guildId, userId) {
   const ec = getEconomy(guildId);
+  const defaults = {
+    wallet: 0,
+    bank: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    gamesPlayed: 0,
+    gamesWon: 0,
+    robAttempts: 0,
+    robSuccess: 0,
+    lastWork: 0,
+    lastDaily: 0,
+    lastCrime: 0,
+    lastRob: 0,
+    inventory: [],
+    equipped: {},
+    messageTracker: { lastContent: '', lastTime: 0, messageCount: 0, windowStart: 0 },
+    suspiciousFlags: 0,
+  };
+
   if (!ec.users[userId]) {
-    ec.users[userId] = {
-      wallet: 0,
-      bank: 0,
-      totalEarned: 0,
-      totalSpent: 0,
-      gamesPlayed: 0,
-      gamesWon: 0,
-      robAttempts: 0,
-      robSuccess: 0,
-      lastWork: 0,
-      lastDaily: 0,
-      lastCrime: 0,
-      inventory: [],
-      equipped: {},
-      messageTracker: { lastContent: '', lastTime: 0, messageCount: 0, windowStart: 0 },
-      suspiciousFlags: 0,
-    };
+    ec.users[userId] = JSON.parse(JSON.stringify(defaults));
     saveEconomy(guildId, ec);
+  } else {
+    // Fix existing users with missing or null fields
+    let changed = false;
+    for (const [key, val] of Object.entries(defaults)) {
+      if (ec.users[userId][key] === undefined || ec.users[userId][key] === null) {
+        ec.users[userId][key] = JSON.parse(JSON.stringify(val));
+        changed = true;
+      }
+    }
+    if (changed) saveEconomy(guildId, ec);
   }
   return ec.users[userId];
 }
@@ -109,7 +122,8 @@ function isEconomyEnabled(guildId) {
 }
 
 function formatNumber(n) {
-  return n.toLocaleString('en-US');
+  if (n === null || n === undefined || Number.isNaN(n)) return '0';
+  return Number(n).toLocaleString('en-US');
 }
 
 function formatDuration(ms) {

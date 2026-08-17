@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 24930,
+      "xp": 24988,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2240,15 +2240,15 @@
     "1528875292016251040": {
       "1410668779347771402": {
         "daily": {
-          "2026-08-17": 18
+          "2026-08-17": 20
         },
         "weekly": {
-          "2026-08-17": 18
+          "2026-08-17": 20
         },
         "monthly": {
-          "2026-08": 18
+          "2026-08": 20
         },
-        "total": 18
+        "total": 20
       }
     }
   },
@@ -2425,7 +2425,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786938472503
+    "1410668779347771402": 1786939108514
   },
   "antinuke": {
     "enabled": true,
@@ -2598,7 +2598,7 @@
     }
   },
   "commandUsage": {
-    "ping": 17,
+    "ping": 18,
     "antiraid": 1,
     "autoresponder": 23,
     "role": 31,
@@ -2615,7 +2615,7 @@
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 17,
+    "balance": 18,
     "daily": 2,
     "economy": 10,
     "profile": 1,
@@ -2923,18 +2923,28 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",balance <@1410668779347771402>",
-          "lastTime": 1786938472504,
+          "lastContent": ",ping",
+          "lastTime": 1786939107078,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786938472504
+          "windowStart": 1786939107078
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
         "_dailyReset": 1786579215854,
-        "wallet": null,
-        "lastDaily": 1786928524278
+        "wallet": 0,
+        "lastDaily": 1786928524278,
+        "bank": 0,
+        "totalEarned": 0,
+        "totalSpent": 0,
+        "gamesPlayed": 0,
+        "gamesWon": 0,
+        "robAttempts": 0,
+        "robSuccess": 0,
+        "lastWork": 0,
+        "lastCrime": 0,
+        "lastRob": 0
       }
     },
     "logs": [
