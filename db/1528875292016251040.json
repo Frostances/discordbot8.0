@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 24583,
+      "xp": 24836,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2240,198 +2240,15 @@
     "1528875292016251040": {
       "1410668779347771402": {
         "daily": {
-          "2026-08-01": 33,
-          "2026-08-09": 8,
-          "2026-08-10": 9,
-          "2026-08-12": 32,
-          "2026-08-13": 76,
-          "2026-08-15": 137,
-          "2026-08-17": 13
+          "2026-08-17": 11
         },
         "weekly": {
-          "2026-07-27": 33,
-          "2026-08-03": 8,
-          "2026-08-10": 254,
-          "2026-08-17": 13
+          "2026-08-17": 11
         },
         "monthly": {
-          "2026-08": 308
+          "2026-08": 11
         },
-        "total": 308
-      },
-      "1278713831345881170": {
-        "daily": {
-          "2026-08-01": 131,
-          "2026-08-03": 53,
-          "2026-08-04": 156,
-          "2026-08-05": 105,
-          "2026-08-06": 177,
-          "2026-08-07": 255,
-          "2026-08-08": 275,
-          "2026-08-09": 71,
-          "2026-08-15": 53
-        },
-        "weekly": {
-          "2026-07-27": 131,
-          "2026-08-03": 1092,
-          "2026-08-10": 53
-        },
-        "monthly": {
-          "2026-08": 1276
-        },
-        "total": 1276
-      },
-      "1408853277470097568": {
-        "daily": {
-          "2026-08-01": 8,
-          "2026-08-03": 26,
-          "2026-08-04": 258,
-          "2026-08-05": 29,
-          "2026-08-06": 24,
-          "2026-08-07": 58,
-          "2026-08-08": 20
-        },
-        "weekly": {
-          "2026-07-27": 8,
-          "2026-08-03": 415
-        },
-        "monthly": {
-          "2026-08": 423
-        },
-        "total": 423
-      },
-      "1508447915352391751": {
-        "daily": {
-          "2026-08-03": 1,
-          "2026-08-04": 6
-        },
-        "weekly": {
-          "2026-08-03": 7
-        },
-        "monthly": {
-          "2026-08": 7
-        },
-        "total": 7
-      },
-      "1371931756692897893": {
-        "daily": {
-          "2026-08-04": 148,
-          "2026-08-05": 4,
-          "2026-08-06": 7,
-          "2026-08-07": 133,
-          "2026-08-08": 60,
-          "2026-08-09": 168
-        },
-        "weekly": {
-          "2026-08-03": 520
-        },
-        "monthly": {
-          "2026-08": 520
-        },
-        "total": 520
-      },
-      "820324513488699404": {
-        "daily": {
-          "2026-08-06": 1
-        },
-        "weekly": {
-          "2026-08-03": 1
-        },
-        "monthly": {
-          "2026-08": 1
-        },
-        "total": 1
-      },
-      "1534648427135369226": {
-        "daily": {
-          "2026-08-08": 1
-        },
-        "weekly": {
-          "2026-08-03": 1
-        },
-        "monthly": {
-          "2026-08": 1
-        },
-        "total": 1
-      }
-    },
-    "1410668779347771402": {
-      "total": 76,
-      "channels": {
-        "[object Object]": 76
-      },
-      "today": {
-        "date": "2026-08-17",
-        "total": 18,
-        "channels": {
-          "[object Object]": 18
-        }
-      },
-      "week": {
-        "start": 1786838400000,
-        "total": 18,
-        "channels": {
-          "[object Object]": 18
-        }
-      },
-      "month": {
-        "month": "2026-08",
-        "total": 18,
-        "channels": {
-          "[object Object]": 18
-        }
-      },
-      "periods": {
-        "today": {
-          "date": "2026-08-17",
-          "total": 19,
-          "channels": {
-            "[object Object]": 19
-          }
-        },
-        "week": {
-          "start": 1786838400000,
-          "total": 19,
-          "channels": {
-            "[object Object]": 19
-          }
-        },
-        "month": {
-          "month": "2026-08",
-          "total": 19,
-          "channels": {
-            "[object Object]": 19
-          }
-        }
-      }
-    },
-    "1278713831345881170": {
-      "total": 1,
-      "channels": {
-        "[object Object]": 1
-      },
-      "periods": {
-        "today": {
-          "date": "2026-08-17",
-          "total": 1,
-          "channels": {
-            "[object Object]": 1
-          }
-        },
-        "week": {
-          "start": 1786838400000,
-          "total": 1,
-          "channels": {
-            "[object Object]": 1
-          }
-        },
-        "month": {
-          "month": "2026-08",
-          "total": 1,
-          "channels": {
-            "[object Object]": 1
-          }
-        }
+        "total": 11
       }
     }
   },
@@ -2446,159 +2263,18 @@
   "vcStats": {
     "1528875292016251040": {
       "1410668779347771402": {
-        "totalMs": 158332296,
-        "daily": {
-          "2026-08-01": 509810,
-          "2026-08-04": 1505,
-          "2026-08-09": 2039968,
-          "2026-08-13": 1618913,
-          "2026-08-15": 44933254,
-          "2026-08-17": 109228846
-        },
-        "weekly": {
-          "2026-07-27": 509810,
-          "2026-08-03": 2041473,
-          "2026-08-10": 46552167,
-          "2026-08-17": 109228846
-        },
-        "monthly": {
-          "2026-08": 158332296
-        },
-        "streamMs": 2073033,
-        "cameraMs": 151316,
-        "streamDaily": {
-          "2026-08-01": 72840,
-          "2026-08-09": 2000193
-        },
-        "cameraDaily": {
-          "2026-08-01": 151316
-        },
-        "lastJoin": null,
-        "lastStreamJoin": null,
-        "lastCameraJoin": null,
-        "inVc": false,
-        "streaming": false,
-        "cameraOn": false
-      },
-      "1278713831345881170": {
-        "totalMs": 18517228,
-        "daily": {
-          "2026-08-01": 110735,
-          "2026-08-04": 2204884,
-          "2026-08-07": 3706890,
-          "2026-08-08": 11419618,
-          "2026-08-09": 1075101
-        },
-        "weekly": {
-          "2026-07-27": 110735,
-          "2026-08-03": 18406493
-        },
-        "monthly": {
-          "2026-08": 18517228
-        },
-        "streamMs": 919748,
-        "cameraMs": 0,
-        "streamDaily": {
-          "2026-08-09": 919748
-        },
-        "cameraDaily": {},
-        "lastJoin": null,
-        "lastStreamJoin": null,
-        "lastCameraJoin": null,
-        "inVc": false,
-        "streaming": false,
-        "cameraOn": false
-      },
-      "1408853277470097568": {
-        "totalMs": 1137163,
-        "daily": {
-          "2026-08-01": 309621,
-          "2026-08-04": 827542
-        },
-        "weekly": {
-          "2026-07-27": 309621,
-          "2026-08-03": 827542
-        },
-        "monthly": {
-          "2026-08": 1137163
-        },
+        "totalMs": 0,
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
         "streamMs": 0,
         "cameraMs": 0,
         "streamDaily": {},
         "cameraDaily": {},
-        "lastJoin": null,
+        "lastJoin": 1786936053656,
         "lastStreamJoin": null,
         "lastCameraJoin": null,
-        "inVc": false,
-        "streaming": false,
-        "cameraOn": false
-      },
-      "1164500664462880778": {
-        "totalMs": 6527302,
-        "daily": {
-          "2026-08-04": 6527302
-        },
-        "weekly": {
-          "2026-08-03": 6527302
-        },
-        "monthly": {
-          "2026-08": 6527302
-        },
-        "streamMs": 0,
-        "cameraMs": 0,
-        "streamDaily": {},
-        "cameraDaily": {},
-        "lastJoin": null,
-        "lastStreamJoin": null,
-        "lastCameraJoin": null,
-        "inVc": false,
-        "streaming": false,
-        "cameraOn": false
-      },
-      "1528881379868152020": {
-        "totalMs": 605476,
-        "daily": {
-          "2026-08-04": 605476
-        },
-        "weekly": {
-          "2026-08-03": 605476
-        },
-        "monthly": {
-          "2026-08": 605476
-        },
-        "streamMs": 0,
-        "cameraMs": 0,
-        "streamDaily": {},
-        "cameraDaily": {},
-        "lastJoin": null,
-        "lastStreamJoin": null,
-        "lastCameraJoin": null,
-        "inVc": false,
-        "streaming": false,
-        "cameraOn": false
-      },
-      "1371931756692897893": {
-        "totalMs": 4001526,
-        "daily": {
-          "2026-08-07": 478615,
-          "2026-08-09": 3522911
-        },
-        "weekly": {
-          "2026-08-03": 4001526
-        },
-        "monthly": {
-          "2026-08": 4001526
-        },
-        "streamMs": 1285859,
-        "cameraMs": 0,
-        "streamDaily": {
-          "2026-08-09": 1285859
-        },
-        "cameraDaily": {},
-        "lastJoin": null,
-        "lastStreamJoin": null,
-        "lastCameraJoin": null,
-        "inVc": false,
+        "inVc": true,
         "streaming": false,
         "cameraOn": false
       }
@@ -2749,7 +2425,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786935637710
+    "1410668779347771402": 1786936583513
   },
   "antinuke": {
     "enabled": true,
@@ -2922,7 +2598,7 @@
     }
   },
   "commandUsage": {
-    "ping": 16,
+    "ping": 17,
     "antiraid": 1,
     "autoresponder": 23,
     "role": 31,
@@ -2943,8 +2619,8 @@
     "daily": 2,
     "economy": 9,
     "profile": 1,
-    "messages": 12,
-    "voicetime": 33,
+    "messages": 15,
+    "voicetime": 35,
     "nuke": 7,
     "botstats": 2,
     "play": 28,
@@ -2999,8 +2675,8 @@
     "reaction": 2,
     "clownboard": 1,
     "discord": 2,
-    "msg": 1,
-    "cameratime": 8,
+    "msg": 2,
+    "cameratime": 9,
     "vtr": 1,
     "afk": 2,
     "voice": 1,
@@ -3009,7 +2685,11 @@
     "newmembers": 3,
     "streamtime": 4,
     "mt": 1,
-    "messagestime": 1
+    "messagestime": 1,
+    "statsclear": 1,
+    "topvc": 1,
+    "cr": 1,
+    "sgs": 1
   },
   "economy": {
     "enabled": true,
@@ -3243,12 +2923,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",balance",
-          "lastTime": 1786935637711,
-          "messageCount": 3,
+          "lastContent": ",messages <@1278713831345881170>",
+          "lastTime": 1786936583515,
+          "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786935631392
+          "windowStart": 1786936583515
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,

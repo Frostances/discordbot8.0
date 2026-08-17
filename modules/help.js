@@ -1099,6 +1099,8 @@ function shouldShowHelpForCommand(query, prefix = ',') {
   if (new Set([
     'nuke', 'levels', 'vc', 'voice', 'antiraid', 'antinuke',
     'automod', 'filter', 'reaction', 'previousreact', 'noselfreact',
+    'messages', 'msgs', 'voicetime', 'vt', 'streamtime', 'st',
+    'cameratime', 'ct', 'statsclear',
   ]).has(normalized)) return false;
 
   const catalog = buildCategoryCatalog(getHelpCommands(), prefix);

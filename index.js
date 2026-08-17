@@ -1439,7 +1439,9 @@ client.on('messageCreate', async (message) => {
             'disablemodule', 'ignore', 'pin', 'unpin', 'pins', 'webhook',
             'fakepermissions', 'roleplay', 'afk', 'godadmin', 'autoresponder',
             'counter', 'starboard', 'clownboard', 'seticon', 'setsplashbackground',
-            'setbanner', 'voicemaster', 'musicstats'
+            'setbanner', 'voicemaster', 'musicstats',
+            // Stats commands — show stats on bare invocation, not help
+            'messages', 'voicetime', 'streamtime', 'cameratime', 'statsclear'
         ]);
 
          // A bare command/category that has a browsable guide opens that guide
