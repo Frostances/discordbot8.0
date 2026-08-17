@@ -185,6 +185,7 @@ async function handleBombs(message, args) {
 
   collector.on('collect', async m => {
     if (m.content.toLowerCase() === ',cashout') {
+      alive = false;
       collector.stop();
       const win = Math.floor(amount * multiplier);
       if (win > 0) addCredits(guildId, userId, win, 'bombs_cashout');
@@ -784,6 +785,7 @@ async function handleMines(message, args) {
 
   collector.on('collect', async m => {
     if (m.content.toLowerCase() === ',cashout') {
+      alive = false;
       collector.stop();
       const win = Math.floor(amount * multiplier);
       if (win > 0) addCredits(guildId, userId, win, 'mines_cashout');

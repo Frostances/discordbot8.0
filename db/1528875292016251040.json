@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 23729,
+      "xp": 24330,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -1213,7 +1213,7 @@
       "lastCrime": null
     },
     "1278713831345881170": {
-      "xp": 33890,
+      "xp": 34005,
       "level": 9,
       "balance": 0,
       "bank": 0,
@@ -2354,9 +2354,82 @@
       }
     },
     "1410668779347771402": {
-      "total": 29,
+      "total": 76,
       "channels": {
-        "[object Object]": 29
+        "[object Object]": 76
+      },
+      "today": {
+        "date": "2026-08-17",
+        "total": 18,
+        "channels": {
+          "[object Object]": 18
+        }
+      },
+      "week": {
+        "start": 1786838400000,
+        "total": 18,
+        "channels": {
+          "[object Object]": 18
+        }
+      },
+      "month": {
+        "month": "2026-08",
+        "total": 18,
+        "channels": {
+          "[object Object]": 18
+        }
+      },
+      "periods": {
+        "today": {
+          "date": "2026-08-17",
+          "total": 19,
+          "channels": {
+            "[object Object]": 19
+          }
+        },
+        "week": {
+          "start": 1786838400000,
+          "total": 19,
+          "channels": {
+            "[object Object]": 19
+          }
+        },
+        "month": {
+          "month": "2026-08",
+          "total": 19,
+          "channels": {
+            "[object Object]": 19
+          }
+        }
+      }
+    },
+    "1278713831345881170": {
+      "total": 1,
+      "channels": {
+        "[object Object]": 1
+      },
+      "periods": {
+        "today": {
+          "date": "2026-08-17",
+          "total": 1,
+          "channels": {
+            "[object Object]": 1
+          }
+        },
+        "week": {
+          "start": 1786838400000,
+          "total": 1,
+          "channels": {
+            "[object Object]": 1
+          }
+        },
+        "month": {
+          "month": "2026-08",
+          "total": 1,
+          "channels": {
+            "[object Object]": 1
+          }
+        }
       }
     }
   },
@@ -2371,23 +2444,23 @@
   "vcStats": {
     "1528875292016251040": {
       "1410668779347771402": {
-        "totalMs": 153855649,
+        "totalMs": 154664522,
         "daily": {
           "2026-08-01": 509810,
           "2026-08-04": 1505,
           "2026-08-09": 2039968,
           "2026-08-13": 1618913,
           "2026-08-15": 44933254,
-          "2026-08-17": 104752199
+          "2026-08-17": 105561072
         },
         "weekly": {
           "2026-07-27": 509810,
           "2026-08-03": 2041473,
           "2026-08-10": 46552167,
-          "2026-08-17": 104752199
+          "2026-08-17": 105561072
         },
         "monthly": {
-          "2026-08": 153855649
+          "2026-08": 154664522
         },
         "streamMs": 2073033,
         "cameraMs": 151316,
@@ -2398,10 +2471,10 @@
         "cameraDaily": {
           "2026-08-01": 151316
         },
-        "lastJoin": null,
+        "lastJoin": 1786931819891,
         "lastStreamJoin": null,
         "lastCameraJoin": null,
-        "inVc": false,
+        "inVc": true,
         "streaming": false,
         "cameraOn": false
       },
@@ -2669,12 +2742,12 @@
     }
   },
   "lastSeen": {
-    "1278713831345881170": 1786810667057,
+    "1278713831345881170": 1786931811786,
     "1408853277470097568": 1786226128256,
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786928524247
+    "1410668779347771402": 1786931821419
   },
   "antinuke": {
     "enabled": true,
@@ -2857,19 +2930,19 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 33,
+    "help": 36,
     "levels": 7,
     "ask": 10,
     "who": 1,
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 11,
+    "balance": 12,
     "daily": 2,
-    "economy": 7,
+    "economy": 8,
     "profile": 1,
-    "messages": 5,
-    "voicetime": 7,
+    "messages": 9,
+    "voicetime": 31,
     "nuke": 7,
     "botstats": 2,
     "play": 28,
@@ -2925,8 +2998,16 @@
     "clownboard": 1,
     "discord": 2,
     "msg": 1,
-    "cameratime": 4,
-    "vtr": 1
+    "cameratime": 7,
+    "vtr": 1,
+    "afk": 1,
+    "voice": 1,
+    "statsreset": 1,
+    "reset": 1,
+    "newmembers": 3,
+    "streamtime": 2,
+    "mt": 1,
+    "messagestime": 1
   },
   "economy": {
     "enabled": true,
@@ -3043,12 +3124,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",vc",
-          "lastTime": 1786810667063,
+          "lastContent": ",vt",
+          "lastTime": 1786931812207,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786810667063
+          "windowStart": 1786931812207
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 250,
@@ -3160,12 +3241,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",daily",
-          "lastTime": 1786928524248,
-          "messageCount": 2,
+          "lastContent": ",vt",
+          "lastTime": 1786931821424,
+          "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786928516859
+          "windowStart": 1786931821424
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,

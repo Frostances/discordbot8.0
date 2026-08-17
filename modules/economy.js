@@ -304,7 +304,7 @@ async function handleDaily(message) {
   return message.reply({ embeds: [embed] });
 }
 
-async function handleWork(message) {
+async function handleWork(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
   const userId = message.author.id;
