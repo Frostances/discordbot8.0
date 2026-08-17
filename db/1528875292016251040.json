@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 23352,
+      "xp": 23474,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2352,6 +2352,12 @@
         },
         "total": 1
       }
+    },
+    "1410668779347771402": {
+      "total": 10,
+      "channels": {
+        "[object Object]": 10
+      }
     }
   },
   "topvcConfig": {
@@ -2365,21 +2371,23 @@
   "vcStats": {
     "1528875292016251040": {
       "1410668779347771402": {
-        "totalMs": 49103450,
+        "totalMs": 153855649,
         "daily": {
           "2026-08-01": 509810,
           "2026-08-04": 1505,
           "2026-08-09": 2039968,
           "2026-08-13": 1618913,
-          "2026-08-15": 44933254
+          "2026-08-15": 44933254,
+          "2026-08-17": 104752199
         },
         "weekly": {
           "2026-07-27": 509810,
           "2026-08-03": 2041473,
-          "2026-08-10": 46552167
+          "2026-08-10": 46552167,
+          "2026-08-17": 104752199
         },
         "monthly": {
-          "2026-08": 49103450
+          "2026-08": 153855649
         },
         "streamMs": 2073033,
         "cameraMs": 151316,
@@ -2390,10 +2398,10 @@
         "cameraDaily": {
           "2026-08-01": 151316
         },
-        "lastJoin": 1786821098759,
+        "lastJoin": null,
         "lastStreamJoin": null,
         "lastCameraJoin": null,
-        "inVc": true,
+        "inVc": false,
         "streaming": false,
         "cameraOn": false
       },
@@ -2666,7 +2674,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786835279517
+    "1410668779347771402": 1786925854448
   },
   "antinuke": {
     "enabled": true,
@@ -2849,7 +2857,7 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 29,
+    "help": 30,
     "levels": 7,
     "ask": 10,
     "who": 1,
@@ -2858,10 +2866,10 @@
     "bal": 1,
     "balance": 9,
     "daily": 1,
-    "economy": 4,
+    "economy": 5,
     "profile": 1,
-    "messages": 1,
-    "voicetime": 3,
+    "messages": 3,
+    "voicetime": 6,
     "nuke": 7,
     "botstats": 2,
     "play": 28,
@@ -2915,7 +2923,9 @@
     "sc": 1,
     "reaction": 2,
     "clownboard": 1,
-    "discord": 2
+    "discord": 2,
+    "msg": 1,
+    "cameratime": 2
   },
   "economy": {
     "enabled": true,
@@ -3149,12 +3159,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",help",
-          "lastTime": 1786835279519,
+          "lastContent": ",economy",
+          "lastTime": 1786925854451,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786835279519
+          "windowStart": 1786925854451
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
@@ -3265,7 +3275,47 @@
         "emoji": "☀️"
       }
     ],
-    "activeEvents": {}
+    "activeEvents": {},
+    "mode": "guild",
+    "currencyName": "Credits",
+    "currencySymbol": "💰",
+    "dailyAmount": 500,
+    "workCooldown": 420000,
+    "crimeCooldown": 0,
+    "robCooldown": 0,
+    "jobs": [
+      {
+        "name": "Developer",
+        "min": 100,
+        "max": 500,
+        "description": "Write code and fix bugs"
+      },
+      {
+        "name": "Designer",
+        "min": 80,
+        "max": 400,
+        "description": "Create beautiful graphics"
+      },
+      {
+        "name": "Streamer",
+        "min": 120,
+        "max": 600,
+        "description": "Entertain the masses"
+      },
+      {
+        "name": "Trader",
+        "min": 150,
+        "max": 700,
+        "description": "Buy low, sell high"
+      },
+      {
+        "name": "Hacker",
+        "min": 200,
+        "max": 800,
+        "description": "Break into systems (legally)"
+      }
+    ],
+    "circulation": 0
   },
   "pinsConfig": {
     "enabled": false,
