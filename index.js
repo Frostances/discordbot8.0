@@ -290,26 +290,26 @@ const { handleMediaCommand, MEDIA_COMMANDS } = require('./modules/media');
 // ══════════════════════════════════════════════════════════
 const {
   handleBalance, handleDaily, handleWork, handleEconomyConfig,
-  handleAddCredits, handleRemoveCredits, handleSetCredits, handleResetUser,
-  handleGive, handleTake, handleReset, handleTransfer,
-  handleDeposit, handleWithdraw, handleCirculation, handleDestroy,
-  handleJobAdd, handleJobRemove, handleOpen, handleCrime,
-  handleEconomyButton, isEconomyEnabled, trackEconomyMessage,
-  handleLeaderboard, handleProfile,
+  handleGive, handleTake, handleSetCredits, handleReset,
+  handleTransfer, handleDeposit, handleWithdraw, handleCirculation,
+  handleDestroy, handleJobAdd, handleJobRemove, handleOpen, handleCrime,
+  handleRob, handleEconomyButton, isEconomyEnabled, trackEconomyMessage,
+  handleLeaderboard, handleProfile, handleEconomyEvents, handleEconomyAdmin,
 } = require('./modules/economy');
 const {
-  handleCoinflip,
-  handleCrash, handleGamble, handleBombs, handleScratch,
-  handleRoulette, handlePlinko, handleHighlow, handleLadder,
-  handleDice, handleSlots, handleBlackjack, handleMines,
-  handleRob,
+  handleCoinflip, handleCrash, handleGamble, handleRoulette,
+  handlePlinko, handleLadder, handleDice, handleSlots,
+  handleBlackjack, handleMines,
 } = require('./modules/economyGames');
 const {
   handleShop, handleBuy, handleInventory, handleUse,
 } = require('./modules/economyShop');
 const {
-  scheduleRandomEvent, stopScheduler,
+  scheduleRandomEvent, stopScheduler, handleEventCommand,
 } = require('./modules/economyEvents');
+const {
+  handleStickyMessage, onMessageCreate, initStickyMessages,
+} = require('./modules/stickyMessage');
 
 // ══════════════════════════════════════════════════════════
 //  HANDLERS
@@ -1013,11 +1013,13 @@ async function handleVCPrefixCommand(message, args) {
             permitted.delete(target.id);
             vcPermittedUsers.set(vc.id, permitted);
             saveLegacyData();
+            try { await vc.permissionOverwrites.edit(target, { Connect: null }); } catch {}
             return message.reply({ embeds: [mkSuccess('Permission Removed', `<@${target.id}> is no longer permitted to join **${vc.name}**.`)] });
         } else {
             permitted.add(target.id);
             vcPermittedUsers.set(vc.id, permitted);
             saveLegacyData();
+            try { await vc.permissionOverwrites.edit(target, { Connect: true }); } catch {}
             return message.reply({ embeds: [mkSuccess('Permission Granted', `<@${target.id}> is now permitted to join **${vc.name}** even when locked.`)] });
         }
     }
@@ -1350,6 +1352,9 @@ client.on('messageCreate', async (message) => {
       trackEconomyMessage(message.guild.id, message.author.id, message.content, false);
     }
 
+    // ── Sticky Messages ──
+    await onMessageCreate(message, client).catch(() => {});
+
     // Track giveaway message counts for active giveaways with required_messages
     trackGiveawayMessage(message.guild.id, message.author.id, message.channel.id);
 
@@ -1403,7 +1408,7 @@ client.on('messageCreate', async (message) => {
     if (isModuleEnabled(message.guild.id, 'economy') && isEconomyEnabled(message.guild.id)) {
       const economyCommands = new Set([
         'balance','daily','work','leaderboard','profile',
-        'crash','gamble','bombs','scratch','roulette','plinko','highlow','ladder',
+        'crash','gamble','roulette','plinko','ladder',
         'dice','slots','blackjack','mines','rob','crime','coinflip',
         'shop','buy','inventory','use',
         'transfer','deposit','withdraw','circulation','open'
@@ -1437,7 +1442,7 @@ client.on('messageCreate', async (message) => {
         // Config commands with no args should show their module config, not help
         const CONFIG_BARE = new Set([
             'level', 'levels', 'log', 'config', 'settings', 'ticket', 'welcome',
-            'goodbye', 'boosts', 'economy', 'levelupmsg', 'module',
+            'goodbye', 'boosts', 'economy', 'economyevents', 'economyadmin', 'levelupmsg', 'module',
             'customize', 'pagination', 'enablecommand', 'disablecommand',
             'copydisabled', 'enableevent', 'disableevent', 'enablemodule',
             'disablemodule', 'ignore', 'pin', 'unpin', 'pins', 'webhook',
@@ -1884,12 +1889,11 @@ client.on('messageCreate', async (message) => {
          if (command === 'leaderboard') return handleLeaderboard(message, args, client);
          if (command === 'profile') return handleProfile(message, args, client);
          if (command === 'economy') return handleEconomyConfig(message, args);
-         if (command === 'addcredits') return handleAddCredits(message, args);
-         if (command === 'removecredits') return handleRemoveCredits(message, args);
-         if (command === 'setcredits') return handleSetCredits(message, args);
-         if (command === 'resetuser') return handleResetUser(message, args);
+         if (command === 'economyevents') return handleEconomyEvents(message, args);
+         if (command === 'economyadmin') return handleEconomyAdmin(message, args);
          if (command === 'give') return handleGive(message, args);
          if (command === 'take') return handleTake(message, args);
+         if (command === 'setcredits') return handleSetCredits(message, args);
          if (command === 'reset') return handleReset(message, args);
          if (command === 'transfer') return handleTransfer(message, args);
          if (command === 'deposit') return handleDeposit(message, args);
@@ -1904,22 +1908,19 @@ client.on('messageCreate', async (message) => {
          }
          if (command === 'open') return handleOpen(message);
          if (command === 'crime') return handleCrime(message);
+         if (command === 'rob') return handleRob(message, args);
 
          // Economy Games
          if (command === 'coinflip') return handleCoinflip(message, args);
          if (command === 'crash') return handleCrash(message, args);
          if (command === 'gamble') return handleGamble(message, args);
-         if (command === 'bombs') return handleBombs(message, args);
-         if (command === 'scratch') return handleScratch(message, args);
          if (command === 'roulette') return handleRoulette(message, args);
          if (command === 'plinko') return handlePlinko(message, args);
-         if (command === 'highlow') return handleHighlow(message, args);
          if (command === 'ladder') return handleLadder(message, args);
          if (command === 'dice') return handleDice(message, args);
          if (command === 'slots') return handleSlots(message, args);
          if (command === 'blackjack') return handleBlackjack(message, args);
          if (command === 'mines') return handleMines(message, args);
-         if (command === 'rob') return handleRob(message, args);
 
          // Economy Shop
          if (command === 'shop') return handleShop(message, args);
@@ -1928,7 +1929,10 @@ client.on('messageCreate', async (message) => {
          if (command === 'use') return handleUse(message, args);
 
          // Economy Events
-         if (command === 'event') return require('./modules/economyEvents').handleEventCommand(message, args);
+         if (command === 'event') return handleEventCommand(message, args);
+
+         // Sticky Message
+         if (command === 'stickymessage' || command === 'sticky') return handleStickyMessage(message, args);
 
      } catch (err) {
      await handleCommandError(message, err);
@@ -2445,6 +2449,7 @@ client.on('guildCreate', async (guild) => {
         return;
     }
     await initGuild(guild).catch(() => {});
+    await initStickyMessages(guild, client).catch(() => {});
     logger.info('GUILD', `Joined new guild: ${guild.name} (${guild.id})`);
 });
 
@@ -2593,6 +2598,7 @@ client.once('clientReady', async () => {
             continue;
         }
         await initGuild(guild).catch(() => {});
+        await initStickyMessages(guild, client).catch(() => {});
 
         // Restore VoiceMaster interface
         const db = getGuildDb(guild.id);

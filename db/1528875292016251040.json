@@ -1158,10 +1158,10 @@
   ],
   "notes": {},
   "voiceMaster": {
-    "categoryId": "1531788362183082076",
-    "interfaceChannelId": "1531788363580051587",
-    "joinChannelId": "1531788364628627616",
-    "interfaceMessageId": "1531791959201546445"
+    "categoryId": "1539690303802446006",
+    "interfaceChannelId": "1539690305194950855",
+    "joinChannelId": "1539690306239463606",
+    "interfaceMessageId": "1539690307006894193"
   },
   "welcomeConfig": {
     "message": "{embed}$v{message: {user.mention}}$v{author: welcome, {user}! && <:moon:1533126502080843977> }$v{description: <:invisible:1531760713453015081><:whitestar:1533126538315304960> follow [law](https://discord.com/channels/1528875292016251040/1528875293895299264)\n<:invisible:1531760713453015081><:invisible:1531760713453015081><:whitestar:1533126538315304960> boost / invite friends \n<:invisible:1531760713453015081><:invisible:1531760713453015081><:invisible:1531760713453015081><:whitestar:1533126538315304960> get your [roles](https://discord.com/channels/1528875292016251040/1529515361295401090) }$v{thumbnail: {user.avatar}}$v{button: https://discord.com/channels/1528875292016251040/1531788364628627616 && call&& <:moon:1533126502080843977> && enabled}$v{button: && {guild.count} && <:w_members:1531761274583515176> && enabled}",
@@ -1201,8 +1201,8 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 28300,
-      "level": 8,
+      "xp": 28785,
+      "level": 9,
       "balance": 0,
       "bank": 0,
       "warnings": [],
@@ -1213,7 +1213,7 @@
       "lastCrime": null
     },
     "1278713831345881170": {
-      "xp": 34005,
+      "xp": 34259,
       "level": 9,
       "balance": 0,
       "bank": 0,
@@ -1276,6 +1276,18 @@
     },
     "1534648427135369226": {
       "xp": 63,
+      "level": 0,
+      "balance": 0,
+      "bank": 0,
+      "warnings": [],
+      "inventory": [],
+      "lastDaily": null,
+      "lastWeekly": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "1535267061385662514": {
+      "xp": 53,
       "level": 0,
       "balance": 0,
       "bank": 0,
@@ -2241,15 +2253,39 @@
       "1410668779347771402": {
         "daily": {
           "2026-08-17": 27,
-          "2026-08-19": 291
+          "2026-08-19": 304
         },
         "weekly": {
-          "2026-08-17": 318
+          "2026-08-17": 331
         },
         "monthly": {
-          "2026-08": 318
+          "2026-08": 331
         },
-        "total": 318
+        "total": 331
+      },
+      "1278713831345881170": {
+        "daily": {
+          "2026-08-19": 14
+        },
+        "weekly": {
+          "2026-08-17": 14
+        },
+        "monthly": {
+          "2026-08": 14
+        },
+        "total": 14
+      },
+      "1535267061385662514": {
+        "daily": {
+          "2026-08-19": 2
+        },
+        "weekly": {
+          "2026-08-17": 2
+        },
+        "monthly": {
+          "2026-08": 2
+        },
+        "total": 2
       }
     }
   },
@@ -2264,24 +2300,25 @@
   "vcStats": {
     "1528875292016251040": {
       "1410668779347771402": {
-        "totalMs": 38574612,
+        "totalMs": 38578763,
         "daily": {
-          "2026-08-17": 38574612
+          "2026-08-17": 38574612,
+          "2026-08-19": 4151
         },
         "weekly": {
-          "2026-08-17": 38574612
+          "2026-08-17": 38578763
         },
         "monthly": {
-          "2026-08": 38574612
+          "2026-08": 38578763
         },
         "streamMs": 0,
         "cameraMs": 0,
         "streamDaily": {},
         "cameraDaily": {},
-        "lastJoin": null,
+        "lastJoin": 1787161179984,
         "lastStreamJoin": null,
         "lastCameraJoin": null,
-        "inVc": false,
+        "inVc": true,
         "streaming": false,
         "cameraOn": false
       }
@@ -2427,12 +2464,13 @@
     }
   },
   "lastSeen": {
-    "1278713831345881170": 1786931811786,
+    "1278713831345881170": 1787160382381,
     "1408853277470097568": 1786226128256,
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1787151178106
+    "1410668779347771402": 1787161321772,
+    "1535267061385662514": 1787157311249
   },
   "antinuke": {
     "enabled": true,
@@ -2624,7 +2662,7 @@
     "bal": 1,
     "balance": 31,
     "daily": 2,
-    "economy": 31,
+    "economy": 33,
     "profile": 2,
     "messages": 16,
     "voicetime": 36,
@@ -2643,9 +2681,9 @@
     "volume": 16,
     "fastforward": 2,
     "tts": 1,
-    "purge": 13,
+    "purge": 25,
     "customize": 26,
-    "ce": 6,
+    "ce": 7,
     "ec": 5,
     "quotwe": 1,
     "quote": 4,
@@ -2658,7 +2696,7 @@
     "work": 9,
     "gamble": 2,
     "cups": 3,
-    "vc": 16,
+    "vc": 17,
     "music": 20,
     "membercount": 1,
     "roleinfo": 1,
@@ -2716,11 +2754,14 @@
     "plink": 1,
     "shop": 5,
     "shopadd": 1,
-    "economyevents": 4,
+    "economyevents": 6,
     "economyadmin": 1,
     "ladder": 3,
     "leaderboard": 1,
-    "inventory": 1
+    "inventory": 1,
+    "stickymessage": 3,
+    "voicemaster": 1,
+    "reverseimage": 2
   },
   "economy": {
     "enabled": true,
@@ -2773,7 +2814,7 @@
       "jackpot": 3600000
     },
     "events": {
-      "enabled": true,
+      "enabled": false,
       "autoInterval": 3600000,
       "channelId": null
     },
@@ -2838,16 +2879,29 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",vt",
-          "lastTime": 1786931812207,
-          "messageCount": 1,
+          "lastContent": "e",
+          "lastTime": 1787160382384,
+          "messageCount": 2,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786931812207
+          "windowStart": 1787160378600
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 250,
-        "_dailyReset": 1786237276617
+        "_dailyReset": 1786237276617,
+        "wallet": 0,
+        "bank": 0,
+        "totalEarned": 0,
+        "totalSpent": 0,
+        "gamesPlayed": 0,
+        "gamesWon": 0,
+        "robAttempts": 0,
+        "robSuccess": 0,
+        "lastWork": 0,
+        "lastDaily": 0,
+        "lastCrime": 0,
+        "lastRob": 0,
+        "lastOpen": 0
       },
       "1371931756692897893": {
         "credits": 0,
@@ -2955,12 +3009,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",inventory",
-          "lastTime": 1787151178109,
-          "messageCount": 1,
+          "lastContent": ",purge 1",
+          "lastTime": 1787161321775,
+          "messageCount": 2,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1787151178109
+          "windowStart": 1787161319241
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
@@ -2978,6 +3032,30 @@
         "lastCrime": 1787150207979,
         "lastRob": 0,
         "lastOpen": 0
+      },
+      "1535267061385662514": {
+        "wallet": 0,
+        "bank": 0,
+        "totalEarned": 0,
+        "totalSpent": 0,
+        "gamesPlayed": 0,
+        "gamesWon": 0,
+        "robAttempts": 0,
+        "robSuccess": 0,
+        "lastWork": 0,
+        "lastDaily": 0,
+        "lastCrime": 0,
+        "lastRob": 0,
+        "lastOpen": 0,
+        "inventory": [],
+        "equipped": {},
+        "messageTracker": {
+          "lastContent": "3rd",
+          "lastTime": 1787157311251,
+          "messageCount": 2,
+          "windowStart": 1787157305553
+        },
+        "suspiciousFlags": 0
       }
     },
     "logs": [
@@ -4203,5 +4281,8 @@
       "roles": []
     },
     "messages": {}
+  },
+  "stickyMessages": {
+    "1528875294952521975": "lol"
   }
 }

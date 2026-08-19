@@ -874,16 +874,16 @@ async function sendEconomyGuide(message) {
 // ══════════════════════════════════════════════════════════
 
 async function handleEconomyConfig(message, args) {
- if (!canManageEconomy(message.member, message.guild.id)) {
- return message.reply(err('You need to be an economy admin, have Manage Server permission, or be the server owner.'));
- }
-
  const guildId = message.guild.id;
  const ec = getEconomy(guildId);
  const sub = args[0]?.toLowerCase();
 
  if (!sub) {
  return sendEconomyGuide(message);
+ }
+
+ if (!canManageEconomy(message.member, message.guild.id)) {
+ return message.reply(err('You need to be an economy admin, have Manage Server permission, or be the server owner.'));
  }
 
  if (sub === 'enable') {

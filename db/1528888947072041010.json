@@ -114,5 +114,6 @@
     "antiSpamWindow": 10000,
     "antiSpamThreshold": 10,
     "messageCooldown": 2000
-  }
+  },
+  "stickyMessages": {}
 }

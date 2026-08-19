@@ -1,9 +1,9 @@
 // ══════════════════════════════════════════════════════════
-// ECONOMY SHOP MODULE — v2.0
+// ECONOMY SHOP MODULE — v2.1 (Global mode restricted)
 // ══════════════════════════════════════════════════════════
 
 const { EmbedBuilder } = require('discord.js');
-const { getEconomy, getUserEconomy, isEconomyEnabled, addCredits, removeCredits, saveEconomy, formatNumber, makeEmbed } = require('./economy');
+const { getEconomy, getUserEconomy, isEconomyEnabled, addCredits, removeCredits, saveEconomy, formatNumber, makeEmbed, isGlobalMode } = require('./economy');
 const { hasDiscordPerm } = require('./helpers');
 const { error: err, success: ok } = require('../utils/embeds');
 
@@ -14,6 +14,7 @@ const { error: err, success: ok } = require('../utils/embeds');
 async function handleShop(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
+  if (isGlobalMode(guildId)) return message.reply(err('The shop is not available in global economy mode.'));
   const ec = getEconomy(guildId);
   const sub = args[0]?.toLowerCase();
 
@@ -72,6 +73,7 @@ async function handleShop(message, args) {
 async function handleBuy(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
+  if (isGlobalMode(guildId)) return message.reply(err('The shop is not available in global economy mode.'));
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
@@ -100,8 +102,10 @@ async function handleBuy(message, args) {
 
 async function handleInventory(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
+  const guildId = message.guild.id;
+  if (isGlobalMode(guildId)) return message.reply(err('Inventory is not available in global economy mode.'));
   const target = message.mentions.users.first() || message.author;
-  const user = getUserEconomy(message.guild.id, target.id);
+  const user = getUserEconomy(guildId, target.id);
 
   if (!user.inventory || !user.inventory.length) {
     return message.reply(err(`${target.id === message.author.id ? 'Your' : target.username + "'s"} inventory is empty.`));
@@ -115,6 +119,7 @@ async function handleInventory(message, args) {
 async function handleUse(message, args) {
   if (!isEconomyEnabled(message.guild.id)) return message.reply(err('Economy is not enabled.'));
   const guildId = message.guild.id;
+  if (isGlobalMode(guildId)) return message.reply(err('Items cannot be used in global economy mode.'));
   const userId = message.author.id;
   const user = getUserEconomy(guildId, userId);
   const ec = getEconomy(guildId);
