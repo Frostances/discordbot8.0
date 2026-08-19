@@ -443,7 +443,7 @@ async function handleDeposit(message, args) {
   const ec = getEconomy(guildId);
 
   const amount = parseAmount(args[0], user, 'wallet');
-  if (amount === null) return message.reply(err('Usage: `,deposit <amount | all | half | quarter>`'));
+  if (amount === null) return message.reply(err('Usage: `,deposit <amount>`'));
   if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
   if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}** in your wallet.`));
 
@@ -463,7 +463,7 @@ async function handleWithdraw(message, args) {
   const ec = getEconomy(guildId);
 
   const amount = parseAmount(args[0], user, 'bank');
-  if (amount === null) return message.reply(err('Usage: `,withdraw <amount | all | half | quarter>`'));
+  if (amount === null) return message.reply(err('Usage: `,withdraw <amount>`'));
   if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
   if (user.bank < amount) return message.reply(err(`You only have **${formatNumber(user.bank)}** in your bank.`));
 
@@ -487,7 +487,7 @@ async function handleTransfer(message, args) {
   if (target.id === userId) return message.reply(err('You cannot transfer to yourself.'));
 
   const amount = parseAmount(args[1], user, 'wallet');
-  if (amount === null) return message.reply(err('Usage: `,transfer @user <amount | all | half | quarter>`'));
+  if (amount === null) return message.reply(err('Usage: `,transfer @user <amount>`'));
   if (amount <= 0) return message.reply(err('Amount must be greater than 0.'));
   if (user.wallet < amount) return message.reply(err(`You only have **${formatNumber(user.wallet)}** in your wallet.`));
 
@@ -577,7 +577,7 @@ async function handleJobAdd(message, args) {
   const description = args.slice(3).join(' ') || 'No description';
 
   if (!name || isNaN(min) || isNaN(max)) {
-    return message.reply(err('Usage: `,job add <name> <min payout> <max payout> [description]`'));
+    return message.reply(err('Usage: `,job add <name> <min> <max> [description]`'));
   }
 
   ec.jobs.push({ name, min, max, description });
@@ -653,7 +653,7 @@ async function handleEconomyConfig(message, args) {
   if (sub === 'mode') {
     const mode = args[1]?.toLowerCase();
     if (!mode || !['guild', 'global'].includes(mode)) {
-      return message.reply(err('Usage: `,economy mode <guild | global>`'));
+      return message.reply(err('Usage: `,economy mode <guild|global>`'));
     }
     ec.mode = mode;
     saveEconomy(guildId, ec);
@@ -664,15 +664,16 @@ async function handleEconomyConfig(message, args) {
     return handleLeaderboard(message, args.slice(1), message.client);
   }
 
-  return message.reply(info('Economy Admin', `
+  // FIX: wrap info() embed in { embeds: [...] } — passing EmbedBuilder directly causes "Cannot send an empty message"
+  return message.reply({ embeds: [info('Economy Admin', `
 \`,economy enable\` — Enable economy
 \`,economy disable\` — Disable economy
-\`,economy preset <name>\` — Apply preset
+\`,economy preset <preset>\` — Apply preset
 \`,economy reset @user\` — Reset user data
 \`,economy config\` — View configuration
-\`,economy mode <guild | global>\` — Switch mode
+\`,economy mode <guild|global>\` — Switch mode
 \`,economy leaderboard\` — View leaderboard
-`));
+`)] });
 }
 
 async function handleGive(message, args) {

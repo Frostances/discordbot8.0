@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 25038,
+      "xp": 26742,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2240,15 +2240,16 @@
     "1528875292016251040": {
       "1410668779347771402": {
         "daily": {
-          "2026-08-17": 27
+          "2026-08-17": 27,
+          "2026-08-19": 223
         },
         "weekly": {
-          "2026-08-17": 27
+          "2026-08-17": 250
         },
         "monthly": {
-          "2026-08": 27
+          "2026-08": 250
         },
-        "total": 27
+        "total": 250
       }
     }
   },
@@ -2431,7 +2432,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1786974637628
+    "1410668779347771402": 1787142539481
   },
   "antinuke": {
     "enabled": true,
@@ -2614,16 +2615,16 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 38,
+    "help": 39,
     "levels": 7,
     "ask": 10,
     "who": 1,
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 20,
+    "balance": 25,
     "daily": 2,
-    "economy": 11,
+    "economy": 15,
     "profile": 1,
     "messages": 16,
     "voicetime": 36,
@@ -2633,7 +2634,7 @@
     "pause": 8,
     "disconnect": 9,
     "unpause": 2,
-    "mines": 6,
+    "mines": 17,
     "resume": 5,
     "preset": 3,
     "skip": 4,
@@ -2654,7 +2655,7 @@
     "unlock": 1,
     "ticket": 1,
     "starboard": 3,
-    "work": 6,
+    "work": 8,
     "gamble": 2,
     "cups": 3,
     "vc": 16,
@@ -2696,7 +2697,23 @@
     "topvc": 1,
     "cr": 1,
     "sgs": 1,
-    "coinflip": 1
+    "coinflip": 4,
+    "bal'": 1,
+    "bombs": 6,
+    "cashout": 3,
+    "givwe": 1,
+    "give": 1,
+    "crash": 6,
+    "circulation": 1,
+    "plinko": 29,
+    "blackjack": 2,
+    "depo": 1,
+    "deposit": 1,
+    "withdraw": 1,
+    "crime": 63,
+    "crim": 1,
+    "case": 1,
+    "plink": 1
   },
   "economy": {
     "enabled": true,
@@ -2930,27 +2947,27 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",coinflip",
-          "lastTime": 1786974637631,
-          "messageCount": 1,
+          "lastContent": ",economy config",
+          "lastTime": 1787142539482,
+          "messageCount": 2,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1786974637631
+          "windowStart": 1787142530855
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
         "_dailyReset": 1786579215854,
-        "wallet": 237,
+        "wallet": 0,
         "lastDaily": 1786928524278,
         "bank": 0,
-        "totalEarned": 237,
-        "totalSpent": 0,
-        "gamesPlayed": 0,
-        "gamesWon": 0,
+        "totalEarned": 71962,
+        "totalSpent": 71962,
+        "gamesPlayed": 43,
+        "gamesWon": 20,
         "robAttempts": 0,
         "robSuccess": 0,
-        "lastWork": 1786974616283,
-        "lastCrime": 0,
+        "lastWork": 1787141921932,
+        "lastCrime": 1787142320973,
         "lastRob": 0
       }
     },
@@ -2989,6 +3006,942 @@
         "prev": 0,
         "next": 237,
         "timestamp": 1786974616266
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -10,
+        "type": "mines_bet",
+        "prev": 237,
+        "next": 227,
+        "timestamp": 1787141127530
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -10,
+        "type": "bombs_bet",
+        "prev": 227,
+        "next": 217,
+        "timestamp": 1787141196915
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -9,
+        "type": "bombs_bet",
+        "prev": 217,
+        "next": 208,
+        "timestamp": 1787141209227
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -50,
+        "type": "mines_bet",
+        "prev": 208,
+        "next": 158,
+        "timestamp": 1787141244886
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -100,
+        "type": "mines_bet",
+        "prev": 158,
+        "next": 58,
+        "timestamp": 1787141273550
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -58,
+        "type": "mines_bet",
+        "prev": 58,
+        "next": 0,
+        "timestamp": 1787141291323
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 159,
+        "type": "mines_cashout",
+        "prev": 0,
+        "next": 159,
+        "timestamp": 1787141313281
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -40,
+        "type": "crash_bet",
+        "prev": 159,
+        "next": 119,
+        "timestamp": 1787141507689
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 48,
+        "type": "crash",
+        "prev": 119,
+        "next": 167,
+        "timestamp": 1787141511133
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -30,
+        "type": "crash_bet",
+        "prev": 167,
+        "next": 137,
+        "timestamp": 1787141522521
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 57,
+        "type": "crash",
+        "prev": 137,
+        "next": 194,
+        "timestamp": 1787141533179
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -97,
+        "type": "crash_bet",
+        "prev": 194,
+        "next": 97,
+        "timestamp": 1787141543421
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 203,
+        "type": "crash",
+        "prev": 97,
+        "next": 300,
+        "timestamp": 1787141555337
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -10,
+        "type": "crash_bet",
+        "prev": 300,
+        "next": 290,
+        "timestamp": 1787141562278
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -100,
+        "type": "coinflip_bet",
+        "prev": 290,
+        "next": 190,
+        "timestamp": 1787141607930
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -190,
+        "type": "coinflip_bet",
+        "prev": 190,
+        "next": 0,
+        "timestamp": 1787141623067
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 380,
+        "type": "coinflip_win",
+        "prev": 0,
+        "next": 380,
+        "timestamp": 1787141624846
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -10,
+        "type": "plinko_bet",
+        "prev": 380,
+        "next": 370,
+        "timestamp": 1787141671582
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 50,
+        "type": "plinko",
+        "prev": 370,
+        "next": 420,
+        "timestamp": 1787141671589
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -100,
+        "type": "plinko_bet",
+        "prev": 420,
+        "next": 320,
+        "timestamp": 1787141709355
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 200,
+        "type": "plinko",
+        "prev": 320,
+        "next": 520,
+        "timestamp": 1787141709363
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -260,
+        "type": "plinko_bet",
+        "prev": 520,
+        "next": 260,
+        "timestamp": 1787141722191
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 520,
+        "type": "plinko",
+        "prev": 260,
+        "next": 780,
+        "timestamp": 1787141722199
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -780,
+        "type": "plinko_bet",
+        "prev": 780,
+        "next": 0,
+        "timestamp": 1787141729287
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 1560,
+        "type": "plinko",
+        "prev": 0,
+        "next": 1560,
+        "timestamp": 1787141729294
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1560,
+        "type": "plinko_bet",
+        "prev": 1560,
+        "next": 0,
+        "timestamp": 1787141734861
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 7800,
+        "type": "plinko",
+        "prev": 0,
+        "next": 7800,
+        "timestamp": 1787141734870
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -7800,
+        "type": "plinko_bet",
+        "prev": 7800,
+        "next": 0,
+        "timestamp": 1787141739776
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 15600,
+        "type": "plinko",
+        "prev": 0,
+        "next": 15600,
+        "timestamp": 1787141739783
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -7800,
+        "type": "plinko_bet",
+        "prev": 15600,
+        "next": 7800,
+        "timestamp": 1787141744968
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3900,
+        "type": "mines_bet",
+        "prev": 7800,
+        "next": 3900,
+        "timestamp": 1787141760294
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 6825,
+        "type": "mines_cashout",
+        "prev": 3900,
+        "next": 10725,
+        "timestamp": 1787141770411
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -10,
+        "type": "blackjack_double",
+        "prev": 10725,
+        "next": 10715,
+        "timestamp": 1787141816462
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -10000,
+        "type": "plinko_bet",
+        "prev": 10000,
+        "next": 0,
+        "timestamp": 1787141859559
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -715,
+        "type": "plinko_bet",
+        "prev": 715,
+        "next": 0,
+        "timestamp": 1787141874877
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 1430,
+        "type": "plinko",
+        "prev": 0,
+        "next": 1430,
+        "timestamp": 1787141874883
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1430,
+        "type": "plinko_bet",
+        "prev": 1430,
+        "next": 0,
+        "timestamp": 1787141879296
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 2860,
+        "type": "plinko",
+        "prev": 0,
+        "next": 2860,
+        "timestamp": 1787141879302
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -2860,
+        "type": "mines_bet",
+        "prev": 2860,
+        "next": 0,
+        "timestamp": 1787141886833
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 499,
+        "type": "work",
+        "prev": 0,
+        "next": 499,
+        "timestamp": 1787141921931
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -499,
+        "type": "plinko_bet",
+        "prev": 499,
+        "next": 0,
+        "timestamp": 1787141927371
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 998,
+        "type": "plinko",
+        "prev": 0,
+        "next": 998,
+        "timestamp": 1787141927378
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -86,
+        "type": "crime_fine",
+        "prev": 998,
+        "next": 912,
+        "timestamp": 1787141933590
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 175,
+        "type": "crime",
+        "prev": 912,
+        "next": 1087,
+        "timestamp": 1787141936912
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 294,
+        "type": "crime",
+        "prev": 1087,
+        "next": 1381,
+        "timestamp": 1787141939458
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -80,
+        "type": "crime_fine",
+        "prev": 1381,
+        "next": 1301,
+        "timestamp": 1787141942016
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -120,
+        "type": "crime_fine",
+        "prev": 1301,
+        "next": 1181,
+        "timestamp": 1787141943701
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 621,
+        "type": "crime",
+        "prev": 1181,
+        "next": 1802,
+        "timestamp": 1787141944653
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 363,
+        "type": "crime",
+        "prev": 1802,
+        "next": 2165,
+        "timestamp": 1787141945711
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 287,
+        "type": "crime",
+        "prev": 2165,
+        "next": 2452,
+        "timestamp": 1787141950281
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -2452,
+        "type": "plinko_bet",
+        "prev": 2452,
+        "next": 0,
+        "timestamp": 1787141953305
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 180,
+        "type": "crime",
+        "prev": 0,
+        "next": 180,
+        "timestamp": 1787141979205
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 176,
+        "type": "crime",
+        "prev": 180,
+        "next": 356,
+        "timestamp": 1787141981095
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 343,
+        "type": "crime",
+        "prev": 356,
+        "next": 699,
+        "timestamp": 1787141984252
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -699,
+        "type": "plinko_bet",
+        "prev": 699,
+        "next": 0,
+        "timestamp": 1787141987361
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 1398,
+        "type": "plinko",
+        "prev": 0,
+        "next": 1398,
+        "timestamp": 1787141987368
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -77,
+        "type": "crime_fine",
+        "prev": 1398,
+        "next": 1321,
+        "timestamp": 1787141991402
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1321,
+        "type": "mines_bet",
+        "prev": 1321,
+        "next": 0,
+        "timestamp": 1787141994854
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 419,
+        "type": "crime",
+        "prev": 0,
+        "next": 419,
+        "timestamp": 1787142015382
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 364,
+        "type": "crime",
+        "prev": 419,
+        "next": 783,
+        "timestamp": 1787142016518
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 287,
+        "type": "crime",
+        "prev": 783,
+        "next": 1070,
+        "timestamp": 1787142020139
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -142,
+        "type": "crime_fine",
+        "prev": 1070,
+        "next": 928,
+        "timestamp": 1787142021426
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -120,
+        "type": "crime_fine",
+        "prev": 928,
+        "next": 808,
+        "timestamp": 1787142033002
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 292,
+        "type": "crime",
+        "prev": 808,
+        "next": 1100,
+        "timestamp": 1787142034060
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 215,
+        "type": "crime",
+        "prev": 1100,
+        "next": 1315,
+        "timestamp": 1787142037024
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1315,
+        "type": "plinko_bet",
+        "prev": 1315,
+        "next": 0,
+        "timestamp": 1787142041417
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 618,
+        "type": "crime",
+        "prev": 0,
+        "next": 618,
+        "timestamp": 1787142043626
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 534,
+        "type": "crime",
+        "prev": 618,
+        "next": 1152,
+        "timestamp": 1787142044692
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 117,
+        "type": "crime",
+        "prev": 1152,
+        "next": 1269,
+        "timestamp": 1787142046634
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1269,
+        "type": "plinko_bet",
+        "prev": 1269,
+        "next": 0,
+        "timestamp": 1787142051325
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 2538,
+        "type": "plinko",
+        "prev": 0,
+        "next": 2538,
+        "timestamp": 1787142051335
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1269,
+        "type": "plinko_bet",
+        "prev": 2538,
+        "next": 1269,
+        "timestamp": 1787142055715
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 2538,
+        "type": "plinko",
+        "prev": 1269,
+        "next": 3807,
+        "timestamp": 1787142055722
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3807,
+        "type": "mines_bet",
+        "prev": 3807,
+        "next": 0,
+        "timestamp": 1787142060529
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 10469,
+        "type": "mines_cashout",
+        "prev": 0,
+        "next": 10469,
+        "timestamp": 1787142097556
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -5234,
+        "type": "plinko_bet",
+        "prev": 10469,
+        "next": 5235,
+        "timestamp": 1787142151588
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -5235,
+        "type": "crash_bet",
+        "prev": 5235,
+        "next": 0,
+        "timestamp": 1787142157798
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 0,
+        "type": "crime_fine",
+        "prev": 0,
+        "next": 0,
+        "timestamp": 1787142208774
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 0,
+        "type": "crime_fine",
+        "prev": 0,
+        "next": 0,
+        "timestamp": 1787142209731
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 333,
+        "type": "crime",
+        "prev": 0,
+        "next": 333,
+        "timestamp": 1787142210638
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 336,
+        "type": "crime",
+        "prev": 333,
+        "next": 669,
+        "timestamp": 1787142212531
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -133,
+        "type": "crime_fine",
+        "prev": 669,
+        "next": 536,
+        "timestamp": 1787142213294
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 100,
+        "type": "crime",
+        "prev": 536,
+        "next": 636,
+        "timestamp": 1787142215862
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -636,
+        "type": "plinko_bet",
+        "prev": 636,
+        "next": 0,
+        "timestamp": 1787142219412
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 449,
+        "type": "crime",
+        "prev": 0,
+        "next": 449,
+        "timestamp": 1787142222484
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 75,
+        "type": "crime",
+        "prev": 449,
+        "next": 524,
+        "timestamp": 1787142226844
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -524,
+        "type": "plinko_bet",
+        "prev": 524,
+        "next": 0,
+        "timestamp": 1787142229710
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 592,
+        "type": "crime",
+        "prev": 0,
+        "next": 592,
+        "timestamp": 1787142240669
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 241,
+        "type": "crime",
+        "prev": 592,
+        "next": 833,
+        "timestamp": 1787142247524
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 362,
+        "type": "crime",
+        "prev": 833,
+        "next": 1195,
+        "timestamp": 1787142249505
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -102,
+        "type": "crime_fine",
+        "prev": 1195,
+        "next": 1093,
+        "timestamp": 1787142252366
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1093,
+        "type": "plinko_bet",
+        "prev": 1093,
+        "next": 0,
+        "timestamp": 1787142255861
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 0,
+        "type": "crime_fine",
+        "prev": 0,
+        "next": 0,
+        "timestamp": 1787142265318
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 285,
+        "type": "crime",
+        "prev": 0,
+        "next": 285,
+        "timestamp": 1787142268279
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 303,
+        "type": "crime",
+        "prev": 285,
+        "next": 588,
+        "timestamp": 1787142269954
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 265,
+        "type": "crime",
+        "prev": 588,
+        "next": 853,
+        "timestamp": 1787142271286
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -853,
+        "type": "plinko_bet",
+        "prev": 853,
+        "next": 0,
+        "timestamp": 1787142277653
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 609,
+        "type": "crime",
+        "prev": 0,
+        "next": 609,
+        "timestamp": 1787142280605
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -120,
+        "type": "crime_fine",
+        "prev": 609,
+        "next": 489,
+        "timestamp": 1787142284404
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -489,
+        "type": "plinko_bet",
+        "prev": 489,
+        "next": 0,
+        "timestamp": 1787142291045
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 0,
+        "type": "crime_fine",
+        "prev": 0,
+        "next": 0,
+        "timestamp": 1787142295242
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 244,
+        "type": "crime",
+        "prev": 0,
+        "next": 244,
+        "timestamp": 1787142296845
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 199,
+        "type": "crime",
+        "prev": 244,
+        "next": 443,
+        "timestamp": 1787142298832
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 207,
+        "type": "crime",
+        "prev": 443,
+        "next": 650,
+        "timestamp": 1787142300473
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 77,
+        "type": "crime",
+        "prev": 650,
+        "next": 727,
+        "timestamp": 1787142301807
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 216,
+        "type": "crime",
+        "prev": 727,
+        "next": 943,
+        "timestamp": 1787142303866
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -68,
+        "type": "crime_fine",
+        "prev": 943,
+        "next": 875,
+        "timestamp": 1787142304865
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 154,
+        "type": "crime",
+        "prev": 875,
+        "next": 1029,
+        "timestamp": 1787142305799
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 290,
+        "type": "crime",
+        "prev": 1029,
+        "next": 1319,
+        "timestamp": 1787142307001
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1319,
+        "type": "plinko_bet",
+        "prev": 1319,
+        "next": 0,
+        "timestamp": 1787142310877
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 247,
+        "type": "crime",
+        "prev": 0,
+        "next": 247,
+        "timestamp": 1787142313982
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 311,
+        "type": "crime",
+        "prev": 247,
+        "next": 558,
+        "timestamp": 1787142314920
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 379,
+        "type": "crime",
+        "prev": 558,
+        "next": 937,
+        "timestamp": 1787142318978
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 720,
+        "type": "crime",
+        "prev": 937,
+        "next": 1657,
+        "timestamp": 1787142320976
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1657,
+        "type": "plinko_bet",
+        "prev": 1657,
+        "next": 0,
+        "timestamp": 1787142324381
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 3314,
+        "type": "plinko",
+        "prev": 0,
+        "next": 3314,
+        "timestamp": 1787142324388
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3314,
+        "type": "mines_bet",
+        "prev": 3314,
+        "next": 0,
+        "timestamp": 1787142329276
       }
     ],
     "shop": [
@@ -3113,7 +4066,7 @@
         "description": "Break into systems (legally)"
       }
     ],
-    "circulation": 237
+    "circulation": 0
   },
   "pinsConfig": {
     "enabled": false,
