@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 28224,
+      "xp": 28300,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2241,15 +2241,15 @@
       "1410668779347771402": {
         "daily": {
           "2026-08-17": 27,
-          "2026-08-19": 288
+          "2026-08-19": 291
         },
         "weekly": {
-          "2026-08-17": 315
+          "2026-08-17": 318
         },
         "monthly": {
-          "2026-08": 315
+          "2026-08": 318
         },
-        "total": 315
+        "total": 318
       }
     }
   },
@@ -2432,7 +2432,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1787150740890
+    "1410668779347771402": 1787151178106
   },
   "antinuke": {
     "enabled": true,
@@ -2624,7 +2624,7 @@
     "bal": 1,
     "balance": 31,
     "daily": 2,
-    "economy": 30,
+    "economy": 31,
     "profile": 2,
     "messages": 16,
     "voicetime": 36,
@@ -2709,7 +2709,7 @@
     "blackjack": 2,
     "depo": 1,
     "deposit": 1,
-    "withdraw": 1,
+    "withdraw": 2,
     "crime": 72,
     "crim": 1,
     "case": 1,
@@ -2719,7 +2719,8 @@
     "economyevents": 4,
     "economyadmin": 1,
     "ladder": 3,
-    "leaderboard": 1
+    "leaderboard": 1,
+    "inventory": 1
   },
   "economy": {
     "enabled": true,
@@ -2954,12 +2955,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",welcome variables",
-          "lastTime": 1787150740969,
+          "lastContent": ",inventory",
+          "lastTime": 1787151178109,
           "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1787150740969
+          "windowStart": 1787151178109
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
