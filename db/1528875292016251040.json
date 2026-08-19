@@ -1201,7 +1201,7 @@
   },
   "users": {
     "1410668779347771402": {
-      "xp": 26742,
+      "xp": 28224,
       "level": 8,
       "balance": 0,
       "bank": 0,
@@ -2241,15 +2241,15 @@
       "1410668779347771402": {
         "daily": {
           "2026-08-17": 27,
-          "2026-08-19": 223
+          "2026-08-19": 288
         },
         "weekly": {
-          "2026-08-17": 250
+          "2026-08-17": 315
         },
         "monthly": {
-          "2026-08": 250
+          "2026-08": 315
         },
-        "total": 250
+        "total": 315
       }
     }
   },
@@ -2432,7 +2432,7 @@
     "1371931756692897893": 1786238783533,
     "820324513488699404": 1786048518357,
     "1534648427135369226": 1786220285276,
-    "1410668779347771402": 1787142539481
+    "1410668779347771402": 1787150740890
   },
   "antinuke": {
     "enabled": true,
@@ -2605,7 +2605,7 @@
     }
   },
   "commandUsage": {
-    "ping": 18,
+    "ping": 20,
     "antiraid": 1,
     "autoresponder": 23,
     "role": 31,
@@ -2615,17 +2615,17 @@
     "strip": 2,
     "stripstaff": 4,
     "bt": 1,
-    "help": 39,
+    "help": 40,
     "levels": 7,
     "ask": 10,
     "who": 1,
     "ttt": 1,
     "br": 4,
     "bal": 1,
-    "balance": 25,
+    "balance": 31,
     "daily": 2,
-    "economy": 15,
-    "profile": 1,
+    "economy": 30,
+    "profile": 2,
     "messages": 16,
     "voicetime": 36,
     "nuke": 7,
@@ -2634,7 +2634,7 @@
     "pause": 8,
     "disconnect": 9,
     "unpause": 2,
-    "mines": 17,
+    "mines": 27,
     "resume": 5,
     "preset": 3,
     "skip": 4,
@@ -2655,7 +2655,7 @@
     "unlock": 1,
     "ticket": 1,
     "starboard": 3,
-    "work": 8,
+    "work": 9,
     "gamble": 2,
     "cups": 3,
     "vc": 16,
@@ -2668,7 +2668,7 @@
     "leveling": 2,
     "log": 12,
     "stop": 2,
-    "welcome": 8,
+    "welcome": 9,
     "goodbye": 1,
     "filter": 1,
     "repeat": 1,
@@ -2698,22 +2698,28 @@
     "cr": 1,
     "sgs": 1,
     "coinflip": 4,
-    "bal'": 1,
+    "bal'": 2,
     "bombs": 6,
     "cashout": 3,
     "givwe": 1,
     "give": 1,
-    "crash": 6,
+    "crash": 8,
     "circulation": 1,
-    "plinko": 29,
+    "plinko": 30,
     "blackjack": 2,
     "depo": 1,
     "deposit": 1,
     "withdraw": 1,
-    "crime": 63,
+    "crime": 72,
     "crim": 1,
     "case": 1,
-    "plink": 1
+    "plink": 1,
+    "shop": 5,
+    "shopadd": 1,
+    "economyevents": 4,
+    "economyadmin": 1,
+    "ladder": 3,
+    "leaderboard": 1
   },
   "economy": {
     "enabled": true,
@@ -2767,7 +2773,8 @@
     },
     "events": {
       "enabled": true,
-      "autoInterval": 3600000
+      "autoInterval": 3600000,
+      "channelId": null
     },
     "eventMultipliers": {
       "work": 2,
@@ -2947,12 +2954,12 @@
           }
         ],
         "messageTracker": {
-          "lastContent": ",economy config",
-          "lastTime": 1787142539482,
-          "messageCount": 2,
+          "lastContent": ",welcome variables",
+          "lastTime": 1787150740969,
+          "messageCount": 1,
           "commandCount": 0,
           "spamCount": 0,
-          "windowStart": 1787142530855
+          "windowStart": 1787150740969
         },
         "suspiciousFlags": 0,
         "_dailyEarned": 180,
@@ -2960,15 +2967,16 @@
         "wallet": 0,
         "lastDaily": 1786928524278,
         "bank": 0,
-        "totalEarned": 71962,
-        "totalSpent": 71962,
-        "gamesPlayed": 43,
-        "gamesWon": 20,
+        "totalEarned": 93353,
+        "totalSpent": 93353,
+        "gamesPlayed": 55,
+        "gamesWon": 24,
         "robAttempts": 0,
         "robSuccess": 0,
-        "lastWork": 1787141921932,
-        "lastCrime": 1787142320973,
-        "lastRob": 0
+        "lastWork": 1787150204487,
+        "lastCrime": 1787150207979,
+        "lastRob": 0,
+        "lastOpen": 0
       }
     },
     "logs": [
@@ -3942,6 +3950,86 @@
         "prev": 3314,
         "next": 0,
         "timestamp": 1787142329276
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 176,
+        "type": "crime",
+        "prev": 0,
+        "next": 176,
+        "timestamp": 1787146744538
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 273,
+        "type": "crime",
+        "prev": 176,
+        "next": 449,
+        "timestamp": 1787146746451
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 741,
+        "type": "crime",
+        "prev": 449,
+        "next": 1190,
+        "timestamp": 1787146748653
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 252,
+        "type": "crime",
+        "prev": 1190,
+        "next": 1442,
+        "timestamp": 1787146753631
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -1442,
+        "type": "plinko_bet",
+        "prev": 1442,
+        "next": 0,
+        "timestamp": 1787146780559
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": 14420,
+        "type": "plinko",
+        "prev": 0,
+        "next": 14420,
+        "timestamp": 1787146780564
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3000,
+        "type": "mines_bet",
+        "prev": 14420,
+        "next": 11420,
+        "timestamp": 1787146816358
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3000,
+        "type": "mines_bet",
+        "prev": 11420,
+        "next": 8420,
+        "timestamp": 1787146823809
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3000,
+        "type": "mines_bet",
+        "prev": 8420,
+        "next": 5420,
+        "timestamp": 1787146838025
+      },
+      {
+        "userId": "1410668779347771402",
+        "amount": -3000,
+        "type": "mines_bet",
+        "prev": 5420,
+        "next": 2420,
+        "timestamp": 1787146847482
       }
     ],
     "shop": [
@@ -4024,6 +4112,12 @@
         "price": 2000,
         "type": "event",
         "emoji": "☀️"
+      },
+      {
+        "name": "cat",
+        "price": 1,
+        "role": null,
+        "description": "3"
       }
     ],
     "activeEvents": {},
@@ -4066,7 +4160,9 @@
         "description": "Break into systems (legally)"
       }
     ],
-    "circulation": 0
+    "circulation": 0,
+    "openCooldown": 300000,
+    "economyAdmins": []
   },
   "pinsConfig": {
     "enabled": false,

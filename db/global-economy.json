@@ -1,0 +1,32 @@
+{
+  "economy": {
+    "users": {
+      "1410668779347771402": {
+        "wallet": 630,
+        "bank": 0,
+        "totalEarned": 630,
+        "totalSpent": 0,
+        "gamesPlayed": 0,
+        "gamesWon": 0,
+        "robAttempts": 0,
+        "robSuccess": 0,
+        "lastWork": 0,
+        "lastDaily": 0,
+        "lastCrime": 1787150239929,
+        "lastRob": 0,
+        "lastOpen": 0,
+        "inventory": [],
+        "equipped": {},
+        "messageTracker": {
+          "lastContent": ",crime",
+          "lastTime": 1787150239898,
+          "messageCount": 2,
+          "windowStart": 1787150236126
+        },
+        "suspiciousFlags": 0
+      }
+    },
+    "circulation": 630,
+    "logs": []
+  }
+}
